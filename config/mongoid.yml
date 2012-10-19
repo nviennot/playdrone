@@ -1,0 +1,17 @@
+development:
+  sessions:
+   default:
+     hosts:
+       - localhost:27017
+     database: googleplaycrawler_dev
+     options:
+       safe: false
+
+test:
+  sessions:
+   default:
+     hosts:
+       - localhost:27017
+     database: googleplaycrawler_test
+     options:
+       safe: false
