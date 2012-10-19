@@ -1,4 +1,4 @@
-class Market
+module Market
   require Rails.root.join 'vendor', 'protobuf-java-2.4.1.jar'
   require Rails.root.join 'vendor', 'AndroidMarketApi.jar'
   require Rails.root.join 'vendor', 'protobuf-java-format-1.2.jar'
@@ -18,4 +18,9 @@ class Market
   end
 
   com.google.protobuf.GeneratedMessage.__send__(:include, Parser)
+
+  def self.get_type_value(kind, what)
+    return nil if what.nil?
+    kind.value_of(kind.const_get("#{what.to_s.upcase}_VALUE"))
+  end
 end
