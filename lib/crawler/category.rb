@@ -26,7 +26,7 @@ class Crawler::Category < Crawler::Base
     when 2 then :ringtone
     when 3 then :wallpaper
     when 4 then :game
-    else :unkown
+    else :unknown
     end
   end
 end
