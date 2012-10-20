@@ -3,3 +3,4 @@ log/
 tmp/
 *.swp
 *.swo
+vendor/libjd-intellij.so
