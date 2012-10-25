@@ -6,6 +6,8 @@ gem 'foreman'
 gem 'haml'
 gem 'mongoid'
 gem 'puma'
+gem 'redis'
+gem 'airbrake'
 
 group :assets do
   gem 'sass-rails',   '~> 3.2.3'
