@@ -3,9 +3,9 @@ class App
 
   belongs_to :searched_category, :class_name => 'Category', :foreign_key => :category_id
 
-  alias_attribute :app_id, :_id
+  alias_attribute :package_name, :_id
 
-  field :app_id,       :type => Integer
+  field :app_id
   field :title
   field :app_type,     :type => Symbol
   field :creator

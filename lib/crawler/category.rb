@@ -1,4 +1,6 @@
 class Crawler::Category < Crawler::Base
+  # XXX Not maintained, because useless.
+
   def crawl
     query_categories.to_ruby
   end

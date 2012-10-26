@@ -26,8 +26,10 @@ class Account
         s.setAuthSubToken(token)
       else
         s.login(email, password, android_id)
-        Redis.instance.set(key, s.authSubToken)
-        Redis.instance.expire(key, AUTH_TOKEN_EXPIRE)
+        Redis.instance.multi do
+          Redis.instance.set(key, s.authSubToken)
+          Redis.instance.expire(key, AUTH_TOKEN_EXPIRE)
+        end
       end
     end
   end
@@ -40,16 +42,16 @@ class Account
     v = Redis.instance.incr(rate_limit_key)
     # FIXME If the instance dies here, we never expire the key
     Redis.instance.expire(rate_limit_key, 1.minute) if v == 1
+    return v < MAX_QUERIES_PER_MIN
   end
 
-  def can_use_api?
-    Redis.instance.get(rate_limit_key).to_i < MAX_QUERIES_PER_MIN
-  end
-
-  def self.first_usable
+  # XXX atomically calls incr_queries
+  def self.first_usable(options={})
+    last = options[:last]
+    return last if last && last.incr_queries!
     loop do
       Account.all.each do |account|
-        return account if account.can_use_api?
+        return account if account.incr_queries!
       end
       sleep 1
     end

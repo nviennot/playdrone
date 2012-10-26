@@ -5,14 +5,15 @@ class Crawler::Base
   end
 
   def account
-    if @account.nil? || !@account.can_use_api?
-      @account = Account.first_usable
-    end
-    @account
+    @account = Account.first_usable(:last => @account)
   end
 
   def session(options={})
-    account.tap { |a| a.incr_queries! }.session(options)
+    account.session(options)
+    #.tap do |s|
+      #s.context.setVersion(201210);
+      #s.context.setDeviceAndSdkVersion("crespo:16")
+    #end
   end
 
   def query_app(*args)
