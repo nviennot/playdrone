@@ -1,6 +1,6 @@
 class Crawler::Category < Crawler::Base
   def crawl
-    session.queryCategories.to_ruby
+    query_categories.to_ruby
   end
 
   def crawl_and_process

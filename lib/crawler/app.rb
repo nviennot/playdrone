@@ -23,7 +23,7 @@ class Crawler::App < Crawler::Base
     req.setEntriesCount options[:per_page]
     req.setViewType     options[:view]        if options[:view]
 
-    resp = session.queryApp(req.build)
+    resp = query_app(req.build)
     # go figure
     raise if resp.size != 1
     resp[0].to_ruby

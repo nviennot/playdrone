@@ -8,6 +8,7 @@ gem 'mongoid'
 gem 'puma'
 gem 'redis'
 gem 'airbrake'
+gem 'sidekiq'
 
 group :assets do
   gem 'sass-rails',   '~> 3.2.3'
