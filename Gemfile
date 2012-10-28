@@ -11,6 +11,8 @@ gem 'airbrake'
 gem 'sidekiq'
 gem 'sinatra'
 gem 'slim'
+gem 'faraday'
+gem 'faraday_middleware'
 
 group :assets do
   gem 'sass-rails',   '~> 3.2.3'

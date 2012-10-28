@@ -17,9 +17,8 @@ class AppQuery
     Crawler::App.new(options.merge(:query => self.query)).crawl
   end
 
-
-  after_create :start_crawl
-  def start_crawl
+  after_create :async_crawl
+  def async_crawl
     self.class.delay(:queue => 'app_query_count').crawl(id_str)
   end
 

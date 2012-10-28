@@ -1,9 +1,8 @@
 class App
   include Mongoid::Document
+  include Sidekiq::Worker
 
   belongs_to :searched_category, :class_name => 'Category', :foreign_key => :category_id
-
-  alias_attribute :package_name, :_id
 
   field :app_id
   field :title
@@ -25,9 +24,26 @@ class App
   field :recent_changes
   field :promo_video
 
-  field :package_name
+  field :_id, :as => :package_name
   field :version_code
 
   field :price_currency
   field :price
+
+  has_many :apks, :foreign_key => :package_name
+
+  def fetch_latest_apk(options={})
+    force = options[:force]
+
+    apk = apks.where(:version_code => version_code).first
+    if apk
+      # Racy, but okay because this will be fired manually
+      apk.async_fetch if force
+    else
+      # Racy, but okay because of unique index
+      apks.create(:version_code => version_code,
+                  :version      => version,
+                  :asset_id     => app_id)
+    end
+  end
 end

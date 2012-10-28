@@ -1,8 +1,7 @@
 class Category
   include Mongoid::Document
 
-  alias_attribute :category_id, :_id
-  field :category_id
+  field :_id, :as => :category_id
   field :title
   field :app_type
 
