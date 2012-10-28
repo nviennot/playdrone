@@ -8,7 +8,7 @@ module Decompiler
   mattr_accessor :instance
   self.instance = Java::JdCore::Decompiler
 
-  def self.decompile(jar)
-    instance.new.decompile(jar)
+  def self.decompile(jar, out_dir)
+    instance.new.decompile_to_dir(jar, out_dir)
   end
 end
