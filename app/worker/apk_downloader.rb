@@ -16,10 +16,10 @@ class ApkDownloader
 
     crawler.last_account.wait_until_usable
 
-    conn = Faraday.new do |f|
+    conn = Faraday.new(:ssl => {:verify => false}) do |f|
       f.response :logger, Rails.logger
       f.response :follow_redirects
-      f.adapter  Faraday.default_adapter
+      f.adapter  :net_http
     end
     response = conn.get do |req|
       req.url url
