@@ -12,9 +12,12 @@ module Decompiler
     # We'll acall the CLI
     # JdCore.new.decompile_to_dir(jar.to_s, out_dir.to_s)
     jdcore = Rails.root.join 'vendor', 'jd-core-java-1.0.jar'
-    unless system("env", "java", "-jar", jdcore.to_s, jar.to_s, out_dir.to_s);
-      raise "Couldn't decompile #{jar} properly. Crashed ?"
-      out_dir.unlink
+    unless system("env", "java", "-jar", jdcore.to_s, jar.to_s, out_dir.to_s)
+      if $?.termsig
+        raise "Couldn't decompile #{jar} properly. Crashed."
+      else
+        raise "Couldn't decompile #{jar} properly"
+      end
     end
   end
 

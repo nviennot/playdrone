@@ -10,6 +10,7 @@ class Apk
   field :secured
 
   field :released_at
+  field :decompilation_failed
 
   belongs_to :app, :foreign_key => :package_name
 

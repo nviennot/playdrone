@@ -5,6 +5,14 @@ class ApkDecompiler
   def perform(apk_id)
     apk = Apk.find(apk_id)
     out_dir = Rails.root.join('play', 'src', apk.file.basename)
-    Decompiler.decompile(apk.file, out_dir)
+    begin
+      Decompiler.decompile(apk.file, out_dir)
+    rescue Exception => e
+      if e.message =~ /Crashed/
+        apk.update_attributes(:decompilation_failed => true)
+      else
+        raise e
+      end
+    end
   end
 end
