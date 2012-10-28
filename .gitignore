@@ -1,7 +1,7 @@
 .bundle
 log/
 tmp/
-apks/
+play/
 *.swp
 *.swo
 vendor/libjd-intellij.so

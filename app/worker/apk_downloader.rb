@@ -2,12 +2,19 @@ class ApkDownloader
   include Sidekiq::Worker
   sidekiq_options :queue => name.underscore
 
-  def perform(apk_id, options)
-    options      = options.symbolize_keys!
-    apk          = Apk.find(apk_id)
-    url          = options[:url]
-    cookie_name  = options[:cookie_name]
-    cookie_value = options[:cookie_value]
+  def perform(apk_id)
+    apk = Apk.find(apk_id)
+    crawler = apk.crawler
+    asset = crawler.crawl.asset
+    raise "No Asset" unless asset
+
+    apk.update_attributes(asset.select {|k| k.in? [:asset_size, :secured]})
+
+    url          = asset[:url]
+    cookie_name  = asset[:cookie_name]
+    cookie_value = asset[:cookie_value]
+
+    crawler.last_account.wait_until_usable
 
     conn = Faraday.new do |f|
       f.response :logger, Rails.logger
@@ -27,11 +34,10 @@ class ApkDownloader
         raise "Got #{response.body.size} bytes, not #{apk.asset_size}"
       end
     end
-    file = Rails.root.join('apks', apk.file_name)
-    file.open('wb') { |f| f.write(response.body) }
 
     last_modified = Time.parse(response.headers['last-modified'])
-    apk.update_attributes(:last_modified => last_modified)
-    file.utime(last_modified, last_modified)
+    apk.file.open('wb') { |f| f.write(response.body) }
+    apk.update_attributes(:released_at => last_modified)
+    apk.file.utime(last_modified, last_modified)
   end
 end

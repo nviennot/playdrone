@@ -1,12 +1,17 @@
 class Account
   include Mongoid::Document
 
-  MAX_QUERIES_PER_MIN = 50
+  # Burst, 50 queries per minute
+  MAX_SECS_PER_QUERY = 5
   AUTH_TOKEN_EXPIRE = 10.minutes
 
   field :email
   field :password
   field :android_id
+
+  field :disabled_until, :type => Time, :default => ->{ Time.now }
+
+  index :disabled_until => 1
 
   def checkin!
     Helpers.has_java_exceptions do
@@ -44,20 +49,50 @@ class Account
 
   def incr_queries!
     v = Redis.instance.incr(rate_limit_key)
-    # FIXME If the instance dies here, we never expire the key
-    Redis.instance.expire(rate_limit_key, 1.minute) if v == 1
-    return v < MAX_QUERIES_PER_MIN
+
+    if v == 1
+      # FIXME If the instance dies here, we never expire the key
+      Redis.instance.expire(rate_limit_key, MAX_SECS_PER_QUERY)
+      true
+    else
+      false
+    end
+  end
+
+  def self.enabled
+    where(:android_id.ne => nil, :disabled_until.lt => Time.now)
+  end
+
+  def enabled?
+    return false if self.android_id.nil?
+    self.class.where(atomic_selector).enabled.count > 0
+  end
+
+  def disable!(options={})
+    duration = options[:duration] || 1.hour
+    update_attributes(:disabled_until => duration.from_now)
+  end
+
+  def wait_until_usable
+    loop do
+      if enabled?
+        return if incr_queries!
+        sleep 1
+      else
+        sleep 30.seconds
+      end
+    end
   end
 
   # XXX atomically calls incr_queries
   def self.first_usable(options={})
     last = options[:last]
-    return last if last && last.incr_queries!
+    return last if last && last.enabled? && last.incr_queries!
     loop do
-      Account.all.each do |account|
+      Account.enabled.each do |account|
         return account if account.incr_queries!
       end
-      sleep 1
+      sleep MAX_SECS_PER_QUERY
     end
   end
 end

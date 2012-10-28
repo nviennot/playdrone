@@ -9,21 +9,22 @@ class Apk
   field :asset_size
   field :secured
 
-  field :last_modified
+  field :released_at
 
   belongs_to :app, :foreign_key => :package_name
 
   index({:package_name => 1, :version_code => 1}, :unique => true)
 
   def download!
-    ApkFetcher.perform_async(id)
+    ApkDownloader.perform_async(id)
   end
 
   def crawler(options={})
     Crawler::Asset.new(options.merge(:asset_id => asset_id))
   end
 
-  def file_name
-    "#{package_name}-#{version}-#{version_code}.apk"
+  def file
+    file_name = "#{package_name}-#{version}-#{version_code}.apk"
+    Rails.root.join('play', 'apk', file_name)
   end
 end
