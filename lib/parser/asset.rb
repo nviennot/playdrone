@@ -1,6 +1,8 @@
 class Parser::Asset < Parser::Base
   def asset
-    asset = response['InstallAsset'].first
+    asset = response['InstallAsset'].try(:first)
+    return nil if asset.nil?
+
     {
       :asset_size   => asset['assetSize'],
       :cookie_name  => asset['downloadAuthCookieName'],

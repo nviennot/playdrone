@@ -32,18 +32,21 @@ class App
 
   has_many :apks, :foreign_key => :package_name
 
-  def fetch_latest_apk(options={})
+  def download_latest_apk!(options={})
     force = options[:force]
+
+    raise "This is a paied app" if price
 
     apk = apks.where(:version_code => version_code).first
     if apk
       # Racy, but okay because this will be fired manually
-      apk.async_fetch if force
+      apk.download! if force
     else
       # Racy, but okay because of unique index
-      apks.create(:version_code => version_code,
-                  :version      => version,
-                  :asset_id     => app_id)
+      apk = apks.create!(:version_code => version_code,
+                         :version      => version,
+                         :asset_id     => app_id)
+      apk.download!
     end
   end
 end
