@@ -19,6 +19,10 @@ class Apk
     ApkDownloader.perform_async(id)
   end
 
+  def decompile!
+    ApkDecompiler.perform_async(id)
+  end
+
   def crawler(options={})
     Crawler::Asset.new(options.merge(:asset_id => asset_id))
   end

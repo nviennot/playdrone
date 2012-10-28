@@ -39,5 +39,7 @@ class ApkDownloader
     apk.file.open('wb') { |f| f.write(response.body) }
     apk.update_attributes(:released_at => last_modified)
     apk.file.utime(last_modified, last_modified)
+
+    apk.decompile!
   end
 end
