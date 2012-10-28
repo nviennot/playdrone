@@ -10,6 +10,8 @@ class ApkDecompiler
     rescue Exception => e
       if e.message =~ /Crashed/
         apk.update_attributes(:decompilation_failed => true)
+      elsif e.message =~ /dex2jar failed/
+        apk.update_attributes(:decompilation_failed => true)
       else
         raise e
       end

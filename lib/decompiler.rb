@@ -30,7 +30,11 @@ module Decompiler
   Dex2jar = Java::ComGooglecodeDex2jarV3::Dex2jar
 
   def self.dex2jar(apk, jar)
-    Dex2jar.from(apk.to_s).to(jar.to_s)
+    begin
+      Dex2jar.from(apk.to_s).to(jar.to_s)
+    rescue Exception => e
+        raise "Couldn't extract #{apk} properly. dex2jar failed"
+    end
   end
 
   def self.decompile(apk, out_dir)
