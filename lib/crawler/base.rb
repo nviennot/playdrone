@@ -17,14 +17,20 @@ class Crawler::Base
   end
 
   def query_app(*args)
-    session(:secure => false).query_app(*args)
+    Helpers.has_java_exceptions do
+      session(:secure => false).query_app(*args)
+    end
   end
 
   def query_categories(*args)
-    session(:secure => false).query_categories(*args)
+    Helpers.has_java_exceptions do
+      session(:secure => false).query_categories(*args)
+    end
   end
 
   def query_get_asset_request(*args)
-    session(:secure => true).query_get_asset_request(*args)
+    Helpers.has_java_exceptions do
+      session(:secure => true).query_get_asset_request(*args)
+    end
   end
 end
