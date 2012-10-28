@@ -8,8 +8,8 @@ class Account
   field :password
   field :android_id
 
-  def android_id
-    super || '3000000000000000'
+  def checkin!
+    update_attributes(:android_id => Checkin.checkin(email, password))
   end
 
   def auth_token_key(secure)
