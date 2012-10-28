@@ -1,13 +1,18 @@
 class Account
   include Mongoid::Document
 
-  # Burst, 50 queries per minute
-  MAX_SECS_PER_QUERY = 5
+  # On burst, the API can give us 50 queries per minute,
+  # but on the long run, it's much less.
+  # We are doing 6 req/min, 360 req/hr
+  MAX_SECS_PER_QUERY = 10
   AUTH_TOKEN_EXPIRE = 10.minutes
 
   field :email
   field :password
   field :android_id
+
+  field :num_requests
+  field :ban_history, :type => Array, :default => []
 
   field :disabled_until, :type => Time, :default => ->{ Time.now }
 
@@ -70,7 +75,11 @@ class Account
 
   def disable!(options={})
     duration = options[:duration] || 1.hour
-    update_attributes(:disabled_until => duration.from_now)
+
+    self.ban_history << self.num_requests
+    self.num_requests = 0
+    self.disabled_until = duration.from_now
+    self.save!
   end
 
   def wait_until_usable

@@ -11,7 +11,7 @@ class Crawler::Base
     #s.context.setDeviceAndSdkVersion("crespo:16")
     begin
       Helpers.has_java_exceptions do
-        yield s
+        yield(s).tap { self.last_account.inc(:num_requests, 1) }
       end
     rescue Exception => e
       if e.message =~ /Response code = 4??/

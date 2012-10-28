@@ -14,7 +14,9 @@ class ApkDownloader
     cookie_name  = asset[:cookie_name]
     cookie_value = asset[:cookie_value]
 
-    crawler.last_account.wait_until_usable
+    # We are probably not rate limited on
+    # the download
+    # crawler.last_account.wait_until_usable
 
     conn = Faraday.new(:ssl => {:verify => false}) do |f|
       f.response :logger, Rails.logger
