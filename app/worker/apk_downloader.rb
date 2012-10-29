@@ -33,6 +33,9 @@ class ApkDownloader
       if response.body.size < 100
         raise "Oops: #{response.status} // #{response.body}"
       else
+        File.open('fails.' + apk.file.basename.to_s, 'wb') do |f|
+          f.write(response.body)
+        end
         raise "Got #{response.body.size} bytes, not #{apk.asset_size}"
       end
     end

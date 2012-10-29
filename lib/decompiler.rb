@@ -8,8 +8,8 @@ module Decompiler
   JdCore = Java::JdCore::Decompiler
 
   def self.jar2java(jar, out_dir)
-    # Crashes way too often in jdcore. Instead of dying with it
-    # We'll acall the CLI
+    # Crashes way too often in jdcore.
+    # Instead of dying with it we'll call the CLI.
     # JdCore.new.decompile_to_dir(jar.to_s, out_dir.to_s)
     jdcore = Rails.root.join 'vendor', 'jd-core-java-1.0.jar'
     unless system("env", "java", "-jar", jdcore.to_s, jar.to_s, out_dir.to_s)
@@ -31,6 +31,7 @@ module Decompiler
 
   def self.dex2jar(apk, jar)
     begin
+      # We might want to fork/exec because of memory leaks
       Dex2jar.from(apk.to_s).to(jar.to_s)
     rescue Exception => e
         raise "Couldn't extract #{apk} properly. dex2jar failed"

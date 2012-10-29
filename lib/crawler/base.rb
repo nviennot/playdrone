@@ -7,14 +7,12 @@ class Crawler::Base
   def with_session(options={})
     self.last_account = Account.first_usable(:last => self.last_account)
     s = self.last_account.session(options)
-    #s.context.setVersion(201210);
-    #s.context.setDeviceAndSdkVersion("crespo:16")
     begin
       Helpers.has_java_exceptions do
-        yield(s).tap { self.last_account.inc(:num_requests, 1) }
+        yield(s).tap { self.last_account.incr_requests! }
       end
     rescue Exception => e
-      if e.message =~ /Response code = 4??/
+      if e.message =~ /Response code = 429/
         self.last_account.disable!
       end
       raise e

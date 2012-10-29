@@ -1,10 +1,11 @@
 class Account
   include Mongoid::Document
 
-  # On burst, the API can give us 50 queries per minute,
-  # but on the long run, it's much less.
-  # We are doing 6 req/min, 360 req/hr
-  MAX_SECS_PER_QUERY = 10
+  # On bursts, we can do 50 queries per minutes
+  MAX_QUERIES_PER_MIN = 50
+  # But per hour, it's pretty aweful
+  MAX_QUERIES_PER_HOUR = 300
+
   AUTH_TOKEN_EXPIRE = 10.minutes
 
   field :email
@@ -48,20 +49,26 @@ class Account
     end
   end
 
-  def rate_limit_key
-    "account:#{id}:rate"
+  def rate_limit_key(what)
+    "account:#{id}:rate:#{what}"
   end
 
-  def incr_queries!
-    v = Redis.instance.incr(rate_limit_key)
+  def incr_requests!
+    inc(:num_requests, 1)
+  end
 
-    if v == 1
-      # FIXME If the instance dies here, we never expire the key
-      Redis.instance.expire(rate_limit_key, MAX_SECS_PER_QUERY)
-      true
-    else
-      false
-    end
+  def rate_limit!
+    v = Redis.instance.incr(rate_limit_key(:min))
+    # FIXME If the instance dies here, we never expire the key
+    Redis.instance.expire(rate_limit_key(:min), 1.minute) if v == 1
+    return false if v > MAX_QUERIES_PER_MIN
+
+    v = Redis.instance.incr(rate_limit_key(:hour))
+    # FIXME If the instance dies here, we never expire the key
+    Redis.instance.expire(rate_limit_key(:hour), 1.hour) if v == 1
+    return false if v > MAX_QUERIES_PER_HOUR
+
+    true
   end
 
   def self.enabled
@@ -74,9 +81,11 @@ class Account
   end
 
   def disable!(options={})
-    duration = options[:duration] || 1.hour
+    duration = options[:duration] || 6.hours
 
-    self.ban_history << self.num_requests
+    self.ban_history << {:started_at => self.disabled_until,
+                         :duration => (Time.now - self.disabled_until).to_i,
+                         :requests => self.num_requests}
     self.num_requests = 0
     self.disabled_until = duration.from_now
     self.save!
@@ -85,7 +94,7 @@ class Account
   def wait_until_usable
     loop do
       if enabled?
-        return if incr_queries!
+        return if rate_limit!
         sleep 1
       else
         sleep 30.seconds
@@ -93,15 +102,15 @@ class Account
     end
   end
 
-  # XXX atomically calls incr_queries
+  # XXX atomically calls rate_limit
   def self.first_usable(options={})
     last = options[:last]
-    return last if last && last.enabled? && last.incr_queries!
+    return last if last && last.enabled? && last.rate_limit!
     loop do
       Account.enabled.each do |account|
-        return account if account.incr_queries!
+        return account if account.rate_limit!
       end
-      sleep MAX_SECS_PER_QUERY
+      sleep 30
     end
   end
 end
