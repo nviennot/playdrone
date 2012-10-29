@@ -37,7 +37,8 @@ class App
 
     raise "This is a paied app" if price
 
-    apk = apks.where(:version_code => version_code).first
+    apk = apks.first # for now, we don't care about updates
+    #apk = apks.where(:version_code => version_code).first
     if apk
       # Racy, but okay because this will be fired manually
       apk.download! if force

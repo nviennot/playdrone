@@ -5,7 +5,7 @@ development:
        - localhost:27017
      database: googleplaycrawler_dev
      options:
-       safe: false
+       safe: true
 
 test:
   sessions:
@@ -14,4 +14,4 @@ test:
        - localhost:27017
      database: googleplaycrawler_test
      options:
-       safe: false
+       safe: true
