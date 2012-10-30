@@ -5,3 +5,5 @@ play/
 *.swp
 *.swo
 vendor/libjd-intellij.so
+config/redis.yml
+config/mongoid.yml

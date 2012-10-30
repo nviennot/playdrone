@@ -15,3 +15,14 @@ test:
      database: googleplaycrawler_test
      options:
        safe: true
+
+production:
+  sessions:
+   default:
+     hosts:
+       - <host>
+     database: googleplaycrawler_prod
+     username: <username>
+     password: <password>
+     options:
+       safe: true
