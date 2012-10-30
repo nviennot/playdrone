@@ -65,8 +65,8 @@ class Account
 
     v = Redis.instance.incr(rate_limit_key(:hour))
     # FIXME If the instance dies here, we never expire the key
-    Redis.instance.expire(rate_limit_key(:hour), 1.hour) if v == 1
     return false if v > MAX_QUERIES_PER_HOUR
+    Redis.instance.expire(rate_limit_key(:hour), 90.minutes)
 
     true
   end
