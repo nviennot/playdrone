@@ -4,7 +4,7 @@ class Account
   # On bursts, we can do 50 queries per minutes
   MAX_QUERIES_PER_MIN = 50
   # But per hour, it's pretty aweful
-  MAX_QUERIES_PER_HOUR = 300
+  MAX_QUERIES_PER_HOUR = 350
 
   AUTH_TOKEN_EXPIRE = 10.minutes
 
@@ -65,10 +65,16 @@ class Account
 
     v = Redis.instance.incr(rate_limit_key(:hour))
     # FIXME If the instance dies here, we never expire the key
-    return false if v > MAX_QUERIES_PER_HOUR
-    Redis.instance.expire(rate_limit_key(:hour), 90.minutes)
+    Redis.instance.expire(rate_limit_key(:hour), 1.hour) if v == 1
 
-    true
+    if v > MAX_QUERIES_PER_HOUR
+      # disabling the account for ... 6 hours. Still trying to figure
+      # out the rules...
+      disable!
+      false
+    else
+      true
+    end
   end
 
   def self.enabled
