@@ -1,0 +1,11 @@
+require 'bundler/setup'
+require 'bundler/deployment'
+require 'capistrano_colors'
+require 'bundler/capistrano'
+require 'rvm/capistrano'
+
+load 'deploy'
+load 'deploy/settings'
+load 'deploy/server'
+load 'deploy/assets'
+load 'deploy/symlinks'

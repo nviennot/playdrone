@@ -14,6 +14,12 @@ gem 'slim'
 gem 'faraday'
 gem 'faraday_middleware'
 
+group :development do
+  gem 'capistrano'
+  gem 'capistrano_colors'
+  gem 'rvm-capistrano'
+end
+
 group :assets do
   gem 'sass-rails',   '~> 3.2.3'
   gem 'coffee-rails', '~> 3.2.1'

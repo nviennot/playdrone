@@ -7,3 +7,4 @@ play/
 vendor/libjd-intellij.so
 config/redis.yml
 config/mongoid.yml
+deploy/settings.rb
