@@ -40,7 +40,7 @@ class ApkDownloader
     last_modified = Time.parse(response.headers['last-modified'])
     apk.file.open('wb') { |f| f.write(response.body) }
     apk.update_attributes(:released_at => last_modified,
-                          :decompiled  => true)
+                          :downloaded  => true)
     apk.file.utime(last_modified, last_modified)
 
     apk.decompile!
