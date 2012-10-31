@@ -19,6 +19,8 @@ class Account
 
   index :disabled_until => 1
 
+  attr_accessible :email, :password
+
   def checkin!
     Helpers.has_java_exceptions do
       update_attributes(:android_id => Checkin.checkin(email, password))

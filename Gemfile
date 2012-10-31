@@ -3,7 +3,6 @@ source :rubygems
 gem 'rails'
 gem 'jruby-openssl'
 gem 'foreman'
-gem 'haml'
 gem 'mongoid'
 gem 'puma'
 gem 'redis'
@@ -13,6 +12,11 @@ gem 'sinatra'
 gem 'slim'
 gem 'faraday'
 gem 'faraday_middleware'
+gem 'haml-rails'
+gem 'jquery-rails'
+gem 'less'
+gem 'twitter-bootstrap-rails', git: 'https://github.com/seyhunak/twitter-bootstrap-rails.git'
+gem 'sinatra', :require => false
 
 group :development do
   gem 'capistrano'
