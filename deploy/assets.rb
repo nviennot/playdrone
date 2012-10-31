@@ -6,4 +6,5 @@ namespace :deploy do
   end
 end
 
-#after "deploy:finalize_update", "deploy:assets:precompile"
+# Assets are being difficult... fuck it, putting them in public/
+#after "deploy:symlinks:additional", "deploy:assets:precompile"
