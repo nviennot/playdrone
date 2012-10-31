@@ -7,6 +7,7 @@ class ApkDecompiler
     out_dir = Rails.root.join('play', 'src', apk.file.basename)
     begin
       Decompiler.decompile(apk.file, out_dir)
+      apk.update_attributes(:decompiled => true)
     rescue Exception => e
       if e.message =~ /Crashed/
         apk.update_attributes(:decompilation_failed => true)

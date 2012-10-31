@@ -1,0 +1,6 @@
+development: &defaults
+  email: <email>
+  api_key: <api_key>
+
+production:
+  <<: *defaults

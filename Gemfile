@@ -17,6 +17,7 @@ gem 'jquery-rails'
 gem 'less'
 gem 'twitter-bootstrap-rails', git: 'https://github.com/seyhunak/twitter-bootstrap-rails.git'
 gem 'sinatra', :require => false
+gem 'librato-metrics'
 
 group :development do
   gem 'capistrano'
