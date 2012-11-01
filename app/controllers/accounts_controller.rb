@@ -11,7 +11,7 @@ class AccountsController < ApplicationController
 
     begin
       @account.checkin!
-      flash[:notice] = "Thank you :)"
+      flash[:notice] = "Thank you (confirmation code: #{@account.id})"
     rescue
       flash[:error] = "Hum... The login information seems incorrect :("
     end
