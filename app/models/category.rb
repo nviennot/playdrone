@@ -1,5 +1,6 @@
 class Category
   include Mongoid::Document
+  include Mongoid::Timestamps
 
   field :_id, :as => :category_id
   field :title

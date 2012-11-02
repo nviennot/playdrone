@@ -1,6 +1,7 @@
 class App
   include Mongoid::Document
   include Sidekiq::Worker
+  include Mongoid::Timestamps
 
   belongs_to :searched_category, :class_name => 'Category', :foreign_key => :category_id
 
