@@ -10,6 +10,8 @@ class AppQuery
 
   validates :query, :presence => true
 
+  index({:query => 1}, :unique => true)
+
   def fetch_apps!
     AppQueryDispatcher.perform_async(id)
   end
