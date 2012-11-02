@@ -1,6 +1,7 @@
 class AppQuery
   include Mongoid::Document
   include Sidekiq::Worker
+  include Mongoid::Timestamps
 
   field :query
   field :fetched_at,         :type => Time

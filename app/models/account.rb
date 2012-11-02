@@ -1,5 +1,6 @@
 class Account
   include Mongoid::Document
+  include Mongoid::Timestamps
 
   # On bursts, we can do 50 queries per minutes
   MAX_QUERIES_PER_MIN = 50
