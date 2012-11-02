@@ -118,8 +118,7 @@ class Account
     last = options[:last]
     return last if last && last.enabled? && last.rate_limit!
     loop do
-      # This is quite inefficient. Maybe we should be using redis
-      Account.enabled.order_by(:num_requests => 1).each do |account|
+      Account.enabled.shuffle.each do |account|
         return account if account.rate_limit!
       end
       sleep 30
