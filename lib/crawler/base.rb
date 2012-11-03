@@ -15,6 +15,8 @@ class Crawler::Base
     rescue Exception => e
       if e.message =~ /Response code = 429/
         self.last_account.disable!
+      elsif e.message =~ /username or password/
+        self.last_account.disable! :duration => 1.year
       end
       raise e
     end
