@@ -58,8 +58,9 @@ class Account
     "account:#{id}:rate:#{what}"
   end
 
-  def incr_requests!
+  def incr_requests!(what)
     inc(:num_requests, 1)
+    Redis.instance.incr("requests:#{what}")
   end
 
   def rate_limit!
