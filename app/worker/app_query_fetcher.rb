@@ -7,7 +7,10 @@ class AppQueryFetcher
     start = page * Crawler::App::PER_PAGE
     # google is tight on 401
     start = [start, Crawler::App::MAX_START - Crawler::App::PER_PAGE].min
-    apps = query.crawler(:start => start).crawl.apps
+    self.class.save_apps(query, query.crawler(:start => start).crawl.apps)
+  end
+
+  def self.save_apps(query, apps)
     apps.each do |app|
       app = App.new(app)
       app.upsert
