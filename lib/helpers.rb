@@ -4,8 +4,8 @@ module Helpers
       yield
     rescue Exception => e
       ruby_e = e
-      unless e.is_a?(StandardError)
-        ruby_e = RuntimeError.new(e.message)
+      if !e.is_a?(StandardError) || e.is_a?(NativeException)
+        ruby_e = NativeException.new(e.message.gsub(/^.*Exception: /, ''))
         ruby_e.set_backtrace(e.backtrace)
       end
       raise ruby_e
