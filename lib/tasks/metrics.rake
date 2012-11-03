@@ -13,6 +13,10 @@ def submit_metrics_once
   Sidekiq.info[:queues_with_sizes].each do |queue_name, size|
     queue.add "play.sidekiq.#{queue_name}" => size
   end
+
+  queue.add 'play.requests.app' => {:type => :counter, :value => Redis.instance.get("requests:app") }
+  queue.add 'play.requests.apk' => {:type => :counter, :value => Redis.instance.get("requests:apk") }
+
   queue.submit
 end
 
