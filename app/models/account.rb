@@ -18,7 +18,7 @@ class Account
 
   field :disabled_until, :type => Time, :default => ->{ Time.now }
 
-  index(:disabled_until => 1, :num_requests => 1)
+  index(:disabled_until => 1)
   index({:email => 1}, :unique => true)
 
   attr_accessible :email, :password
@@ -92,7 +92,7 @@ class Account
   end
 
   def disable!(options={})
-    duration = options[:duration] || 1.hour
+    duration = options[:duration] || 2.hour
 
     self.ban_history << {:started_at => self.disabled_until,
                          :duration => (Time.now - self.disabled_until).to_i,
@@ -118,7 +118,7 @@ class Account
     last = options[:last]
     return last if last && last.enabled? && last.rate_limit!
     loop do
-      Account.enabled.shuffle.each do |account|
+      Account.enabled.each do |account|
         return account if account.rate_limit!
       end
       sleep 30
