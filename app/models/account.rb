@@ -71,14 +71,12 @@ class Account
 
     v = Redis.instance.incr(rate_limit_key(:hour))
     # FIXME If the instance dies here, we never expire the key
-    Redis.instance.expire(rate_limit_key(:hour), 1.hour) if v == 1
 
-    if v >= MAX_QUERIES_PER_HOUR
-      # disabling the account for ... 6 hours. Still trying to figure
-      # out the rules...
+    if v > MAX_QUERIES_PER_HOUR
       disable!
       false
     else
+      Redis.instance.expire(rate_limit_key(:hour), 1.hour)
       true
     end
   end
@@ -93,7 +91,7 @@ class Account
   end
 
   def disable!(options={})
-    duration = options[:duration] || 2.hour
+    duration = options[:duration] || 1.hour
 
     self.ban_history << {:started_at => self.disabled_until,
                          :duration => (Time.now - self.disabled_until).to_i,
