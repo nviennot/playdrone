@@ -11,12 +11,12 @@
       = text_field_tag :pattern, params[:pattern], :autocomplete => :off, :placeholder => 'Pattern (lucene)'
       = text_field_tag :filter,  params[:filter],  :autocomplete => :off, :placeholder => 'Filter (ruby regex)'
 
-      - options = [10, 25, 50, 100].map { |n| ["#{n} files per page", n] }
+      - options = [10, 30, 100, 1000].map { |n| ["#{n} files per page", n] }
       = select_tag  :per_page, options_for_select(options, params[:per_page] || 10), :class => 'input-medium'
 
-      = button_tag :id => 'refresh', :class => 'btn' do
-        %i.icon-refresh
-        Refresh
+      = button_tag :id => 'search', :class => 'btn btn-primary' do
+        %i.icon-search
+        %span Search
 
 #results
   = render 'results'
