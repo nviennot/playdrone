@@ -14,6 +14,11 @@ def submit_metrics_once
     queue.add "play.sidekiq.#{queue_name}" => size
   end
 
+  q = Source.search('*')
+  queue.add 'play.source.num_files' => q.total
+  queue.add 'play.source.num_lines' => q.facets['num_lines']['total'].to_i
+  queue.add 'play.source.size'      => q.facets['size']['total'].to_i
+
   queue.add 'play.requests.app' => {:type => :counter, :value => Redis.instance.get("requests:app") }
   queue.add 'play.requests.apk' => {:type => :counter, :value => Redis.instance.get("requests:apk") }
 
