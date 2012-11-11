@@ -14,7 +14,6 @@ class Apk
   field :decompiled
 
   field :released_at
-  field :decompilation_failed
 
   belongs_to :app, :foreign_key => :package_name
 
@@ -22,7 +21,6 @@ class Apk
 
   index({:downloaded => 1}, :sparse => true)
   index({:decompiled => 1}, :sparse => true)
-  index({:decompilation_failed => 1}, :sparse => true)
 
   def self.downloaded
     where(:downloaded => true)
@@ -30,6 +28,12 @@ class Apk
 
   def self.decompiled
     where(:decompiled => true)
+  end
+
+  def self.find_by_eid(eid)
+    if eid =~ /([^\-]+)-(\d+)$/
+      where(:package_name => $1, :version_code => $2.to_i).first
+    end
   end
 
   def download!
@@ -44,8 +48,16 @@ class Apk
     Crawler::Asset.new(options.merge(:asset_id => asset_id))
   end
 
+  def eid
+    "#{package_name}-#{version_code}"
+  end
+
   def file
     file_name = "#{package_name}-#{version.gsub("/", "_")}-#{version_code}.apk"
     Rails.root.join('play', 'apk', file_name)
+  end
+
+  def source_dir
+    Rails.root.join('play', 'src', file.basename)
   end
 end

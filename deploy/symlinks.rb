@@ -4,6 +4,7 @@ namespace :deploy do
       symlinks = [
         'config/mongoid.yml',
         'config/redis.yml',
+        'config/elasticsearch.yml',
         'config/librato.yml',
         'config/initializers/errbit.rb',
         'play/apk',

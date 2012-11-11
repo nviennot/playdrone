@@ -7,5 +7,6 @@ play/
 vendor/libjd-intellij.so
 config/redis.yml
 config/mongoid.yml
+config/elasticsearch.yml
 config/librato.yml
 deploy/settings.rb
