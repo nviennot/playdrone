@@ -3,6 +3,7 @@ source :rubygems
 gem 'rails'
 gem 'jruby-openssl'
 gem 'foreman'
+gem 'tire'
 gem 'mongoid'
 gem 'puma'
 gem 'redis'
