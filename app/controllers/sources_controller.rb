@@ -1,5 +1,6 @@
 class SourcesController < ApplicationController
   def search
+    params[:per_page] ||= 50
     if params[:pattern]
       @results = Source.search(params[:pattern],
                                :page => params[:page].to_i,
