@@ -1,0 +1,32 @@
+- if @results
+  .row
+    .span6
+      %p
+        #{@results.total} Files /
+        #{number_to_human_size(@results.facets['size']['total'].to_i)}
+        (ES took #{@results.time/1000.0}s)
+
+    .span6.source-paginate
+      = will_paginate @results
+
+- if @files
+  .row
+    .span12
+      %table.table.table-condensed.table-bordered.lines
+        %thead
+          %tr
+            %th Android Package
+            %th File
+            %th Line
+        %tbody
+          - @files.each do |file|
+            - file[:lines].each do |line|
+              %tr
+                %td.eid=  file[:apk_eid]
+                %td.path= file[:path].split('/')[-1]
+                %td.line.CodeRay= raw CodeRay.scan(line, :java).html
+
+- if @results
+  .row
+    .span12.source-paginate
+      = will_paginate @results

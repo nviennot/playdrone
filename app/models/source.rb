@@ -49,13 +49,12 @@ class Source
     end
   end
 
-  def self.filter_lines(results, regex, highlight=nil)
+  def self.filter_lines(results, regex)
     per_file_lines = []
     results.each do |source|
       matched_lines = source.lines.grep(regex)
       next if matched_lines.empty?
 
-      matched_lines.map! { |line| line.gsub(regex, highlight) } if highlight
       per_file_lines << {:apk_eid => source.apk_eid,
                          :path    => source.path,
                          :lines   => matched_lines}

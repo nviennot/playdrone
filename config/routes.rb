@@ -3,4 +3,5 @@ GooglePlayCrawler::Application.routes.draw do
   mount Sidekiq::Web => '/crawler'
 
   resource :accounts, :only => [:new, :create]
+  get 'search' => 'sources#search'
 end
