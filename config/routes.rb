@@ -4,4 +4,5 @@ GooglePlayCrawler::Application.routes.draw do
 
   resource :accounts, :only => [:new, :create]
   get 'search' => 'sources#search'
+  get 'packages/:apk_eid' => 'packages#show', :apk_eid => /[^\/]+-[^\/]+/
 end
