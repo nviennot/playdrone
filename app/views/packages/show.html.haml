@@ -1,21 +1,27 @@
 %br
+
+.row
+  .span12
+    .page-header
+      %h1 #{@app.title} #{@apk.version}
+
 .row
   .span6
-    %h1 #{@app.title} #{@apk.version}
-    %h2= @apk_eid
-    %hr
+    - if @app.description.present?
+      %h4 Description
+      %p= @app.description
+    - if @app.recent_changes.present?
+      %hr
+      %h4 What's new
+      %p= @app.recent_changes
 
-    %h4 Description
-    %p= @app.description
-    %hr
-
-    %h4 What's new
-    %p= @app.recent_changes
-    %hr
-
+  .span6
     %h4 Stats
     %table.table.table-condensed.table-bordered.app_info
       %tbody
+        %tr
+          %td.property Package
+          %td.value= @apk_eid
         %tr
           %td.property Creator
           %td.value= @app.creator
@@ -31,7 +37,16 @@
         %tr
           %td.property Download Count
           %td.value= @app.downloads_count_text
+    %h4 Permissions
+    %table.table.table-condensed.table-bordered.permissions
+      %tbody
+        - @app.permissions.sort.each do |perm|
+          %tr
+            %td.permission= perm
 
+.row
+  .span12
+    %hr
     %h4 Files
     %h5
       #{@results.total} Files ⚫
@@ -41,11 +56,3 @@
     %ul.unstyled
       - @results.each do |source|
         %li= link_to source[:path], "/packages/#{@apk_eid}/#{source[:path]}"
-
-  .span6
-    %h4 Permissions
-    %table.table.table-condensed.table-bordered.permissions
-      %tbody
-        - @app.permissions.sort.each do |perm|
-          %tr
-            %td.permission= perm

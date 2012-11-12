@@ -8,8 +8,8 @@ class Source
   property :size
 
   tire.mapping :_all => {:enabled => false} do
-    indexes :apk_eid,   :index    => :not_analyzed
-    indexes :path,      :index    => :not_analyzed
+    indexes :apk_eid,   :index    => :not_analyzed, :store => :yes
+    indexes :path,      :index    => :not_analyzed, :store => :yes
     indexes :lines,     :analyzer => :simple
     indexes :num_lines, :type     => :integer, :store => :yes
     indexes :size,      :type     => :integer, :store => :yes

@@ -1,16 +1,16 @@
 class SourcesController < ApplicationController
-  def show_package
-    @apk_eid = apk_eid = params[:apk_eid]
-    @apk = Apk.find_by_eid(@apk_eid)
-    @app = @apk.app
+  def show
+    @apk_eid  = apk_eid  = params[:apk_eid]
+    @apk_path = apk_path = params[:apk_path]
 
-    @results = Source.tire.search :per_page => 100000 do
-      query { term :apk_eid, apk_eid }
-      sort { by :path, :asc }
-      fields :path
-
-      facet(:num_lines) { statistical :num_lines }
-      facet(:size)      { statistical :size }
+    @results = Source.tire.search :size => 1 do
+      query do
+        boolean do
+          must { term :apk_eid,  apk_eid  }
+          must { term :path,     apk_path }
+        end
+      end
+      fields :lines
     end
   end
 
