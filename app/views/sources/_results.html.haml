@@ -15,13 +15,15 @@
       %table.table.table-condensed.table-bordered.lines
         %thead
           %tr
-            %th Android Package ⚫ File
+            %th Android Package
+            %th Path
             %th Line
         %tbody
           - @files.each do |file|
             - file[:lines].each do |line|
               %tr
-                %td.file #{file[:apk_eid]} ⚫ #{file[:path]}
+                %td.eid=  file[:apk_eid]
+                %td.path= file[:path]
                 %td.line.CodeRay= raw CodeRay.scan(line, :java).html
 
 - if @results
