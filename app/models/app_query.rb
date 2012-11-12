@@ -16,6 +16,7 @@ class AppQuery
   index :source => 1
 
   def fetch_apps!
+    update_attributes(:total_apps => 0, :total_apps_fetched => 0)
     AppQueryDispatcher.perform_async(id)
   end
 
