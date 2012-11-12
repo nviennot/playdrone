@@ -7,10 +7,13 @@ class AppQuery
   field :fetched_at,         :type => Time
   field :total_apps,         :type => Integer
   field :total_apps_fetched, :type => Integer
+  field :source
 
   validates :query, :presence => true
 
   index({:query => 1}, :unique => true)
+  index :created_at => 1
+  index :source => 1
 
   def fetch_apps!
     AppQueryDispatcher.perform_async(id)
