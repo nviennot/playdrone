@@ -14,7 +14,13 @@ def submit_metrics_once
     queue.add "play.sidekiq.#{queue_name}" => size
   end
 
-  q = Source.search('*')
+  q = Source.tire.search do
+    size 0
+    query { all }
+    facet(:num_lines) { statistical :num_lines }
+    facet(:size)      { statistical :size }
+  end
+
   queue.add 'play.source.num_files' => q.total
   queue.add 'play.source.num_lines' => q.facets['num_lines']['total'].to_i
   queue.add 'play.source.size'      => q.facets['size']['total'].to_i
