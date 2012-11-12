@@ -1,0 +1,8 @@
+.row
+  .span12
+    .page-header
+      %h2 #{link_to @apk_eid, "/packages/#{@apk_eid}"}/<wbr />#{@apk_path}
+- coderay = CodeRay.scan(@results.first[:lines].join("\n"), :java)
+= raw coderay.html :line_numbers    => :table,
+                   :highlight_lines => [params[:hl].to_i]
+%hr

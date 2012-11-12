@@ -3,23 +3,29 @@ span.CodeRay { white-space: pre; border: 0px; padding: 2px; }
 table.CodeRay { border-collapse: collapse; width: 100%; padding: 2px; }
 table.CodeRay td { padding: 2px 4px; vertical-align: top; }
 
+table.CodeRay pre {
+  font-size: 12px;
+  line-height: 16px;
+}
+
 .CodeRay .line-numbers {
-  background-color: hsl(180,65%,90%);
   color: gray;
   text-align: right;
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
 }
+
 .CodeRay .line-numbers a {
-  background-color: hsl(180,65%,90%) !important;
   color: gray !important;
   text-decoration: none !important;
+  overflow:hidden;
+  white-space:nowrap;
 }
 .CodeRay .line-numbers a:target { color: blue !important; }
 .CodeRay .line-numbers .highlighted { color: red !important; }
 .CodeRay .line-numbers .highlighted a { color: red !important; }
-.CodeRay span.line-numbers { padding: 0px 4px; }
+.CodeRay span.line-numbers { padding: 0px 2px; }
 .CodeRay .line { display: block; float: left; width: 100%; }
 .CodeRay .code { width: 100%; }
 

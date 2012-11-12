@@ -23,8 +23,9 @@
             - file[:lines].each do |line|
               %tr
                 %td.eid=  link_to file[:apk_eid], "/packages/#{file[:apk_eid]}"
-                %td.path= file[:path]
+                %td.path= link_to file[:path],    "/packages/#{file[:apk_eid]}/#{file[:path]}"
                 %td.line.CodeRay= raw CodeRay.scan(line, :java).html
+
 
 - if @results
   .row
