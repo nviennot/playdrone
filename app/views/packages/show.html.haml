@@ -24,7 +24,9 @@
       %tbody
         %tr
           %td.property Package
-          %td.value= @apk_eid
+          %td.value
+            = @apk_eid
+            =link_to "[google play]", "https://play.google.com/store/apps/details?id=#{@app.package_name}"
         %tr
           %td.property Creator
           %td.value= @app.creator
