@@ -1,8 +1,9 @@
-.row
+- unless @results
+  .row.spacer
+
+.row.header
   .span12
-    = bootstrap_flash
-    .page-header
-      %h1 Search Sources
+    %a.logo{:href => '/search'} Google Play With Me
 
 .row
   .span12.offset1
