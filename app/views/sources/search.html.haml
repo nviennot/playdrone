@@ -7,9 +7,10 @@
 .row
   .span12.offset1
     = form_tag '/search', :class => 'form-inline search', :method => :get do
-      = text_field_tag :query,   params[:query],   :autocomplete => :off, :placeholder => 'Query'
-      = text_field_tag :pattern, params[:pattern], :autocomplete => :off, :placeholder => 'Pattern (lucene)'
-      = text_field_tag :filter,  params[:filter],  :autocomplete => :off, :placeholder => 'Filter (ruby regex)'
+      = text_field_tag :query,  params[:query],  :autocomplete => :off, :class => 'input-xxlarge',
+                       :placeholder => 'Query (Lucene syntax), fields: apk_eid, path, lines'
+      = text_field_tag :filter, params[:filter], :autocomplete => :off,
+                       :placeholder => 'Line filter (Ruby regex), optional'
 
       - options = [10, 30, 100, 1000].map { |n| ["#{n} files per page", n] }
       = select_tag  :per_page, options_for_select(options, params[:per_page] || 10), :class => 'input-medium'

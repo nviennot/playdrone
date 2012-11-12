@@ -38,21 +38,26 @@ class Source
   end
 
   def self.purge_index!(apk)
-    Tire::Configuration.client.delete "#{index.url}/_query?q=apk_eid:#{apk.extended_id}"
+    Tire::Configuration.client.delete "#{index.url}/_query?q=apk_eid:#{apk.eid}"
   end
 
   def self.search(query, options={})
     tire.search(options) do
-      query             { string query }
+      query     { string query, :default_field => :lines, :default_operator => 'AND' }
+      highlight :lines => {:fragment_size => 300, :number_of_fragments => 100000}, :options => {:tag => ''}
+      fields    :apk_eid, :path
+
       facet(:num_lines) { statistical :num_lines }
       facet(:size)      { statistical :size }
     end
   end
 
-  def self.filter_lines(results, regex)
+  def self.filter_lines(results, regex=nil)
     per_file_lines = []
     results.each do |source|
-      matched_lines = source.lines.grep(regex)
+      next unless source.highlight
+      matched_lines = source.highlight[:lines]
+      matched_lines = matched_lines.grep(regex) if regex
       next if matched_lines.empty?
 
       per_file_lines << {:apk_eid => source.apk_eid,
