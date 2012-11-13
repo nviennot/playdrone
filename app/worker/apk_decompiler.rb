@@ -1,11 +1,16 @@
+require 'timeout'
+
 class ApkDecompiler
   include Sidekiq::Worker
-  sidekiq_options :queue => name.underscore
+  sidekiq_options :queue => name.underscore, :retry => false
 
   def perform(apk_id)
     apk = Apk.find(apk_id)
+    Source.purge_index!(apk)
     begin
-      Decompiler.decompile(apk.file, apk.source_dir)
+      Timeout::timeout(1.minute) do
+        Decompiler.decompile(apk.file, apk.source_dir)
+      end
       Source.index_sources!(apk)
       apk.update_attributes(:decompiled => true)
     rescue Exception => e
