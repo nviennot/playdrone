@@ -1,3 +1,5 @@
+require 'timeout'
+
 module Decompiler
   unless File.exists?(Rails.root.join 'vendor', 'libjd-intellij.so')
     raise "Please install libjd-intellij.so in ./vendor.\n" +
@@ -12,7 +14,18 @@ module Decompiler
     # Instead of dying with it we'll call the CLI.
     # JdCore.new.decompile_to_dir(jar.to_s, out_dir.to_s)
     jdcore = Rails.root.join 'vendor', 'jd-core-java-1.0.jar'
-    unless system("env", "java", "-jar", jdcore.to_s, jar.to_s, out_dir.to_s)
+    pid = Process.spawn("env", "java", "-jar", jdcore.to_s, jar.to_s, out_dir.to_s)
+    puts pid
+    begin
+      Timeout.timeout(1.minute) do
+        Process.wait(pid)
+      end
+    rescue Timeout::Error => e
+      Process.kill('TERM', pid)
+      raise e
+    end
+
+    unless $?.success?
       if $?.termsig
         raise "Couldn't decompile #{jar} properly. Crashed."
       else
