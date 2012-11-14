@@ -6,7 +6,6 @@ class AppQuery
   field :query
   field :fetched_at,         :type => Time
   field :total_apps,         :type => Integer
-  field :total_apps_fetched, :type => Integer
   field :source
 
   validates :query, :presence => true
@@ -16,7 +15,7 @@ class AppQuery
   index :source => 1
 
   def fetch_apps!
-    update_attributes(:total_apps => 0, :total_apps_fetched => 0)
+    update_attributes(:total_apps => 0)
     AppQueryDispatcher.perform_async(id)
   end
 

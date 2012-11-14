@@ -19,6 +19,5 @@ class AppQueryFetcher
         app.download_latest_apk!
       end
     end
-    query.inc(:total_apps_fetched, apps.count) unless apps.empty?
   end
 end
