@@ -31,6 +31,8 @@ class App
   field :price_currency
   field :price
 
+  index :app_id => 1
+
   has_many :apks, :foreign_key => :package_name
 
   def download_latest_apk!(options={})
