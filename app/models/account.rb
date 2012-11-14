@@ -13,9 +13,6 @@ class Account
   field :password
   field :android_id
 
-  field :num_requests
-  field :ban_history, :type => Array, :default => []
-
   field :disabled_until, :type => Time, :default => ->{ Time.now }
 
   index(:disabled_until => 1)
@@ -59,7 +56,6 @@ class Account
   end
 
   def incr_requests!(what)
-    inc(:num_requests, 1)
     Redis.instance.incr("requests:#{what}")
   end
 
@@ -92,24 +88,8 @@ class Account
 
   def disable!(options={})
     duration = options[:duration] || 1.hour
-
-    self.ban_history << {:started_at => self.disabled_until,
-                         :duration => (Time.now - self.disabled_until).to_i,
-                         :requests => self.num_requests}
-    self.num_requests = 0
     self.disabled_until = duration.from_now
     self.save!
-  end
-
-  def wait_until_usable
-    loop do
-      if enabled?
-        return if rate_limit!
-        sleep 1
-      else
-        sleep 30.seconds
-      end
-    end
   end
 
   # XXX atomically calls rate_limit
