@@ -12,6 +12,8 @@ class AppQueryFetcher
 
   def self.save_apps(query, apps)
     apps.each do |app|
+      next if App.where(:app_id => app[:app_id]).count > 0
+
       app = App.new(app)
       app.upsert
       unless app.price
