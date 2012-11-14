@@ -1,6 +1,6 @@
 class ApkDecompiler
   include Sidekiq::Worker
-  sidekiq_options :queue => name.underscore, :retry => false
+  sidekiq_options :queue => name.underscore, :retry => 2
 
   def perform(apk_id)
     apk = Apk.find(apk_id)
