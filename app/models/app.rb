@@ -32,6 +32,9 @@ class App
   field :price
 
   index :app_id => 1
+  index :price => 1
+  index :downloads_count_text => 1
+  index :price => 1, :downloads_count_text => 1
 
   has_many :apks, :foreign_key => :package_name
 

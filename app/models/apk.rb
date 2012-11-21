@@ -22,6 +22,8 @@ class Apk
   index({:downloaded => 1}, :sparse => true)
   index({:decompiled => 1}, :sparse => true)
 
+  index :released_at => 1
+
   def self.downloaded
     where(:downloaded => true)
   end
