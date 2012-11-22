@@ -28,7 +28,12 @@ module Decompiler
       raise e
     end
 
-    unless $?.success?
+    # $?.success? appears to be unreliable... JRuby is weird...
+    if $?.success?
+      unless Dir.exists?(out_dir)
+        raise "Couldn't decompile #{jar} properly"
+      end
+    else
       if $?.termsig
         raise "Couldn't decompile #{jar} properly. Crashed."
       else

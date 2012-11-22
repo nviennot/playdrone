@@ -16,6 +16,8 @@ class ApkDecompiler
         # swallow
       elsif e.message =~ /dex2jar failed/
         # swallow
+      elsif e.message =~ /Couldn't decompile/
+        # swallow
       else
         Source.purge_index!(apk)
         raise e
