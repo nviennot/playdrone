@@ -14,14 +14,17 @@ module Decompiler
     # Instead of dying with it we'll call the CLI.
     # JdCore.new.decompile_to_dir(jar.to_s, out_dir.to_s)
     jdcore = Rails.root.join 'vendor', 'jd-core-java-1.0.jar'
-    pid = Process.spawn("env", "java", "-jar", jdcore.to_s, jar.to_s, out_dir.to_s)
-    puts pid
+    pid = Spoon.spawnp("env", "java", "-jar", jdcore.to_s, jar.to_s, out_dir.to_s)
     begin
       Timeout.timeout(1.minute) do
-        Process.wait(pid)
+        loop do
+          break unless Process.wait(pid, Process::WNOHANG).to_i == 0
+          sleep 1
+        end
       end
     rescue Timeout::Error => e
       Process.kill('TERM', pid)
+      Process.detach(pid)
       raise e
     end
 

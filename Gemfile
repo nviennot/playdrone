@@ -20,6 +20,7 @@ gem 'sinatra', :require => false
 gem 'librato-metrics'
 gem 'coderay'
 gem 'will_paginate'
+gem 'spoon'
 
 group :development do
   gem 'capistrano'
