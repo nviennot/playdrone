@@ -1,0 +1,8 @@
+#!/bin/bash
+
+_classpath="."
+for k in vendor/*.jar; do
+ _classpath="${_classpath}:${k}"
+done
+
+exec java -Xms512m -Xmx1024m -classpath "${_classpath}" "com.googlecode.dex2jar.tools.Dex2jarCmd" "$@"

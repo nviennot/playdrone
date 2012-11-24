@@ -5,16 +5,24 @@ module Decompiler
     raise "Please install libjd-intellij.so in ./vendor.\n" +
            "It can be found at https://bitbucket.org/bric3/jd-intellij"
   end
-  require Rails.root.join 'vendor', 'jd-core-java-1.0.jar'
 
-  JdCore = Java::JdCore::Decompiler
 
-  def self.jar2java(jar, out_dir)
-    # Crashes way too often in jdcore.
-    # Instead of dying with it we'll call the CLI.
-    # JdCore.new.decompile_to_dir(jar.to_s, out_dir.to_s)
-    jdcore = Rails.root.join 'vendor', 'jd-core-java-1.0.jar'
-    pid = Spoon.spawnp("env", "java", "-jar", jdcore.to_s, jar.to_s, out_dir.to_s)
+  def self.script_exec(*args)
+    # XXX Workaround. jdcore crashes often. We need to fork.
+    # JRuby does not allow forking.
+    # XXX Workaround. JRuby spawn() is broken, it wait for our child
+    # and get it before we can do Process.wait() yielding a -ECHILD,
+    # Using Spoon works.
+    # XXX Workatound. jdcore sometimes uses > 60Gb of RAM. We need
+    # to limit that. rlimit is not supported easily with Spoon.
+    # Using script/decompile
+    # XXX Workaround. we need to timeout the execution, but timeout
+    # doesn't work with Process.wait() for some reason. We need to
+    # poll every second.
+    # XXX Workaround. Sometimes when jdcore crashes, we don't see it in
+    # $?.success? JRuby is broken.
+
+    pid = Spoon.spawnp(*args.map(&:to_s))
     begin
       Timeout.timeout(1.minute) do
         loop do
@@ -29,11 +37,7 @@ module Decompiler
     end
 
     # $?.success? appears to be unreliable... JRuby is weird...
-    if $?.success?
-      unless Dir.exists?(out_dir)
-        raise "Couldn't decompile #{jar} properly"
-      end
-    else
+    unless $?.success?
       if $?.termsig
         raise "Couldn't decompile #{jar} properly. Crashed."
       else
@@ -42,21 +46,16 @@ module Decompiler
     end
   end
 
-  require Rails.root.join 'vendor', 'dex-ir-1.9.jar'
-  require Rails.root.join 'vendor', 'dex-reader-1.12.jar'
-  require Rails.root.join 'vendor', 'dex-translator-0.0.9.11.jar'
-  require Rails.root.join 'vendor', 'commons-lite-1.12.jar'
-  require Rails.root.join 'vendor', 'asm-all-3.3.1.jar'
+  def self.jar2java(jar, out_dir)
+    script_exec("./script/decompile", jar, out_dir)
 
-  Dex2jar = Java::ComGooglecodeDex2jarV3::Dex2jar
+    unless Dir.exists?(out_dir)
+      raise "Couldn't decompile #{jar} properly"
+    end
+  end
 
   def self.dex2jar(apk, jar)
-    begin
-      # We might want to fork/exec because of memory leaks
-      Dex2jar.from(apk.to_s).to(jar.to_s)
-    rescue Exception => e
-        raise "Couldn't extract #{apk} properly. dex2jar failed"
-    end
+    script_exec("./script/dex2jar", "-f", apk, "-o", jar)
   end
 
   def self.decompile(apk, out_dir)
