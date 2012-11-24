@@ -1,0 +1,2 @@
+#!/bin/bash
+exec java -jar vendor/jd-core-java-1.0.jar "$@"
