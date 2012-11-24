@@ -32,7 +32,7 @@ module Decompiler
       end
     rescue Timeout::Error => e
       Process.kill('TERM', pid)
-      Process.detach(pid)
+      Process.wait(pid)
       raise e
     end
 
