@@ -39,9 +39,9 @@ module Decompiler
     # $?.success? appears to be unreliable... JRuby is weird...
     unless $?.success?
       if $?.termsig
-        raise "Couldn't decompile #{jar} properly. Crashed."
+        raise "Couldn't decompile jar properly. Crashed."
       else
-        raise "Couldn't decompile #{jar} properly"
+        raise "Couldn't decompile jar properly"
       end
     end
   end
@@ -50,7 +50,7 @@ module Decompiler
     script_exec("./script/decompile", jar, out_dir)
 
     unless Dir.exists?(out_dir)
-      raise "Couldn't decompile #{jar} properly"
+      raise "Couldn't decompile jar properly"
     end
   end
 
