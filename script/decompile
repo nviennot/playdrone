@@ -1,2 +1,3 @@
 #!/bin/bash
+ulimit -v $((1024*1024))
 exec java -jar vendor/jd-core-java-1.0.jar "$@"
