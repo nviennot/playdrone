@@ -41,15 +41,18 @@ class Source
     Tire::Configuration.client.delete "#{index.url}/_query?q=apk_eid:#{apk.eid}"
   end
 
-  def self.find_path(query)
+  def self.search_path(query, options={})
+    size  = options[:size] || 10
+    field = options[:field] || :path
+
     res = tire.search(:per_page => 0) do
-      query { @value = { :wildcard => { :path => query } } }
-      facet(:path) { terms :field => :path, :size => 100 }
+      query { query == '*' ? all : @value = { :wildcard => { :path => query } } }
+      facet(field) { terms :field => field, :size => size }
     end
 
     {
       :total  => res.total,
-      :detail => Hash[res.facets['path']['terms'].map { |f| [f['term'], f['count']] }]
+      :detail => Hash[res.facets[field.to_s]['terms'].map { |f| [f['term'], f['count']] }]
     }
   end
 
