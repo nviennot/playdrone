@@ -3,6 +3,7 @@ class Source
 
   property :apk_eid
   property :path
+  property :lib
   property :lines
   property :num_lines
   property :size
@@ -10,6 +11,7 @@ class Source
   tire.mapping :_all => {:enabled => false} do
     indexes :apk_eid,   :index    => :not_analyzed, :store => :yes
     indexes :path,      :index    => :not_analyzed, :store => :yes
+    indexes :lib,       :index    => :not_analyzed, :store => :yes
     indexes :lines,     :analyzer => :simple
     indexes :num_lines, :type     => :integer, :store => :yes
     indexes :size,      :type     => :integer, :store => :yes
