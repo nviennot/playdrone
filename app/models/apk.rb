@@ -7,6 +7,7 @@ class Apk
   field :version
 
   field :_id, :as => :asset_id
+  field :eid
   field :asset_size
   field :secured
 
@@ -23,6 +24,7 @@ class Apk
   index({:decompiled => 1}, :sparse => true)
 
   index :released_at => 1
+  index :eid => 1
 
   def self.downloaded
     where(:downloaded => true)
@@ -36,6 +38,10 @@ class Apk
     if eid =~ /([^\-]+)-(\d+)$/
       where(:package_name => $1, :version_code => $2.to_i).first
     end
+  end
+
+  before_save do
+    self.eid = "#{package_name}-#{version_code}"
   end
 
   def download!
