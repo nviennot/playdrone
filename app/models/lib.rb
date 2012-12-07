@@ -7,19 +7,26 @@ class Lib
 
   has_many :apks, :foreign_key => :lib_names
 
-  def es_path_matcher
-    "#{name.gsub(/\./, '/')}/*"
+  def mark_sources!
+    lib = self
+    transform_proc = proc { |doc| doc[:lib] = name; doc }
+    Source.index.reindex('sources', :transform => transform_proc) do
+      query do
+        boolean do
+          must     { @value = { :wildcard => { :path => "#{lib.name.gsub(/\./, '/')}/*" } } }
+          must_not { term 'lib', lib.name }
+        end
+      end
+    end
   end
 
   def mark_apks!
-    results = Source.search_path(es_path_matcher, :size => 10000000, :field => :apk_eid)
-    Apk.where(:eid.in => results[:detail].keys).add_to_set(:lib_names,  name)
-  end
-
-  def mark_sources!
-    q = es_path_matcher
-    Source.index.reindex('sources', :transform => proc { |doc| doc[:lib] = name; doc }) do
-      query { @value = { :wildcard => { :path => q } } }
+    lib = self
+    res = Source.tire.search(:per_page => 0) do
+      query { term 'lib', lib.name }
+      facet(:apk_eid) { terms :field => :apk_eid, :size => 10000000 }
     end
+    apk_eids = res.facets['apk_eid']['terms'].map { |t| t['term'] }
+    Apk.where(:eid.in => apk_eids).add_to_set(:lib_names, name)
   end
 end
