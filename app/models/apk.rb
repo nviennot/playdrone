@@ -17,6 +17,7 @@ class Apk
   field :released_at
 
   belongs_to :app, :foreign_key => :package_name
+  has_and_belongs_to_many :libs, inverse_of: nil, :foreign_key => :lib_names
 
   index({:package_name => 1, :version_code => 1}, :unique => true)
 
@@ -25,6 +26,7 @@ class Apk
 
   index :released_at => 1
   index :eid => 1
+  index :lib_names => 1
 
   def self.downloaded
     where(:downloaded => true)
