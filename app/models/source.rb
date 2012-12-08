@@ -46,9 +46,15 @@ class Source
   def self.search_path(query, options={})
     size  = options[:size] || 10
     field = options[:field] || :path
+    libs  = !!options[:libs]
 
     res = tire.search(:per_page => 0) do
-      query { query == '*' ? all : @value = { :wildcard => { :path => query } } }
+      query do
+        filtered do
+          query { query == '*' ? all : @value = { :wildcard => { :path => query } } }
+          filter :not, :exists => {:field => :lib} unless libs
+        end
+      end
       facet(field) { terms :field => field, :size => size }
     end
 
