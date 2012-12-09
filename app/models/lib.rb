@@ -7,6 +7,10 @@ class Lib
 
   has_many :apks, :foreign_key => :lib_names
 
+  def discover!
+    LibFinder.perform_async(id)
+  end
+
   def self.search_in_sources(query, options={})
     size  = options[:size] || 10
     field = options[:field] || :path
