@@ -6,7 +6,6 @@ def submit_metrics_once
 
   queue.add 'play.app.total' => App.count
 
-  queue.add 'play.apk.total'      => Apk.count
   queue.add 'play.apk.downloaded' => Apk.downloaded.count
   queue.add 'play.apk.decompiled' => Apk.decompiled.count
 
@@ -16,14 +15,18 @@ def submit_metrics_once
 
   q = Source.tire.search do
     size 0
-    query { all }
-    facet(:num_lines) { statistical :num_lines }
-    facet(:size)      { statistical :size }
+    query { filtered { query { all }; filter :not, :exists => {:field => :lib} } }
   end
+  num_files_nolibs = q.total
 
-  queue.add 'play.source.num_files' => q.total
-  queue.add 'play.source.num_lines' => q.facets['num_lines']['total'].to_i
-  queue.add 'play.source.size'      => q.facets['size']['total'].to_i
+  q = Source.tire.search do
+    size 0
+    query { all }
+  end
+  num_files_libs = q.total - num_files_nolibs
+
+  queue.add 'play.source.num_files_libs'   => num_files_libs
+  queue.add 'play.source.num_files_nolibs' => num_files_nolibs
 
   queue.add 'play.requests.app' => {:type => :counter, :value => Redis.instance.get("requests:app") }
   queue.add 'play.requests.apk' => {:type => :counter, :value => Redis.instance.get("requests:apk") }
