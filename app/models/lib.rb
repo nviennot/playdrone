@@ -10,22 +10,25 @@ class Lib
   def self.search_in_sources(query, options={})
     size  = options[:size] || 10
     field = options[:field] || :path
-    libs  = !!options[:libs]
+    libs  = options[:libs]
 
     res = Source.tire.search(:per_page => 0) do
       query do
         filtered do
           query { query == '*' ? all : @value = { :wildcard => { :path => query } } }
-          filter :not, :exists => {:field => :lib} unless libs
+          filter :not, :exists => {:field => :lib} if !libs || libs == :filtered
         end
       end
       facet(field) { terms :field => field, :size => size }
     end
 
-    {
-      :total  => res.total,
-      :detail => Hash[res.facets[field.to_s]['terms'].map { |f| [f['term'], f['count']] }]
-    }
+    detail = Hash[res.facets[field.to_s]['terms'].map { |f| [f['term'], f['count']] }]
+    if libs == :filtered
+      lib_re = Regexp.new "^(#{Lib.all.map { |l| l.name.gsub('.','/') }.join('|')})"
+      detail = detail.reject { |k,v| k =~ lib_re }
+    end
+
+    { :total => res.total, :detail => detail }
   end
 
   def mark_sources!
