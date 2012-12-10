@@ -4,8 +4,12 @@ class Lib
 
   field :name
   field :_id, :as => :name
+  field :num_apks, :type => Integer
 
   has_many :apks, :foreign_key => :lib_names
+  index :num_apks => 1
+
+  default_scope order_by(:num_apks => -1)
 
   def discover!
     LibFinder.perform_async(id)
@@ -56,5 +60,6 @@ class Lib
     end
     apk_eids = res.facets['apk_eid']['terms'].map { |t| t['term'] }
     Apk.where(:eid.in => apk_eids).add_to_set(:lib_names, name)
+    self.update_attributes(:num_apks => self.apks.count)
   end
 end
