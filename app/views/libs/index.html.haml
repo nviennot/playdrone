@@ -1,0 +1,31 @@
+%br
+
+.row
+  .span8
+    %h1 Library Distribution
+  .span4.inline
+    %a.logo{:href => '/search'} Google Play With Me
+  .span12
+    %hr
+
+.row
+  .span12
+    .pull-right
+      = @ranking == :category ? link_to("Global Ranking") : "Global Ranking"
+      ⚫
+      = @ranking != :category ? link_to("Ranking by Categories", url_for(:ranking => :category)) : "Ranking by Categories"
+.row
+  .span12
+    .pull-right
+      #{@libs.count} Libs ⚫ #{@num_apks} Apps
+
+.row
+  .span12
+    - if @ranking == :category
+      - @libs_categorized.each do |category, libs|
+        - if category
+          %h4= Lib::CATEGORY_NAMES[category] || category
+          = render 'libs', :libs => libs, :include_category => false
+    - else
+      %h4 Global Ranking
+      = render 'libs', :libs => @libs, :include_category => true

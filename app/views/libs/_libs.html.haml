@@ -1,0 +1,21 @@
+%table.table.table-condensed.table-bordered.libs
+  %thead
+    %tr
+      %th Java Package
+      %th Name
+      - if include_category
+        %th Category
+      %th Number of Apps
+      %th Penetration
+  %tbody
+    - libs.each do |lib|
+      %tr
+        %td.package= lib.name
+        - if lib.url
+          %td.name= link_to lib.display_name, lib.url
+        - else
+          %td.name= lib.display_name
+        - if include_category
+          %td.category= Lib::CATEGORY_NAMES[lib.category]
+        %td.num_apps= lib.num_apks
+        %td.penetration #{number_with_precision 100*lib.num_apks.to_f/@num_apks, :precision => 2}%

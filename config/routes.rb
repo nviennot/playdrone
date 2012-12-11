@@ -3,6 +3,8 @@ GooglePlayCrawler::Application.routes.draw do
   mount Sidekiq::Web => '/crawler'
 
   resource :accounts, :only => [:new, :create]
+  resources :libs, :only => :index
+
   get 'search' => 'sources#search'
   get 'packages/:apk_eid'           => 'packages#show', :apk_eid => /[^\/]+-[^\/]+/
   get 'packages/:apk_eid/:apk_path' => 'sources#show',  :apk_eid => /[^\/]+-[^\/]+/, :apk_path => /.+/
