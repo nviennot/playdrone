@@ -6,10 +6,41 @@ class Lib
   field :_id, :as => :name
   field :num_apks, :type => Integer
 
+  field :display_name
+  field :url
+  field :category
+
   has_many :apks, :foreign_key => :lib_names
   index :num_apks => 1
 
   default_scope order_by(:num_apks => -1)
+
+  CATEGORY_NAMES = {
+   "android"       => "Android Core",
+   "ads"           => "Advertising Platform",
+   "api"           => "Service API",
+   "app_framwork"  => "Application Framework",
+   "core"          => "Core",
+   "analytics"     => "Analytics",
+   "bug_tracking"  => "Bug Tracking",
+   "barcode"       => "Barcode",
+   "cloud_storage" => "Cloud Storage",
+   "billing"       => "Billing",
+   "data"          => "Data",
+   "mail"          => "Email",
+   "oauth"         => "OAuth",
+   "html"          => "XML/HTML parser",
+   "ui"            => "UI Tools",
+   "orm"           => "ORM",
+   "lang"          => "Lang",
+   "malware"       => "Malware",
+   "gfx"           => "Graphics Engine",
+   "logger"        => "Logger",
+   "maps"          => "Maps",
+   "audio"         => "Audio",
+   "gaming"        => "Gaming",
+   "app_maker"     => "App Maker"
+  }
 
   def discover!
     LibFinder.perform_async(id)
