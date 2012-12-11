@@ -19,6 +19,7 @@ class Source
 
   def self.index_sources!(apk)
     base_len = nil
+    lib_re = Lib.lib_re
 
     sources = []
     apk.source_dir.find do |f|
@@ -26,12 +27,15 @@ class Source
 
       if f.file? && f.extname == '.java'
         lines = f.open.lines.map(&:chomp)
-        sources << new(:id        => Moped::BSON::ObjectId.new.to_s,
-                       :apk_eid   => apk.eid,
-                       :path      => f.to_s[base_len+1..-1],
-                       :lines     => lines,
-                       :num_lines => lines.count,
-                       :size      => f.size)
+        path = f.to_s[base_len+1..-1]
+        attrs = { :id        => Moped::BSON::ObjectId.new.to_s,
+                  :apk_eid   => apk.eid,
+                  :path      => path,
+                  :lines     => lines,
+                  :num_lines => lines.count,
+                  :size      => f.size}
+        attrs[:lib] = $1.gsub('/', '.') if path =~ lib_re
+        sources << new(attrs)
       end
     end
 

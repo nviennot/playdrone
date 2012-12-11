@@ -42,8 +42,8 @@ class Lib
    "app_maker"     => "App Maker"
   }
 
-  def discover!
-    LibFinder.perform_async(id)
+  def self.lib_re
+    Regexp.new "^(#{Lib.all.map { |l| l.name.gsub('.','/') }.join('|')})"
   end
 
   def self.search_in_sources(query, options={})
@@ -62,17 +62,18 @@ class Lib
     end
 
     detail = Hash[res.facets[field.to_s]['terms'].map { |f| [f['term'], f['count']] }]
-    if libs == :filtered
-      lib_re = Regexp.new "^(#{Lib.all.map { |l| l.name.gsub('.','/') }.join('|')})"
-      detail = detail.reject { |k,v| k =~ lib_re }
-    end
+    detail = detail.reject { |k,v| k =~ self.class.lib_re } if libs == :filtered
 
     { :total => res.total, :detail => detail }
   end
 
+  def discover!
+    LibFinder.perform_async(id)
+  end
+
   def mark_sources!
     lib = self
-    transform_proc = proc { |doc| doc[:lib] = name; doc }
+    transform_proc = proc { |doc| doc[:lib] = self.name; doc }
     Source.index.reindex('sources', :transform => transform_proc) do
       query do
         boolean do
