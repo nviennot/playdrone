@@ -50,6 +50,7 @@ class Lib
     size  = options[:size] || 10
     field = options[:field] || :path
     libs  = options[:libs]
+    lib_re = self.lib_re if libs == :filtered
 
     res = Source.tire.search(:per_page => 0) do
       query do
@@ -62,7 +63,7 @@ class Lib
     end
 
     detail = Hash[res.facets[field.to_s]['terms'].map { |f| [f['term'], f['count']] }]
-    detail = detail.reject { |k,v| k =~ self.class.lib_re } if libs == :filtered
+    detail = detail.reject { |k,v| k =~ lib_re } if libs == :filtered
 
     { :total => res.total, :detail => detail }
   end
