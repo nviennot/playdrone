@@ -13,6 +13,7 @@ class Apk
 
   field :downloaded
   field :decompiled
+  field :has_core, :type => Boolean, :default => false
 
   field :released_at
 
@@ -27,6 +28,7 @@ class Apk
   index :released_at => 1
   index :eid => 1
   index :lib_names => 1
+  index :has_core => 1
 
   def self.downloaded
     where(:downloaded => true)
@@ -52,6 +54,10 @@ class Apk
 
   def decompile!
     ApkDecompiler.perform_async(id)
+  end
+
+  def discover_core!
+    ApkCoreFinder.perform_async(id)
   end
 
   def crawler(options={})
