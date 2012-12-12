@@ -63,8 +63,7 @@ class Apk
   end
 
   def file
-    file_name = "#{package_name}-#{version.gsub("/", "_")}-#{version_code}.apk"
-    Rails.root.join('play', 'apk', file_name)
+    Rails.root.join('play', 'apk', "#{package_name}-#{version_code}.apk")
   end
 
   def source_dir
