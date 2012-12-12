@@ -9,7 +9,7 @@ def submit_metrics_once
   queue.add 'play.apk.downloaded' => Apk.downloaded.count
   queue.add 'play.apk.decompiled' => Apk.decompiled.count
 
-  Sidekiq.info[:queues_with_sizes].each do |queue_name, size|
+  Sidekiq::Stats.new.queues.each do |queue_name, size|
     queue.add "play.sidekiq.#{queue_name}" => size
   end
 
