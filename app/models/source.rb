@@ -12,6 +12,7 @@ class Source
     indexes :apk_eid,   :index    => :not_analyzed, :store => :yes
     indexes :path,      :index    => :not_analyzed, :store => :yes
     indexes :lib,       :index    => :not_analyzed, :store => :yes
+    indexes :core,      :type     => :boolean, :store => :yes
     indexes :lines,     :analyzer => :simple
     indexes :num_lines, :type     => :integer, :store => :yes
     indexes :size,      :type     => :integer, :store => :yes
@@ -20,6 +21,7 @@ class Source
   def self.index_sources!(apk)
     base_len = nil
     lib_re = Lib.lib_re
+    core_re = Regexp.new("^#{apk.package_name.gsub('.', '/')}/")
 
     sources = []
     apk.source_dir.find do |f|
@@ -35,6 +37,7 @@ class Source
                   :num_lines => lines.count,
                   :size      => f.size}
         attrs[:lib] = $1.gsub('/', '.') if path =~ lib_re
+        attrs[:core] = true if path =~ core_re
         sources << new(attrs)
       end
     end

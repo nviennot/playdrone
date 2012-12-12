@@ -21,7 +21,8 @@ class SourcesController < ApplicationController
       query do
         filtered do
           query { string user_query, :default_field => :lines, :default_operator => 'AND' }
-          filter :not, :exists => {:field => :lib}
+          #filter :not, :exists => {:field => :lib}
+          filter :term, :core => true
         end
       end
 
