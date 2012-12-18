@@ -9,7 +9,7 @@ class ApkCoreWriter
       size 1000000
       query do
         boolean do
-          must { @value = { :wildcard => { :path => "#{apk.package_name.gsub(/\./, '/')}/*" } } }
+          must { term 'core', true }
           must { term 'apk_eid', apk.eid }
         end
       end
@@ -18,7 +18,7 @@ class ApkCoreWriter
 
     dir = Rails.root.join('play', 'src')
     res.results.each do |file|
-      path = dir.join res.results.first.path
+      path = dir.join file.path
       FileUtils.mkdir_p path.dirname
       File.open(path, 'w') { |f| f.write((file.lines << '').join("\n")) }
     end
