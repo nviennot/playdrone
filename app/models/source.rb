@@ -4,6 +4,7 @@ class Source
   property :apk_eid
   property :path
   property :lib
+  property :core
   property :lines
   property :num_lines
   property :size
