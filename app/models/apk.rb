@@ -17,6 +17,8 @@ class Apk
 
   field :released_at
 
+  field :downloads, :type => Integer, :default => ->{ app.downloads }
+
   belongs_to :app, :foreign_key => :package_name
   has_and_belongs_to_many :libs, inverse_of: nil, :foreign_key => :lib_names
 
@@ -25,6 +27,7 @@ class Apk
   index({:downloaded => 1}, :sparse => true)
   index({:decompiled => 1}, :sparse => true)
 
+  index :downloads => 1
   index :released_at => 1
   index :eid => 1
   index :lib_names => 1
