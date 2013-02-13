@@ -18,6 +18,7 @@ class App
   field :category
   field :contact_email
   field :downloads_count_text
+  field :downloads, :type => Integer, :default => ->{ _downloads }
   field :contact_phone
   field :contact_website
   field :screenshots_count, :type => Integer
@@ -34,9 +35,18 @@ class App
   index :app_id => 1
   index :price => 1
   index :downloads_count_text => 1
+  index :downloads => 1
   index :price => 1, :downloads_count_text => 1
 
   has_many :apks, :foreign_key => :package_name
+
+  def _downloads
+    case downloads_count_text.gsub(/,/,"")
+    when /</         then 0
+    when /(.*)-(.*)/ then $1
+    when />(.*)/     then $1
+    end.to_i
+  end
 
   def download_latest_apk!(options={})
     force = options[:force]
