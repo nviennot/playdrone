@@ -606,5 +606,52 @@ end
 #socialgame | 120
 #...
 
+def topn_by_downloads (keyinfo, n)
+  topn_by_downloads = keyinfo.sort_by{ |x| x[:total_downloads] }.reverse.slice(0 .. n-1)
+  top_table topn_by_downloads
+end
 
+def topn_by_apps (keyinfo, n)
+  topn_by_apps = keyinfo.sort_by{ |x| x[:total] }.reverse.slice(0 .. n-1)
+  top_table topn_by_apps
+end
+
+def top_table_add_headers (table)
+
+  headers = [
+    "Token",
+    "Valid",
+    "With S3",
+    "With EC2",
+    "S3 Buckets",
+    "EC2 Instances",
+    "Non-popular Apps",
+    "Popular Apps",
+    "Total Apps",
+    "Non-popular Dwnlds",
+    "Popular Dwnlds",
+    "Total Dwnlds",
+  ]
+
+  table.each_with_index do |row, i|
+    row.insert 0, headers[i]
+    row.each_with_index do |col, j|
+      if col.nil? then row[j] = "~"
+      elsif col =~ /AKIA.*(.{5})/ then row[j] = ".." + $1
+      end
+    end
+  end
+end
+
+def top_table (topn)
+  result = []
+  topn.each do |x|
+    [:access_key_id, :valid, :s3_active, :ec2_active, :s3_buckets, :ec2_instances,
+      :nonpopular, :popular, :total, :nonpopular_downloads, :popular_downloads, :total_downloads].each_with_index do |y, i|
+      result[i] ||= []
+      result[i] << x[y]
+    end
+  end
+  result
+end
 
