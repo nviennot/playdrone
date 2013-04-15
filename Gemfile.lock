@@ -107,6 +107,9 @@ GEM
       bouncy-castle-java (>= 1.5.0146.1)
     json (1.7.5)
     json (1.7.5-java)
+    kaminari (0.14.1)
+      actionpack (>= 3.0.0)
+      activesupport (>= 3.0.0)
     less (2.2.2)
       commonjs (~> 0.2.6)
     less-rails (2.2.5)
@@ -241,6 +244,7 @@ DEPENDENCIES
   haml-rails
   jquery-rails
   jruby-openssl
+  kaminari
   less
   librato-metrics
   mongoid
