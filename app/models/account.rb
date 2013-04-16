@@ -2,6 +2,8 @@ class Account
   include Mongoid::Document
   include Mongoid::Timestamps
 
+  class AuthFailed < RuntimeError; end
+
   # On bursts, we can do 50 queries per minutes
   MAX_QUERIES_PER_MIN = 50
   # But per hour, it's pretty aweful
@@ -20,39 +22,57 @@ class Account
 
   attr_accessible :email, :password
 
-  def checkin!
-    Helpers.has_java_exceptions do
-      self.android_id = Checkin.checkin(email, password)
-      self.save!
-    end
-  end
-
-  def auth_token_key(secure)
-    "account:#{id}:auth_#{secure ? 'secure' : 'plain'}"
-  end
-
-  def session(options={})
-    Helpers.has_java_exceptions do
-      secure = options[:secure] || false
-      @session ||= Market::Session.new(secure).tap do |s|
-        key = auth_token_key(secure)
-        token = Redis.instance.get(key)
-        if token.present?
-          s.setAndroidId(self.android_id)
-          s.setAuthSubToken(token)
-        else
-          s.login(email, password, android_id)
-          Redis.instance.multi do
-            Redis.instance.set(key, s.authSubToken)
-            Redis.instance.expire(key, AUTH_TOKEN_EXPIRE)
-          end
-        end
-      end
-    end
+  def auth_token_key
+    "account:#{id}:auth"
   end
 
   def rate_limit_key(what)
     "account:#{id}:rate:#{what}"
+  end
+
+  def checkin!
+    raise NotImplementedError
+  end
+
+  def login!
+    response = Faraday.post 'https://android.clients.google.com/auth', {
+      "Email"           => self.email,
+      "Passwd"          => self.password,
+      "service"         => "androidmarket",
+      "accountType"     => "HOSTED_OR_GOOGLE",
+      "has_permission"  => "1",
+      "source"          => "android",
+      "androidId"       => self.android_id,
+      "app"             => "com.android.vending",
+      "device_country"  => "en",
+      "operatorCountry" => "en",
+      "lang"            => "en",
+      "sdk_version"     => "16"
+    }, {
+      'User-Agent' => 'Android-Market/2 (sapphire PLAT-RC33); gzip'
+    }
+
+    # we get SID, LSID, Auth, services, Token.
+    # Token contains doritos,hist,mail,googleme,lh2,talk,android,cl. What is doritos?
+    auth_token = Hash[response.body.split("\n").map { |line| line.split('=') }]['Auth']
+    raise AuthFailed unless auth_token
+    auth_token
+  end
+
+  def auth_token
+    return @auth_token if @auth_token
+
+    @auth_token = Redis.instance.get(auth_token_key)
+    return @auth_token if @auth_token
+
+    @auth_token = login!
+    Redis.instance.multi do
+      Redis.instance.set(auth_token_key, @auth_token)
+      Redis.instance.expire(auth_token_key, AUTH_TOKEN_EXPIRE)
+    end
+    @auth_token
+  rescue AuthFailed
+    disable! :duration => 1.year
   end
 
   def incr_requests!(what)
