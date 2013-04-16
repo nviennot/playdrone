@@ -20,6 +20,7 @@ gem 'librato-metrics'
 gem 'coderay'
 gem 'will_paginate'
 gem 'therubyracer'
+gem 'protobuf', git: 'https://github.com/nviennot/protobuf.git', :branch => 'dev'
 
 group :development do
   gem 'capistrano'

@@ -113,9 +113,7 @@ class Account
   end
 
   # XXX atomically calls rate_limit
-  def self.first_usable(options={})
-    last = options[:last]
-    return last if last && last.enabled? && last.rate_limit!
+  def self.first_usable
     loop do
       Account.enabled.each do |account|
         return account if account.rate_limit!
