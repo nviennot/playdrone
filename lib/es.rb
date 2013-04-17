@@ -7,11 +7,11 @@ module ES
     Thread.current[:es_connection] ||= Stretcher::Server.new(ENV['ELASTICSEARCH_URL'])
   end
 
-  def index(index_name = :live)
+  def index(index_name)
     server.index(index_name)
   end
 
-  def create_index(index_name = :live)
+  def create_index(index_name)
     # number_of_replicas doesn't count master
     index(index_name).create(:index => { :number_of_shards => 10, :number_of_replicas => 1 })
   end
@@ -27,13 +27,13 @@ module ES
       self.mapping[property_name] = options
     end
 
-    def self.type_name
-      self.name.underscore
+    def self.index(index_name)
+      ES.index(index_name).type(self.name.underscore)
     end
 
-    def self.update_mapping(index)
-      index.type(self.type_name).put_mapping(self.type_name => { :properties => self.mapping,
-                                                                 :_all       => { :enabled => false } })
+    def self.update_mapping(index_name)
+      index(index_name).put_mapping(self.name.underscore => { :properties => self.mapping,
+                                                              :_all       => { :enabled => false } })
     end
   end
 end

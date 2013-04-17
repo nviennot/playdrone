@@ -20,8 +20,8 @@ class App < ES::Model
   property :version_string,     :type => :string,  :index    => :no
   property :installation_size,  :type => :integer
   property :permission,         :type => :string,  :index    => :not_analyzed
-  property :crawl_time,         :type => :date,    :store    => true
-  property :upload_date,        :type => :date,    :store    => true
+  property :crawled_at,         :type => :date,    :store    => true
+  property :uploaded_at,        :type => :date,    :store    => true
   property :downloads,          :type => :integer, :store    => true
   property :plus_one_count,     :type => :integer
   property :comment_count,      :type => :integer
@@ -59,8 +59,8 @@ class App < ES::Model
         :version_string     => app[:details][:app_details][:version_string],
         :installation_size  => app[:details][:app_details][:installation_size],
         :permission         => app[:details][:app_details][:permission], # this is an array
-        :crawl_time         => Time.now,
-        :upload_date        => Date.parse(app[:details][:app_details][:upload_date]),
+        :crawled_at         => Time.now,
+        :uploaded_at        => Date.parse(app[:details][:app_details][:upload_date]),
         :downloads          => app[:details][:app_details][:num_downloads].split('-')[0].gsub(/[^0-9]/,'').to_i,
         :plus_one_count     => app[:annotations][:plus_one_data][:total],
         :comment_count      => app[:aggregate_rating][:comment_count],
@@ -73,5 +73,9 @@ class App < ES::Model
         :star_rating        => app[:aggregate_rating][:star_rating]
   rescue Exception => e
     raise ParseError.new "#{e.class}: #{e}\n#{app.inspect}"
+  end
+
+  def save(index_name)
+    self.class.index(index_name).put(self.id, self)
   end
 end
