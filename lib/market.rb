@@ -5,6 +5,7 @@ module Market
     # Lazy load because it's a huge file
     Faraday.new(:url => 'https://android.clients.google.com/fdfe/') do |faraday|
       faraday.use     Market::Middleware
+      faraday.request :url_encoded
       faraday.adapter Faraday.default_adapter
     end
   end
@@ -31,14 +32,14 @@ module Market
     SearchResult.new api.get('search', params).body
   end
 
-  def self.app_details_bulk(app_ids)
+  def self.details_bulk(app_ids)
     request = ::GooglePlay::BulkDetailsRequest.new
     request.doc_id = app_ids
     request.include_child_docs = true
     api.post('bulkDetails', request).body
   end
 
-  def self.app_details(app_id)
+  def self.details(app_id)
     api.get('details', :doc => app_id).body
   end
 end
