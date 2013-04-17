@@ -2,7 +2,6 @@ require "#{Rails.root}/vendor/googleplay.pb"
 
 module Market
   def self.api
-    # Lazy load because it's a huge file
     Faraday.new(:url => 'https://android.clients.google.com/fdfe/') do |faraday|
       faraday.use     Market::Middleware
       faraday.request :url_encoded
@@ -32,14 +31,27 @@ module Market
     SearchResult.new api.get('search', params).body
   end
 
-  def self.details_bulk(app_ids)
-    request = ::GooglePlay::BulkDetailsRequest.new
-    request.doc_id = app_ids
-    request.include_child_docs = true
-    api.post('bulkDetails', request).body
+  # def self.details_bulk(app_ids)
+    # request = ::GooglePlay::BulkDetailsRequest.new
+    # request.doc_id = app_ids
+    # request.include_child_docs = true
+    # api.post('bulkDetails', request).body
+  # end
+
+  class DetailsResult < Struct.new(:payload)
+    def app
+      @app ||= payload[:payload][:details_response][:doc_v2]
+    end
+
+    def related_app_ids
+      payload[:pre_fetch].map do |pf|
+        res = ::GooglePlay::ResponseWrapper.new.parse_from_string(pf[:response]).to_hash
+        res[:payload][:list_response][:doc].map { |r| r[:child].map { |app| app[:docid] } }
+      end.flatten.uniq
+    end
   end
 
   def self.details(app_id)
-    api.get('details', :doc => app_id).body
+    DetailsResult.new api.get('details', :doc => app_id).body
   end
 end
