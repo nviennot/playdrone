@@ -8,7 +8,7 @@ module Market
       account = Account.first_usable
       env[:account] = account
 
-      env[:request_headers].merge!(
+      env[:request_headers].reverse_merge!(
         "Accept-Language"               => 'en',
         "Authorization"                 => "GoogleLogin auth=#{account.auth_token}",
         "X-DFE-Enabled-Experiments"     => "cl:billing.select_add_instrument_by_default",
