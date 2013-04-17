@@ -22,6 +22,7 @@ gem 'therubyracer'
 gem 'protobuf', git: 'https://github.com/nviennot/protobuf.git', :branch => 'dev'
 gem 'stretcher', git: 'git://github.com/PoseBiz/stretcher.git'
 gem 'hashie'
+gem 'rugged', git: 'git://github.com/libgit2/rugged.git', :branch => :development, :submodules => true
 
 group :development do
   gem 'capistrano'
