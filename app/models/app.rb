@@ -1,7 +1,7 @@
 class App < ES::Model
   class ParseError < RuntimeError; end
 
-  property :id,                 :type => :string,  :index    => :not_analyzed
+  property :_id,                :type => :string,  :index    => :not_analyzed
   property :title,              :type => :string,  :analyzer => :simple
   property :description,        :type => :string,  :analyzer => :simple       # html
   property :recent_changes,     :type => :string,  :index    => :not_analyzed # html
@@ -40,15 +40,15 @@ class App < ES::Model
   # }},
 
   def self.from_market(app)
-    new :id                 => app[:docid],
+    new :_id                => app[:docid],
         :title              => app[:title],
         :description        => app[:description_html],
         :recent_changes     => app[:details][:app_details][:recent_changes_html],
         :developer_name     => app[:details][:app_details][:developer_name],
         :developer_email    => app[:details][:app_details][:developer_email],
         :developer_website  => app[:details][:app_details][:developer_website],
-        :top_developer      => !!app[:annotations][:badge_for_creator], # it's actually an array with stuff
-        :editors_choice     => !!app[:annotations][:badge_for_doc],     # it's actually an array with stuff
+        :top_developer      => !!app[:annotations][:badge_for_creator],
+        :editors_choice     => !!app[:annotations][:badge_for_doc],
         :content_rating     => app[:details][:app_details][:content_rating],
         :app_type           => app[:details][:app_details][:app_type],
         :free               => app[:offer][0][:micros].zero?,
@@ -73,9 +73,5 @@ class App < ES::Model
         :star_rating        => app[:aggregate_rating][:star_rating]
   rescue Exception => e
     raise ParseError.new "#{e.class}: #{e}\n#{app.inspect}"
-  end
-
-  def save(index_name)
-    self.class.index(index_name).put(self.id, self)
   end
 end
