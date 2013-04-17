@@ -244,6 +244,7 @@ DEPENDENCIES
   faraday_middleware
   foreman
   haml-rails
+  hashie
   jquery-rails
   kaminari
   less-rails
