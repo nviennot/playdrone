@@ -2,7 +2,6 @@ source 'https://rubygems.org/'
 
 gem 'rails'
 gem 'foreman'
-gem 'tire'
 gem 'mongoid'
 gem 'unicorn'
 gem 'redis'
@@ -21,6 +20,7 @@ gem 'coderay'
 gem 'will_paginate'
 gem 'therubyracer'
 gem 'protobuf', git: 'https://github.com/nviennot/protobuf.git', :branch => 'dev'
+gem 'stretcher', git: 'git://github.com/PoseBiz/stretcher.git'
 
 group :development do
   gem 'capistrano'
