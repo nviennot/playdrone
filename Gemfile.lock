@@ -9,6 +9,14 @@ GIT
       net-http-persistent (~> 2.8)
 
 GIT
+  remote: git://github.com/libgit2/rugged.git
+  revision: d846a1ff735c58a254513519b619ddb0baedb3d7
+  branch: development
+  submodules: true
+  specs:
+    rugged (0.17.0.b8)
+
+GIT
   remote: git://github.com/mperham/sidekiq.git
   revision: 17283909fd699ac9d6c882e3f86f2fc004feb523
   specs:
@@ -253,6 +261,7 @@ DEPENDENCIES
   protobuf!
   rails
   redis
+  rugged!
   rvm-capistrano
   sass-rails (~> 3.2.3)
   sidekiq!
