@@ -45,7 +45,7 @@ module Market
 
   class DetailsResult < Struct.new(:payload)
     def app
-      @app ||= payload[:payload][:details_response][:doc_v2]
+      App.from_market payload[:payload][:details_response][:doc_v2]
     end
 
     def related_app_ids

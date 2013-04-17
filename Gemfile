@@ -21,6 +21,7 @@ gem 'will_paginate'
 gem 'therubyracer'
 gem 'protobuf', git: 'https://github.com/nviennot/protobuf.git', :branch => 'dev'
 gem 'stretcher', git: 'git://github.com/PoseBiz/stretcher.git'
+gem 'hashie'
 
 group :development do
   gem 'capistrano'
