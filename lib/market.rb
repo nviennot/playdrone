@@ -2,10 +2,15 @@ require "#{Rails.root}/vendor/googleplay.pb"
 
 module Market
   def self.api
-    Faraday.new(:url => 'https://android.clients.google.com/fdfe/') do |faraday|
-      faraday.use     Market::Middleware
-      faraday.request :url_encoded
-      faraday.adapter Faraday.default_adapter
+    # Keep the connection open (one connection per thread)
+    Thread.current[:market_connection] ||=
+      Faraday.new(:url => 'https://android.clients.google.com/fdfe/') do |builder|
+        builder.use     Market::Middleware
+        builder.request :url_encoded
+
+        builder.options[:open_timeout] = 10
+        builder.options[:read_timeout] = 10
+        builder.adapter :net_http_persistent
     end
   end
 

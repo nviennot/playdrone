@@ -1,6 +1,6 @@
 GooglePlayCrawler::Application.routes.draw do
   require 'sidekiq/web'
-  mount Sidekiq::Web => '/crawler'
+  mount Sidekiq::Web => '/sidekiq'
 
   resource :accounts, :only => [:new, :create]
   resources :libs, :only => :index

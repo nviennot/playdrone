@@ -1,6 +1,6 @@
 module Market
   class TooManyRequests < RuntimeError; end
-  class BadRequest < RuntimeError; end
+  class BadRequest      < RuntimeError; end
 
   class Middleware < Faraday::Response::Middleware
     def call(env)
