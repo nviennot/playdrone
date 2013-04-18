@@ -18,12 +18,16 @@ module Market
   MAX_START = 500
 
   class SearchResult < Struct.new(:payload)
+    def doc
+      payload[:payload][:search_response][:doc][0]
+    end
+
     def num_apps
-      payload[:payload][:search_response][:doc][0][:container_metadata][:estimated_results]
+      doc[:container_metadata][:estimated_results]
     end
 
     def app_ids
-      payload[:payload][:search_response][:doc][0][:child].map { |app| app[:docid] }
+      doc[:child].map { |app| app[:docid] }
     end
   end
 
@@ -58,5 +62,36 @@ module Market
 
   def self.details(app_id)
     DetailsResult.new api.get('details', :doc => app_id).body
+  end
+
+  class PurchaseResult < Struct.new(:payload)
+    # Payload also contains forward_locked and server_initiated
+    def delivery_data
+       payload[:payload][:buy_response][:purchase_status_response][:app_delivery_data]
+    end
+
+    def download_url
+      delivery_data[:download_url]
+    end
+
+    def cookie
+      delivery_data[:download_auth_cookie][0].values.join('=')
+    end
+
+    def download_size
+      delivery_data[:download_size]
+    end
+
+    def forward_locked
+      delivery_data[:forward_locked]
+    end
+  end
+
+  def self.purchase(app_id, version_code)
+    result = api.post('purchase', :ot => 1, :doc => app_id, :vc => version_code) do |builder|
+      # The API can be a little slow to authorize the purchase
+      builder.options[:read_timeout] = 30
+    end
+    PurchaseResult.new result.body
   end
 end
