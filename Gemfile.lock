@@ -9,14 +9,6 @@ GIT
       net-http-persistent (~> 2.8)
 
 GIT
-  remote: git://github.com/libgit2/rugged.git
-  revision: d846a1ff735c58a254513519b619ddb0baedb3d7
-  branch: development
-  submodules: true
-  specs:
-    rugged (0.17.0.b8)
-
-GIT
   remote: git://github.com/mperham/sidekiq.git
   revision: 17283909fd699ac9d6c882e3f86f2fc004feb523
   specs:
@@ -29,6 +21,14 @@ GIT
       redis-namespace
       sinatra
       slim
+
+GIT
+  remote: git://github.com/nviennot/rugged.git
+  revision: cfc015d7fffb692afc4f60aadd40b36401125f0c
+  branch: development
+  submodules: true
+  specs:
+    rugged (0.17.0.b8)
 
 GIT
   remote: https://github.com/nviennot/protobuf.git
@@ -150,6 +150,7 @@ GEM
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
+    middleware (0.1.0)
     mime-types (1.22)
     mongoid (3.1.2)
       activemodel (~> 3.2)
@@ -257,6 +258,7 @@ DEPENDENCIES
   kaminari
   less-rails
   librato-metrics
+  middleware
   mongoid
   protobuf!
   rails

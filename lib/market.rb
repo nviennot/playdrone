@@ -5,7 +5,7 @@ module Market
     # Keep the connection open (one connection per thread)
     Thread.current[:market_connection] ||=
       Faraday.new(:url => 'https://android.clients.google.com/fdfe/') do |builder|
-        builder.use     Market::Middleware
+        builder.use     Market::FaradayMiddleware
         builder.request :url_encoded
 
         builder.options[:open_timeout] = 10

@@ -2,7 +2,7 @@ module Market
   class TooManyRequests < RuntimeError; end
   class BadRequest      < RuntimeError; end
 
-  class Middleware < Faraday::Response::Middleware
+  class FaradayMiddleware < Faraday::Response::Middleware
     def call(env)
       # Note that first_usable calls rate_limit!
       account = Account.first_usable

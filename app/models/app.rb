@@ -74,4 +74,12 @@ class App < ES::Model
   rescue Exception => e
     raise ParseError.new "#{e.class}: #{e}\n#{app.inspect}"
   end
+
+  def repo(options={})
+    Repository.new(self, options)
+  end
+
+  def id_version
+    @id_version ||= "#{id}-#{version_code}"
+  end
 end
