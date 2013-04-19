@@ -1,9 +1,0 @@
-#!/bin/bash
-
-_classpath="."
-for k in vendor/*.jar; do
- _classpath="${_classpath}:${k}"
-done
-
-ulimit -m $((1024*1024))
-exec java -classpath "${_classpath}" "com.googlecode.dex2jar.tools.Dex2jarCmd" "$@"
