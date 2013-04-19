@@ -5,8 +5,8 @@ class Stack::PrepareFS < Stack::Base
   # The strach dir is automatically deleted once the stack terminates.
 
   def call(env)
-    env[:repo] = env[:app].repo(:auto_create => true)
-    Dir.mktmpdir "scratch-#{env[:app].id}" do |dir|
+    env[:repo] = Repository.new(env[:app_id], :auto_create => true)
+    Dir.mktmpdir "#{env[:app_id]}", Rails.root.join('scratch') do |dir|
       env[:scratch] = Pathname.new(dir)
       @stack.call(env)
     end

@@ -24,6 +24,8 @@ gem 'stretcher', git: 'git://github.com/PoseBiz/stretcher.git'
 gem 'hashie'
 gem 'rugged', git: 'git://github.com/nviennot/rugged.git', :branch => :development, :submodules => true
 gem 'middleware'
+gem 'multi_json'
+gem 'oj'
 
 group :development do
   gem 'capistrano'
