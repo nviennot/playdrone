@@ -1,4 +1,4 @@
-class Stack::DownloadApk < Stack::Base
+class Stack::DownloadApk < Stack::BaseGit
   class DownloadError < RuntimeError; end
 
   # ApiV2 does not give us the last-modified header :(
@@ -7,13 +7,9 @@ class Stack::DownloadApk < Stack::Base
   # TODO Store forward_locked information
   # download_info.forward_locked
 
-  # TODO Provide other middlewares the APK
-  # env[:apk_path] = env[:scratch].join(apk_filename)
-  # env[:apk_path].open('wb') { |f| f.write(response.body) }
+  use_git :branch => :apk
 
-  commit :branch => :apk
-
-  def commit(env, branch)
+  def persist_to_git(env, git)
     download_info = Market.purchase(env[:app].id, env[:app].version_code)
 
     conn = Faraday.new(:ssl => {:verify => false}) do |f|
@@ -35,6 +31,18 @@ class Stack::DownloadApk < Stack::Base
     end
 
     apk_filename = "#{env[:app].id_version}.apk"
-    branch.add_file(apk_filename, response.body)
+
+    git.commit do |tree|
+      tree.add_file(apk_filename, response.body)
+    end
+
+    env[:apk_path] = env[:scratch].join(apk_filename)
+    env[:apk_path].open('wb') { |f| f.write(response.body) }
+  end
+
+  def parse_from_git(env, git)
+    apk_filename = "#{env[:app].id_version}.apk"
+    env[:apk_path] = env[:scratch].join(apk_filename)
+    env[:apk_path].open('wb') { |f| f.write(git.read_file(apk_filename)) }
   end
 end
