@@ -1,4 +1,4 @@
-class Stack::UpdateIndex < Stack::Base
+class Stack::IndexApp < Stack::Base
   def call(env)
     @stack.call(env)
 
