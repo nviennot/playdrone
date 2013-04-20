@@ -11,9 +11,10 @@ class Stack::DecompileApk < Stack::BaseGit
     output = exec_and_capture('script/decompile', env[:scratch], env[:apk_path].basename)
 
     unless $?.success?
-      if output =~ /fatal error/ ||
-         output =~ /OutOfMemoryError/ ||
-         output =~ /StackOverflowError/
+      if output =~ /fatal error/        ||
+         output =~ /OutOfMemoryError/   ||
+         output =~ /StackOverflowError/ ||
+         output =~ /Killed/
         # Too bad, the decompiler sucks
         # TODO write it in the app metadata
         Rails.logger.info "Cannot decompile #{env[:app_id]}"
