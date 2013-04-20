@@ -77,14 +77,24 @@ class App < ES::Model
     raise _e
   end
 
-  def self.discovered_app(app_id)
-    if Redis.instance.sadd('apps', app_id)
-      # New app!
-      ProcessApp.perform_async(app_id, Date.today)
-    end
-  end
+  class << self
+    include Enumerable
 
-  def self.discovered_apps(app_ids)
-    app_ids.each { |app_id| discovered_app(app_id) }
+    def discovered_app(app_id)
+      if Redis.instance.sadd('apps', app_id)
+        # New app!
+        ProcessApp.perform_async(app_id, Date.today)
+      end
+    end
+
+    def discovered_apps(app_ids)
+      app_ids.each { |app_id| discovered_app(app_id) }
+    end
+
+    def each(&block)
+      # TODO batches
+      Redis.instance.sort('apps', :order => 'alpha').each(&block)
+      true
+    end
   end
 end
