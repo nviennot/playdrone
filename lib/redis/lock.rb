@@ -4,7 +4,7 @@ class Redis::Lock
   def initialize(key, options={})
     # TODO remove old code with orig_key
     @orig_key = key.to_s
-    @key      = "#{key}:lock"
+    @key      = "lock:#{key}"
     @timeout  = options[:timeout].to_i
     @sleep    = options[:sleep].to_f
     @expire   = options[:expire].to_i
