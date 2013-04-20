@@ -1,6 +1,6 @@
 class SearchApp
   include Sidekiq::Worker
-  sidekiq_options :queue => name.underscore, :backtrace => true
+  sidekiq_options :queue => name.underscore, :backtrace => true, :timeout => 1.minute
 
   def perform(app_id, raw_url=nil)
     results = Market.search(app_id, :raw_url => raw_url)

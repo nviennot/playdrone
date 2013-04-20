@@ -12,9 +12,11 @@ class Stack::FetchMarketDetails < Stack::BaseGit
     git.commit do |index|
       index.add_file('metadata.json', MultiJson.dump(app_details.raw_app, :pretty => true))
     end
+    @stack.call(env)
   end
 
   def parse_from_git(env, git)
     env[:app] = App.from_market MultiJson.load(git.read_file('metadata.json'), :symbolize_keys => true)
+    @stack.call(env)
   end
 end

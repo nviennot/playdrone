@@ -4,10 +4,7 @@ class Account
 
   class AuthFailed < RuntimeError; end
 
-  # On bursts, we can do 50 queries per minutes
   MAX_QUERIES_PER_MIN = 50
-  # But per hour, it's pretty aweful
-  MAX_QUERIES_PER_HOUR = 350
 
   AUTH_TOKEN_EXPIRE = 10.minutes
 
@@ -83,18 +80,7 @@ class Account
     v = Redis.instance.incr(rate_limit_key(:min))
     # FIXME If the instance dies here, we never expire the key
     Redis.instance.expire(rate_limit_key(:min), 1.minute) if v == 1
-    return false if v > MAX_QUERIES_PER_MIN
-
-    v = Redis.instance.incr(rate_limit_key(:hour))
-    # FIXME If the instance dies here, we never expire the key
-
-    if v > MAX_QUERIES_PER_HOUR
-      disable!
-      false
-    else
-      Redis.instance.expire(rate_limit_key(:hour), 1.hour)
-      true
-    end
+    v <= MAX_QUERIES_PER_MIN
   end
 
   def self.enabled

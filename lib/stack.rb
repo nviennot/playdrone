@@ -4,6 +4,7 @@ module Stack
 
   def self.process_app(app_id)
     @create_app_stack ||= ::Middleware::Builder.new do
+      use LockApp
       use PrepareFS
       use FetchMarketDetails
       use DownloadApk
