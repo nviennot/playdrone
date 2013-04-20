@@ -32,8 +32,8 @@ class Stack::DownloadApk < Stack::BaseGit
 
     apk_filename = "#{env[:app].id_version}.apk"
 
-    git.commit do |tree|
-      tree.add_file(apk_filename, response.body)
+    git.commit do |index|
+      index.add_file(apk_filename, response.body)
     end
 
     env[:apk_path] = env[:scratch].join(apk_filename)

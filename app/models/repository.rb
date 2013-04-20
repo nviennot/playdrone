@@ -2,7 +2,7 @@ class Repository < Rugged::Repository
   REPO_PATH = Rails.root.join 'repos'
   class EmptyCommit < RuntimeError; end
 
-  attr_accessor :app_id
+  attr_accessor :app_id, :path
 
   # Rugged gets its hands on new, not initialize
   def self.new(app_id, options={})
@@ -14,6 +14,7 @@ class Repository < Rugged::Repository
 
     super(path.to_s).instance_eval do
       @app_id = app_id
+      @path = path
       self
     end
   end

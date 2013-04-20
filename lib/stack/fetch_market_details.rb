@@ -9,8 +9,8 @@ class Stack::FetchMarketDetails < Stack::BaseGit
 
     env[:app] = App.from_market(app_details.raw_app)
 
-    git.commit do |tree|
-      tree.add_file('metadata.json', MultiJson.dump(app_details.raw_app, :pretty => true))
+    git.commit do |index|
+      index.add_file('metadata.json', MultiJson.dump(app_details.raw_app, :pretty => true))
     end
   end
 

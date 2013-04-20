@@ -7,7 +7,7 @@ module Stack
       use PrepareFS
       use FetchMarketDetails
       use DownloadApk
-      # use DecompileApk
+      use DecompileApk
     end
     @create_app_stack.call :app_id => app_id, :crawl_date => Date.today
   end
