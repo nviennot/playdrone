@@ -9,7 +9,16 @@ class Stack::DecompileApk < Stack::BaseGit
     return unless env[:app].free
 
     output = exec_and_capture('script/decompile', env[:scratch], env[:apk_path].basename)
-    raise DecompilationError.new(output) unless $?.success?
+
+    unless $?.success?
+      if output =~ /fatal error/
+        # Too bad, the decompiler sucks
+        # TODO write it in the app metadata
+        return
+      end
+
+      raise DecompilationError.new(output)
+    end
 
     env[:src_dir] = env[:scratch].join('src')
 
