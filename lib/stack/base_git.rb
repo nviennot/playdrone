@@ -1,5 +1,6 @@
 class Stack::BaseGit < Stack::Base
   class Git
+    class CommitError < RuntimeError; end
     include ActionView::Helpers::TextHelper
     include ActionView::Helpers::SanitizeHelper
 
@@ -12,7 +13,6 @@ class Stack::BaseGit < Stack::Base
       @branch   = options[:branch]
       @role     = options[:role]
       @tag_with = options[:tag_with]
-      @tree_builder = TreeBuilderProxy.new(repo)
     end
 
     def app
@@ -43,6 +43,10 @@ class Stack::BaseGit < Stack::Base
       Rugged::Reference.lookup(repo, branch_ref).try(:target)
     end
 
+    def last_committed_tree
+      repo.lookup(last_commit_sha).tree
+    end
+
     def new_branch?
       !last_commit_sha
     end
@@ -59,37 +63,36 @@ class Stack::BaseGit < Stack::Base
       msg += "\n\nVersion Code: #{app.version_code}"
     end
 
-    class TreeBuilderProxy < Rugged::Tree::Builder
-      def initialize(repo)
-        @repo = repo
-        super()
+    class Index < Rugged::Index
+      def self.new(repo)
+        super().instance_eval do
+          @repo = repo
+          self
+        end
       end
 
-      def add_file(name, content, mode=0100644)
+      def add_file(filename, content, mode=0100644)
         oid = @repo.write(content, :blob)
-        self.insert(:type => :blob, :name => name.to_s, :oid => oid, :filemode => mode)
-        @has_file = true
+        self.add(:path => filename.to_s, :oid => oid, :mode => mode)
       end
 
-      def has_files?
-        @has_file
+      def add_dir(dir)
+        prefix_regexp = Regexp.new("^#{dir}/")
+        Dir["#{dir}/**/*"].each do |filename|
+          next unless File.file?(filename)
+          add_file(filename.gsub(prefix_regexp, ''), File.open(filename, 'rb') { |f| f.read })
+        end
       end
 
-      def write
+      def write_tree
         super(@repo)
       end
     end
 
-    def read_file(file_name)
-      file = repo.lookup(last_commit_sha).tree[file_name]
-      return nil unless file
-      repo.lookup(file[:oid]).read_raw.data
-    end
-
     def commit(&block)
-      block.call(tree_builder)
-
-      raise "No files to commit" unless tree_builder.has_files?
+      index = Index.new(repo)
+      block.call(index)
+      raise CommitError.new "No files to commit" unless index.count > 0
 
       commit = {}
 
@@ -107,10 +110,25 @@ class Stack::BaseGit < Stack::Base
 
       commit[:parents]    = [last_commit_sha].compact
       commit[:update_ref] = branch_ref
-      commit[:tree]       = tree_builder.write
+      commit[:tree]       = index.write_tree
 
       Rugged::Commit.create(repo, commit).tap do |commit_sha|
         Rugged::Reference.create(repo, tag_ref, commit_sha)
+      end
+    end
+
+    def read_file(file_name)
+      file = last_committed_tree[file_name]
+      return nil unless file
+      repo.lookup(file[:oid]).read_raw.data
+    end
+
+    def read_files(&block)
+      last_committed_tree.walk(:preorder) do |dir, entry|
+        case entry[:type]
+        when :tree then block.call("#{dir}#{entry[:name]}", nil)
+        when :blob then block.call("#{dir}#{entry[:name]}", repo.lookup(entry[:oid]).read_raw.data)
+        end
       end
     end
   end
