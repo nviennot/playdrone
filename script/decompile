@@ -3,7 +3,7 @@
 # $2 == apk file name
 
 APK2GOLD=`pwd`/vendor/apk2gold/apk2gold
-ulimit -m $((1024*1024))
+ulimit -m $((4096*1024))
 cd $1
 $APK2GOLD $2 2>&1 || exit 1
 mv "${2%.*}" src
