@@ -1,3 +1,5 @@
+require 'set'
+
 class Stack::BaseGit < Stack::Base
   class Git
     class CommitError < RuntimeError; end
@@ -118,6 +120,8 @@ class Stack::BaseGit < Stack::Base
       Rugged::Commit.create(repo, commit).tap do |commit_sha|
         Rugged::Reference.create(repo, tag_ref, commit_sha)
       end
+
+      env[:touched_repo] = true
     end
 
     def read_file(file_name)
@@ -126,11 +130,19 @@ class Stack::BaseGit < Stack::Base
       repo.lookup(file[:oid]).read_raw.data
     end
 
-    def read_files(&block)
+    def read_files(options={}, &block)
+      @cached_files ||= Set.new
       last_committed_tree.walk(:preorder) do |dir, entry|
+        filename = "#{dir}#{entry[:name]}"
         case entry[:type]
-        when :tree then block.call("#{dir}#{entry[:name]}", nil)
-        when :blob then block.call("#{dir}#{entry[:name]}", repo.lookup(entry[:oid]).read_raw.data)
+        when :tree
+          # So the caller can create directories
+          block.call(filename, nil)
+        when :blob
+          next if @cached_files.include? filename
+          next if options[:include_filter] && !filename =~ options[:include_filter]
+          block.call(filename, repo.lookup(entry[:oid]).read_raw.data)
+          @cached_files << filename
         end
       end
     end

@@ -28,6 +28,7 @@ class Stack::DecompileApk < Stack::BaseGit
       raise DecompilationError.new(output)
     end
 
+    env[:need_src] = ->{}
     env[:src_dir] = env[:scratch].join('src')
 
     git.commit do |index|
@@ -38,21 +39,22 @@ class Stack::DecompileApk < Stack::BaseGit
   end
 
   def parse_from_git(env, git)
-    env[:src_dir] = env[:scratch].join('src')
-    FileUtils.mkpath(env[:src_dir])
+    has_files = git.last_committed_tree.count > 0
+    return unless has_files
 
-    has_files = false
-    git.read_files do |filename, content|
-      path = env[:src_dir].join(filename)
-      if content
-        File.open(path, 'wb') { |f| f.write(content) }
-        has_files = true
-      else
-        FileUtils.mkpath(path)
+    env[:need_src] = lambda do |include_filter|
+      env[:src_dir] = env[:scratch].join('src')
+      FileUtils.mkpath(env[:src_dir])
+
+      git.read_files :include_filter => include_filter do |filename, content|
+        path = env[:src_dir].join(filename)
+        if content
+          File.open(path, 'wb') { |f| f.write(content) }
+        else
+          FileUtils.mkpath(path)
+        end
       end
     end
-
-    return unless has_files
 
     @stack.call(env)
   end
