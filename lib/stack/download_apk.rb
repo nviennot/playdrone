@@ -39,6 +39,7 @@ class Stack::DownloadApk < Stack::BaseGit
       index.add_file(apk_filename, response.body)
     end
 
+    env[:need_apk] = ->{}
     env[:apk_path] = env[:scratch].join(apk_filename)
     env[:apk_path].open('wb') { |f| f.write(response.body) }
 
@@ -46,10 +47,13 @@ class Stack::DownloadApk < Stack::BaseGit
   end
 
   def parse_from_git(env, git)
-    app = env[:app]
-    apk_filename = "#{app.id}-#{app.version_code}.apk"
-    env[:apk_path] = env[:scratch].join(apk_filename)
-    env[:apk_path].open('wb') { |f| f.write(git.read_file(apk_filename)) }
+    # Lazy loading of the APK
+    env[:need_apk] = lambda do
+      app = env[:app]
+      apk_filename = "#{app.id}-#{app.version_code}.apk"
+      env[:apk_path] = env[:scratch].join(apk_filename)
+      env[:apk_path].open('wb') { |f| f.write(git.read_file(apk_filename)) }
+    end
 
     @stack.call(env)
   end

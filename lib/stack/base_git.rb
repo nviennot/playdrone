@@ -76,10 +76,12 @@ class Stack::BaseGit < Stack::Base
         self.add(:path => filename.to_s, :oid => oid, :mode => mode)
       end
 
-      def add_dir(dir)
+      def add_dir(dir, options={})
         prefix_regexp = Regexp.new("^#{dir}/")
         Dir["#{dir}/**/*"].each do |filename|
           next unless File.file?(filename)
+          next if options[:exclude_filter] && filename =~ options[:exclude_filter]
+
           add_file(filename.gsub(prefix_regexp, ''), File.open(filename, 'rb') { |f| f.read })
         end
       end

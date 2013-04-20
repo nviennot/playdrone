@@ -13,4 +13,13 @@ module Stack
     end
     @create_app_stack.call :app_id => app_id, :crawled_at => crawled_at
   end
+
+  def self.purge_branch(app_id, branch)
+    @clean_branch_stack ||= ::Middleware::Builder.new do
+      use LockApp
+      use PrepareFS
+      use PurgeBranch
+    end
+    @clean_branch_stack.call :app_id => app_id, :purge_branch => branch
+  end
 end
