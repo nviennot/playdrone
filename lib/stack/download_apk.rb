@@ -10,7 +10,10 @@ class Stack::DownloadApk < Stack::BaseGit
   use_git :branch => :apk
 
   def persist_to_git(env, git)
-    download_info = Market.purchase(env[:app].id, env[:app].version_code)
+    app = env[:app]
+    return unless app.free
+
+    download_info = Market.purchase(app.id, app.version_code)
 
     conn = Faraday.new(:ssl => {:verify => false}) do |f|
       f.response :follow_redirects
@@ -30,7 +33,7 @@ class Stack::DownloadApk < Stack::BaseGit
       end
     end
 
-    apk_filename = "#{env[:app].id_version}.apk"
+    apk_filename = "#{app.id}-#{app.version_code}.apk"
 
     git.commit do |index|
       index.add_file(apk_filename, response.body)
@@ -41,7 +44,8 @@ class Stack::DownloadApk < Stack::BaseGit
   end
 
   def parse_from_git(env, git)
-    apk_filename = "#{env[:app].id_version}.apk"
+    app = env[:app]
+    apk_filename = "#{app.id}-#{app.version_code}.apk"
     env[:apk_path] = env[:scratch].join(apk_filename)
     env[:apk_path].open('wb') { |f| f.write(git.read_file(apk_filename)) }
   end

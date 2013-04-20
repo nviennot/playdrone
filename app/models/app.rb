@@ -75,11 +75,14 @@ class App < ES::Model
     raise ParseError.new "#{e.class}: #{e}\n#{app.inspect}"
   end
 
-  def repo(options={})
-    Repository.new(self.id, options)
+  def self.discovered_app(app_id)
+    if Redis.instance.sadd('apps', app_id)
+      # New app!
+      ProcessApp.perform_async(app_id)
+    end
   end
 
-  def id_version
-    @id_version ||= "#{id}-#{version_code}"
+  def self.discovered_apps(app_ids)
+    app_ids.each { |app_id| discovered_app(app_id) }
   end
 end

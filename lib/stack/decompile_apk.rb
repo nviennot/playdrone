@@ -6,7 +6,9 @@ class Stack::DecompileApk < Stack::BaseGit
   use_git :branch => :src
 
   def persist_to_git(env, git)
-    output = `script/decompile #{env[:scratch]} #{env[:apk_path].basename}`
+    return unless env[:app].free
+
+    output = exec_and_capture('script/decompile', env[:scratch], env[:apk_path].basename)
     raise DecompilationError.new(output) unless $?.success?
 
     env[:src_dir] = env[:scratch].join('src')

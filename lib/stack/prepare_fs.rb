@@ -12,7 +12,7 @@ class Stack::PrepareFS < Stack::Base
 
       # It would be much more efficient to write a pack directly.
       # Expect horrible performance when saving sources.
-      output = `cd #{env[:repo].path} 2>&1 && git gc --prune=now -q 2>&1`
+      output = exec_and_capture("git gc --prune=now -q", :chdir => env[:repo].path)
       Rails.logger.info "Cannot garbage collect the repository: #{output}" unless $?.success?
     end
   end
