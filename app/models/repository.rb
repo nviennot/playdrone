@@ -6,7 +6,9 @@ class Repository < Rugged::Repository
 
   # Rugged gets its hands on new, not initialize
   def self.new(app_id, options={})
-    path = REPO_PATH.join(*app_id.split('.'))
+    componants = app_id.split('.')
+    componants.last << '.git'
+    path = REPO_PATH.join(*componants)
 
     if options[:auto_create] && !path.exist?
       init_at(path.to_s, :bare)

@@ -69,6 +69,6 @@ after_fork do |server, worker|
   Redis.instance.client.connect
 
   Sidekiq.configure_client do |config|
-    config.redis = { :url => Redis.instance.client.id, :namespace => 'google-play-crawler' }
+    config.redis = { :url => Redis.instance.client.id  }
   end
 end

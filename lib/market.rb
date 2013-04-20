@@ -19,25 +19,36 @@ module Market
 
   class SearchResult < Struct.new(:payload)
     def doc
-      payload[:payload][:search_response][:doc][0]
+      @doc ||= payload[:payload][:search_response][:doc][0] rescue nil
     end
 
-    def num_apps
+    def total_apps
+      return 0 unless doc
       doc[:container_metadata][:estimated_results]
     end
 
+    def next_page_url
+      return nil unless doc
+      doc[:container_metadata][:next_page_url]
+    end
+
     def app_ids
+      return [] unless doc
       doc[:child].map { |app| app[:docid] }
     end
   end
 
   def self.search(query, options={})
-    params = {}
-    params[:c] = 3 # App category
-    params[:q] = query
-    params[:n] = options[:per_page] if options[:per_page]
-    params[:o] = options[:start]    if options[:start]
-    SearchResult.new api.get('search', params).body
+    if options[:raw_url]
+      SearchResult.new api.get(options[:raw_url]).body
+    else
+      params = {}
+      params[:c] = 3 # App category
+      params[:q] = query
+      params[:n] = options[:per_page] if options[:per_page]
+      params[:o] = options[:start]    if options[:start]
+      SearchResult.new api.get('search', params).body
+    end
   end
 
   # def self.details_bulk(app_ids)
