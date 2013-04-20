@@ -5,4 +5,8 @@ class PurgeBranch
   def perform(app_id, branch)
     Stack.purge_branch(app_id, branch)
   end
+
+  def self.purge_all(branch)
+    App.each { |app_id| perform_async(app_id, branch) }
+  end
 end
