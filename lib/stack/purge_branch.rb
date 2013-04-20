@@ -4,7 +4,9 @@ class Stack::PurgeBranch < Stack::Base
     branch = env[:purge_branch].to_s
 
     repo.refs(/^refs\/(tags|heads)\/#{branch}-/).each(&:delete!)
+
     # garbage collection is done by PrepareFS
+    env[:touched_repo] = true
 
     @stack.call(env)
   end
