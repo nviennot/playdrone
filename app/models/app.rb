@@ -72,7 +72,9 @@ class App < ES::Model
         :five_star_count    => app[:aggregate_rating][:five_star_ratings],
         :star_rating        => app[:aggregate_rating][:star_rating]
   rescue Exception => e
-    raise ParseError.new "#{e.class}: #{e}\n#{app.inspect}"
+    _e = ParseError.new "#{e.class}: #{e}\n#{app.inspect}"
+    _e.set_backtrace(e.backtrace)
+    raise _e
   end
 
   def self.discovered_app(app_id)

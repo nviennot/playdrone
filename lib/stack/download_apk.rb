@@ -41,6 +41,8 @@ class Stack::DownloadApk < Stack::BaseGit
 
     env[:apk_path] = env[:scratch].join(apk_filename)
     env[:apk_path].open('wb') { |f| f.write(response.body) }
+
+    @stack.call(env)
   end
 
   def parse_from_git(env, git)
@@ -48,5 +50,7 @@ class Stack::DownloadApk < Stack::BaseGit
     apk_filename = "#{app.id}-#{app.version_code}.apk"
     env[:apk_path] = env[:scratch].join(apk_filename)
     env[:apk_path].open('wb') { |f| f.write(git.read_file(apk_filename)) }
+
+    @stack.call(env)
   end
 end
