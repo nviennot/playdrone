@@ -9,9 +9,19 @@ module ES
     server.index(index_name)
   end
 
-  def self.create_index(index_name)
+  def self.create_index(index_name, options={})
     # number_of_replicas doesn't count master
-    index(index_name).create(:index => { :number_of_shards => 100, :number_of_replicas => 1 })
+    index(index_name).create(:index => options.reverse_merge(:number_of_shards => 10, :number_of_replicas => 1))
+  end
+
+  def self.create_all_indexes
+    3.times.each { |day| create_index((Date.today + day.days).to_s) }
+    create_index(:live)
+    App.update_mapping(:_all)
+  end
+
+  def self.delete_all_indexes
+    index(:_all).delete
   end
 
   class Model < Hashie::Dash

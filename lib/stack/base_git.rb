@@ -22,7 +22,7 @@ class Stack::BaseGit < Stack::Base
     def tag
       case tag_with
       when :version_code then "#{branch}-#{app.version_code}"
-      when :crawl_date   then "#{branch}-#{env[:crawl_date]}"
+      when :crawl_date   then "#{branch}-#{env[:crawled_at]}"
       else raise "tag format invalid"
       end
     end
@@ -89,10 +89,11 @@ class Stack::BaseGit < Stack::Base
       end
     end
 
-    def commit(&block)
+    def commit(options={}, &block)
+      self.message = options[:message]
+
       index = Index.new(repo)
-      block.call(index)
-      raise CommitError.new "No files to commit" unless index.count > 0
+      block.call(index) if block
 
       commit = {}
 

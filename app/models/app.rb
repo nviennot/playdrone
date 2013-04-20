@@ -59,7 +59,7 @@ class App < ES::Model
         :version_string     => app[:details][:app_details][:version_string],
         :installation_size  => app[:details][:app_details][:installation_size],
         :permission         => app[:details][:app_details][:permission], # this is an array
-        :crawled_at         => Date.today,
+        :crawled_at         => nil, # to be filled by caller
         :uploaded_at        => Date.parse(app[:details][:app_details][:upload_date]),
         :downloads          => app[:details][:app_details][:num_downloads].split('-')[0].gsub(/[^0-9]/,'').to_i,
         :plus_one_count     => app[:annotations][:plus_one_data][:total],
@@ -80,7 +80,7 @@ class App < ES::Model
   def self.discovered_app(app_id)
     if Redis.instance.sadd('apps', app_id)
       # New app!
-      ProcessApp.perform_async(app_id)
+      ProcessApp.perform_async(app_id, Date.today)
     end
   end
 

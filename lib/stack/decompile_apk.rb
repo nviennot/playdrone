@@ -19,6 +19,8 @@ class Stack::DecompileApk < Stack::BaseGit
         # TODO write it in the app metadata
         Rails.logger.info "Cannot decompile #{env[:app_id]}"
         Rails.logger.info output
+
+        git.commit :message => "Failed to decompile"
         return
       end
 
@@ -38,14 +40,18 @@ class Stack::DecompileApk < Stack::BaseGit
     env[:src_dir] = env[:scratch].join('src')
     FileUtils.mkpath(env[:src_dir])
 
+    has_files = false
     git.read_files do |filename, content|
       path = env[:src_dir].join(filename)
       if content
         File.open(path, 'wb') { |f| f.write(content) }
+        has_files = true
       else
         FileUtils.mkpath(path)
       end
     end
+
+    return unless has_files
 
     @stack.call(env)
   end
