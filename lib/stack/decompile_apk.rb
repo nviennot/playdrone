@@ -8,6 +8,7 @@ class Stack::DecompileApk < Stack::BaseGit
   def persist_to_git(env, git)
     return unless env[:app].free
 
+    env[:need_apk].call
     output = exec_and_capture('script/decompile', env[:scratch], env[:apk_path].basename)
 
     unless $?.success?
@@ -30,7 +31,7 @@ class Stack::DecompileApk < Stack::BaseGit
     env[:src_dir] = env[:scratch].join('src')
 
     git.commit do |index|
-      index.add_dir(env[:src_dir])
+      index.add_dir(env[:src_dir], :exclude_filter => /\.(jpg|jpeg|png|gif)$/)
     end
 
     @stack.call(env)
