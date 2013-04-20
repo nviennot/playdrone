@@ -31,7 +31,7 @@ class Stack::DecompileApk < Stack::BaseGit
     env[:src_dir] = env[:scratch].join('src')
 
     git.commit do |index|
-      index.add_dir(env[:src_dir], :exclude_filter => /\.(jpg|jpeg|png|gif)$/)
+      index.add_dir(env[:src_dir])
     end
 
     @stack.call(env)
