@@ -48,12 +48,14 @@
           %tr
             %td.permission= perm
 
-- if @diff
-  .row
-    .span12
-      %hr
-      %h4 Git Diff (./src)
+.row
+  .span12
+    %hr
+    - if @diff.size > 17500 # Couldn't be more lazy. Bite me.
+      %h4 What's really new
       ~ raw @diff
+    - else
+      %h4 No Recorded Updates in Git
 
 .row
   .span12

@@ -3,7 +3,9 @@ class AppsController < ApplicationController
     @app_id = params[:app_id]
     @app = App.find(:live, @app_id)
 
-    @diff = `cd #{Repository.new(@app_id).path} && git log --color --stat src -- src | #{Rails.root.join('script/ansi2html.sh')}` rescue nil
+    @diff = `cd #{Repository.new(@app_id).path} &&
+             git log --color --stat \`git rev-list --max-parents=0 src\`..src |
+             #{Rails.root.join('script/ansi2html.sh')}` rescue nil
 
     @results = Source.index(:live).search({
       :size   => 100000,
