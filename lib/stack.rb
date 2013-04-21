@@ -11,6 +11,7 @@ module Stack
             use DownloadApk
             use DecompileApk
             use IndexSources
+            use LookForNativeLibraries
     end
     @create_app_stack.call :app_id => app_id, :crawled_at => crawled_at
   end

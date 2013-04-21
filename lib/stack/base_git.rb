@@ -46,7 +46,7 @@ class Stack::BaseGit < Stack::Base
     end
 
     def last_committed_tree
-      repo.lookup(last_commit_sha).tree
+      @last_committed_tree ||= repo.lookup(last_commit_sha).tree
     end
 
     def new_branch?
