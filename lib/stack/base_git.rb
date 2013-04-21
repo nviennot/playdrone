@@ -140,7 +140,7 @@ class Stack::BaseGit < Stack::Base
           block.call(filename, nil)
         when :blob
           next if @cached_files.include? filename
-          next if options[:include_filter] && !filename =~ options[:include_filter]
+          next unless !options[:include_filter] || filename =~ options[:include_filter]
           block.call(filename, repo.lookup(entry[:oid]).read_raw.data)
           @cached_files << filename
         end

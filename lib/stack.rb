@@ -5,11 +5,12 @@ module Stack
   def self.process_app(app_id, crawled_at)
     @create_app_stack ||= ::Middleware::Builder.new do
       use LockApp
-      use PrepareFS
-      use FetchMarketDetails
-      use UpdateIndex
-        use DownloadApk
-        use DecompileApk
+        use PrepareFS
+          use FetchMarketDetails
+          use IndexApp
+            use DownloadApk
+            use DecompileApk
+            use IndexSources
     end
     @create_app_stack.call :app_id => app_id, :crawled_at => crawled_at
   end
@@ -17,8 +18,8 @@ module Stack
   def self.purge_branch(app_id, branch)
     @clean_branch_stack ||= ::Middleware::Builder.new do
       use LockApp
-      use PrepareFS
-      use PurgeBranch
+        use PrepareFS
+          use PurgeBranch
     end
     @clean_branch_stack.call :app_id => app_id, :purge_branch => branch
   end

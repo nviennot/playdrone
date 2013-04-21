@@ -1,6 +1,26 @@
 class App < ES::Model
   class ParseError < RuntimeError; end
 
+  class << self
+    include Enumerable
+
+    def discovered_app(app_id)
+      if Redis.instance.sadd('apps', app_id)
+        # New app!
+        ProcessApp.perform_async(app_id, Date.today)
+      end
+    end
+
+    def discovered_apps(app_ids)
+      app_ids.each { |app_id| discovered_app(app_id) }
+    end
+
+    def each(&block)
+      # TODO batches
+      Redis.instance.sort('apps', :order => 'alpha').each(&block)
+    end
+  end
+
   def initialize(attributes={}, &block)
     super
     downloads = self.downloads.to_i
@@ -84,23 +104,7 @@ class App < ES::Model
     raise _e
   end
 
-  class << self
-    include Enumerable
+  ### Crawler specific indexes ###
 
-    def discovered_app(app_id)
-      if Redis.instance.sadd('apps', app_id)
-        # New app!
-        ProcessApp.perform_async(app_id, Date.today)
-      end
-    end
-
-    def discovered_apps(app_ids)
-      app_ids.each { |app_id| discovered_app(app_id) }
-    end
-
-    def each(&block)
-      # TODO batches
-      Redis.instance.sort('apps', :order => 'alpha').each(&block)
-    end
-  end
+  property :decompiled, :type => :boolean
 end
