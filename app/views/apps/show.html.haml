@@ -14,7 +14,7 @@
       %p= raw @app.description
     - if @app.recent_changes.present?
       %hr
-      %h4 What's new
+      %h4 What's New
       %p= raw @app.recent_changes
 
   .span6
@@ -52,8 +52,14 @@
   .span12
     %hr
     - if @diff.size > 17500 # Couldn't be more lazy. Bite me.
-      %h4 What's really new
-      ~ raw @diff
+      %h4#diff What's Really New
+      %p
+        - if params[:show_diff]
+          = link_to 'Show only stats', params.merge(:show_diff => nil, :anchor => :diff)
+        - else
+          = link_to 'Show ./src diff', params.merge(:show_diff => 'src', :anchor => :diff)
+      .git-diff
+        ~ raw @diff
     - else
       %h4 No Recorded Updates in Git
 

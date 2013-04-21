@@ -3,9 +3,11 @@ class AppsController < ApplicationController
     @app_id = params[:app_id]
     @app = App.find(:live, @app_id)
 
-    @diff = `cd #{Repository.new(@app_id).path} &&
-             git log --color --stat \`git rev-list --max-parents=0 src\`..src |
-             #{Rails.root.join('script/ansi2html.sh')}` rescue nil
+    diff_src = params[:show_diff].try(:gsub, /[^a-zA-Z]/,'') # gsub for bash injection
+    git_cmd = diff_src ? "git log --color -p `git rev-list --max-parents=0 src`..src -- #{diff_src}" :
+                         "git log --color --stat=160 `git rev-list --max-parents=0 src`..src"
+    @diff = `cd #{Repository.new(@app_id).path} && #{git_cmd} |
+             #{Rails.root.join('script/ansi2html.sh')} --palette=linux` rescue nil
 
     @results = Source.index(:live).search({
       :size   => 100000,

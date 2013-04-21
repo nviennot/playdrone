@@ -36,7 +36,7 @@ if ENV["RACK_ENV"] == 'production'
   end
 else
   timeout 60*60
-  worker_processes 1
+  worker_processes 4
   listen 3000
 end
 
