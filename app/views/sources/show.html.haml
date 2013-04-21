@@ -7,7 +7,9 @@
   .span12
     .page-header
       %h2 #{link_to @app_id, "/apps/#{@app_id}"}/.../<wbr />#{@filename}
+
 - coderay = CodeRay.scan(@results.results.first.lines.join("\n"), :java)
 ~ raw coderay.html :line_numbers    => :table,
                    :highlight_lines => [params[:hl].to_i]
+
 %hr
