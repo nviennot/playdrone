@@ -2,12 +2,11 @@
   .row
     .span6
       %p
-        #{@results.total} Files /
-        #{number_to_human_size(@results.facets['size']['total'].to_i)}
-        (ES took #{@results.time/1000.0}s)
+        Matched #{@results.total} files
+        (took #{@results.raw['took']/1000.0}s)
 
     .span6.source-paginate
-      = will_paginate @results
+      = will_paginate @pagination
 
 - if @files
   .row
@@ -22,12 +21,12 @@
           - @files.each do |file|
             - file[:lines].each do |line|
               %tr
-                %td.eid=  link_to file[:apk_eid], "/packages/#{file[:apk_eid]}"
-                %td.path= link_to file[:path],    "/packages/#{file[:apk_eid]}/#{file[:path]}"
+                %td.eid=  link_to file[:app_id],   "/packages/#{file[:app_id]}"
+                %td.path= link_to file[:filename], "/packages/#{file[:app_id]}/#{file[:filename]}"
                 %td.line.CodeRay= raw CodeRay.scan(line, :java).html
 
 
 - if @results
   .row
     .span12.source-paginate
-      = will_paginate @results
+      = will_paginate @pagination
