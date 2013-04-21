@@ -29,6 +29,7 @@ class Stack::DecompileApk < Stack::BaseGit
       raise DecompilationError.new(output)
     end
 
+    env[:src_git] = git
     env[:need_src] = ->(_){}
     env[:src_dir] = env[:scratch].join('src')
 
@@ -40,9 +41,10 @@ class Stack::DecompileApk < Stack::BaseGit
   end
 
   def parse_from_git(env, git)
-    has_files = git.last_committed_tree.count > 0
-    return unless has_files
+    env[:app].decompiled = git.last_committed_tree.count > 0
+    return unless env[:app].decompiled
 
+    env[:src_git] = git
     env[:need_src] = lambda do |options|
       env[:src_dir] = env[:scratch].join('src')
       FileUtils.mkpath(env[:src_dir])
