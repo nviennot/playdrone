@@ -1,34 +1,37 @@
-class Account
-  include Mongoid::Document
-  include Mongoid::Timestamps
-
+class Account < Hashie::Dash
   class AuthFailed < RuntimeError; end
 
+  # Just in case...
   MAX_QUERIES_PER_MIN = 50
 
-  AUTH_TOKEN_EXPIRE = 10.minutes
+  AUTH_TOKEN_EXPIRE = 1.hour
 
-  field :email
-  field :password
-  field :android_id
+  # Not using redis hashes for the fields, it's easier to deal with expirations
+  property :email,      :required => true
+  property :password,   :required => true
+  property :android_id, :required => true
 
-  field :disabled_until, :type => Time, :default => ->{ Time.now }
-
-  index(:disabled_until => 1)
-  index({:email => 1}, :unique => true)
-
-  attr_accessible :email, :password
-
-  def auth_token_key
-    "account:#{id}:auth"
+  def key(what)
+    ['accounts', self.email, what].compact.join(':')
   end
 
-  def rate_limit_key(what)
-    "account:#{id}:rate:#{what}"
+  def self.create(fields={})
+    new(fields).tap do |account|
+      Redis.instance.multi do
+        Redis.instance.sadd('accounts', account.email)
+        Redis.instance.set(account.key(:password),   account.password)
+        Redis.instance.set(account.key(:android_id), account.android_id)
+      end
+    end
   end
 
-  def checkin!
-    raise NotImplementedError
+  def self.find(email)
+    password, android_id = Redis.instance.multi do
+      Redis.instance.get("accounts:#{email}:password")
+      Redis.instance.get("accounts:#{email}:android_id")
+    end
+
+    new(:email => email, :password => password, :android_id => android_id)
   end
 
   def login!
@@ -52,59 +55,63 @@ class Account
     # we get SID, LSID, Auth, services, Token.
     # Token contains doritos,hist,mail,googleme,lh2,talk,android,cl. What is doritos?
     auth_token = Hash[response.body.split("\n").map { |line| line.split('=') }]['Auth']
-    raise AuthFailed unless auth_token
-    auth_token
+    auth_token ? auth_token : raise(AuthFailed)
   end
 
   def auth_token
-    return @auth_token if @auth_token
-
-    @auth_token = Redis.instance.get(auth_token_key)
-    return @auth_token if @auth_token
-
-    @auth_token = login!
-    Redis.instance.multi do
-      Redis.instance.set(auth_token_key, @auth_token)
-      Redis.instance.expire(auth_token_key, AUTH_TOKEN_EXPIRE)
+    auth_token = Redis.instance.get(key(:auth_token))
+    unless auth_token
+      auth_token = login!
+      Redis.instance.multi do
+        Redis.instance.set(key(:auth_token), auth_token)
+        Redis.instance.expire(key(:auth_token), AUTH_TOKEN_EXPIRE)
+      end
     end
-    @auth_token
+    auth_token
   rescue AuthFailed
-    disable! :duration => 1.year
+    disable!
   end
 
-  def incr_requests!(what)
-    Redis.instance.incr("requests:#{what}")
+  def disable!
+    Redis.instance.set(key(:disabled), 1)
+  end
+
+  def enable!
+    Redis.instance.del(key(:disabled))
   end
 
   def rate_limit!
-    v = Redis.instance.incr(rate_limit_key(:min))
+    v = Redis.instance.incr(key(:rate_limit_minutes))
     # FIXME If the instance dies here, we never expire the key
-    Redis.instance.expire(rate_limit_key(:min), 1.minute) if v == 1
-    v <= MAX_QUERIES_PER_MIN
+    Redis.instance.expire(key(:rate_limit_minutes), 1.minute) if v == 1
+    return v <= MAX_QUERIES_PER_MIN
   end
 
-  def self.enabled
-    where(:android_id.ne => nil, :disabled_until.lt => Time.now)
-  end
-
-  def enabled?
-    return false if self.android_id.nil?
-    self.class.where(atomic_selector).enabled.count > 0
-  end
-
-  def disable!(options={})
-    duration = options[:duration] || 1.hour
-    self.disabled_until = duration.from_now
-    self.save!
-  end
-
-  # XXX atomically calls rate_limit
-  def self.first_usable
+  def self.get_usable
     loop do
-      Account.enabled.each do |account|
+      @@first_usable_script ||= Redis::Script.new <<-SCRIPT
+        for i = 1, redis.call('scard', 'accounts') do
+          local email = redis.call('srandmember', 'accounts')
+          local prefix = 'accounts:' .. email
+
+          local disabled = redis.call('get', prefix .. ':disabled')
+          local rate = tonumber(redis.call('get', prefix .. ':rate_limit_minutes')) or 0
+
+          if rate <= #{MAX_QUERIES_PER_MIN} and not disabled then
+            return email
+          end
+        end
+
+        return nil
+      SCRIPT
+      email = @@first_usable_script.eval(Redis.instance)
+
+      if email
+        account = find(email)
         return account if account.rate_limit!
       end
-      sleep 30
+
+      sleep 1
     end
   end
 end
