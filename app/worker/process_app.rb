@@ -8,6 +8,6 @@ class ProcessApp
   end
 
   def self.process_all(crawled_at)
-    App.each { |app_id| perform_async(app_id, crawled_at) }.count
+    App.all.each { |app_id| perform_async(app_id, crawled_at) }.count
   end
 end
