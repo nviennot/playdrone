@@ -9,7 +9,7 @@
   .span12.offset1
     = form_tag '/search', :class => 'form-inline search', :method => :get do
       = text_field_tag :query,  params[:query],  :autocomplete => :off, :class => 'input-xxlarge',
-                       :placeholder => 'Query (Lucene syntax), fields: apk_eid, path, lines'
+                       :placeholder => 'Query (Lucene syntax), fields: app_id, filename, lines'
       = text_field_tag :filter, params[:filter], :autocomplete => :off,
                        :placeholder => 'Line filter (Ruby regex), optional'
 
