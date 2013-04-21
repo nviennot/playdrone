@@ -21,8 +21,8 @@
           - @files.each do |file|
             - file[:lines].each do |line|
               %tr
-                %td.eid=  link_to file[:app_id],   "/packages/#{file[:app_id]}"
-                %td.path= link_to file[:filename], "/packages/#{file[:app_id]}/#{file[:filename]}"
+                %td.eid=  link_to file[:app_id],   "/apps/#{file[:app_id]}"
+                %td.path= link_to file[:filename], "/apps/#{file[:app_id]}/#{file[:filename]}"
                 %td.line.CodeRay= raw CodeRay.scan(line, :java).html
 
 

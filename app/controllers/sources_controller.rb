@@ -1,14 +1,31 @@
 require 'will_paginate/collection'
 
 class SourcesController < ApplicationController
+  def show
+    @app_id = params[:app_id]
+    @filename = params[:filename]
+
+    @results = Source.index(:live).search({
+      :size => 1,
+
+      :query => {
+        :bool => {
+          :must => { :term => { :app_id   => @app_id } },
+          :must => { :term => { :filename => @filename } }
+        }
+      },
+
+      :fields => [:lines]
+    })
+  end
+
   def search
     user_query = params[:query]
     per_page   = (params[:per_page] || 10).to_i
     page       = (params[:page] || 1).to_i
     from       = (page-1) * per_page
     regex      = Regexp.new(params[:filter], Regexp::IGNORECASE) if params[:filter].present?
-    return unless user_query
-
+    return unless user_query.present?
 
     @results = Source.index(:live).search({
       :from => from,
