@@ -1,14 +1,7 @@
 .bundle
 log/
 tmp/
-play/
 *.swp
 *.swo
-vendor/libjd-intellij.so
-config/redis.yml
-config/mongoid.yml
-config/elasticsearch.yml
-config/librato.yml
-deploy/settings.rb
 repos/
 scratch/

@@ -1,0 +1,5 @@
+development:
+  url: 'redis://localhost/'
+
+production:
+  url: 'redis://node1/'

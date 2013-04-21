@@ -2,14 +2,8 @@ namespace :deploy do
   namespace :symlinks do
     task :additional, except: { no_release: true } do
       symlinks = [
-        'config/mongoid.yml',
-        'config/redis.yml',
-        'config/elasticsearch.yml',
-        'config/librato.yml',
-        'config/initializers/errbit.rb',
-        'play/apk',
-        'play/src',
-        'vendor/libjd-intellij.so',
+        'play/repos',
+        'play/scratch',
       ]
 
       cmd = []

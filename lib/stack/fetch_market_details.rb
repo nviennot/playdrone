@@ -4,7 +4,7 @@ class Stack::FetchMarketDetails < Stack::BaseGit
   def persist_to_git(env, git)
     app_details = Market.details(env[:app_id])
 
-    if Rails.env.production?
+    if Rails.env.production? && !Dir.exists?('/home/vagrant')
       App.discovered_apps(app_details.related_app_ids)
     end
 
