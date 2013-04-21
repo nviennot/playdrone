@@ -1,12 +1,11 @@
 class App < ES::Model
   class ParseError < RuntimeError; end
-  class MissingPlusOneCount < RuntimeError; end
 
   class << self
     def discovered_app(app_id)
       if Redis.instance.sadd('apps', app_id)
         # New app!
-        ProcessApp.perform_async(app_id, Date.today)
+        ProcessAppFast.perform_async(app_id, Date.today)
       end
     end
 
@@ -50,7 +49,6 @@ class App < ES::Model
   property :crawled_at,         :type => :date,    :store    => true
   property :uploaded_at,        :type => :date,    :store    => true
   property :downloads,          :type => :integer, :store    => true
-  property :plus_one_count,     :type => :integer
   property :comment_count,      :type => :integer
   property :ratings_count,      :type => :integer
   property :one_star_count,     :type => :integer
@@ -67,8 +65,6 @@ class App < ES::Model
   # }},
 
   def self.from_market(app)
-    raise MissingPlusOneCount unless app[:annotations][:plus_one_data][:total]
-
     begin
       new :_id                => app[:docid],
           :title              => app[:title],
@@ -93,7 +89,6 @@ class App < ES::Model
           :crawled_at         => nil, # to be filled by caller
           :uploaded_at        => Date.parse(app[:details][:app_details][:upload_date]),
           :downloads          => app[:details][:app_details][:num_downloads].split('-')[0].gsub(/[^0-9]/,'').to_i,
-          :plus_one_count     => app[:annotations][:plus_one_data][:total],
           :comment_count      => app[:aggregate_rating][:comment_count],
           :ratings_count      => app[:aggregate_rating][:ratings_count],
           :one_star_count     => app[:aggregate_rating][:one_star_ratings],

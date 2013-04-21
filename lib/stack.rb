@@ -20,6 +20,21 @@ module Stack
     @create_app_stack.call(options.dup)
   end
 
+  def self.process_app_fast(options={})
+    # Just to hit the market API, and do nothing else.
+    # Good for grabbing data quickly
+    raise "missing app_id"     unless options[:app_id]
+    raise "missing crawled_at" unless options[:crawled_at]
+
+    @create_app_fast_stack ||= ::Middleware::Builder.new do
+      use LockApp
+        use PrepareFS
+          use FetchMarketDetails
+          use DownloadApk
+    end
+    @create_app_fast_stack.call(options.dup)
+  end
+
   def self.purge_branch(options={})
     raise "missing app_id"       unless options[:app_id]
     raise "missing purge_branch" unless options[:purge_branch]
