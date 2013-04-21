@@ -87,7 +87,7 @@ class Account < Hashie::Dash
     return v <= MAX_QUERIES_PER_MIN
   end
 
-  def self.get_usable
+  def self.first_usable
     loop do
       @@first_usable_script ||= Redis::Script.new <<-SCRIPT
         for i = 1, redis.call('scard', 'accounts') do
