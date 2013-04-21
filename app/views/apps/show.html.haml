@@ -48,6 +48,13 @@
           %tr
             %td.permission= perm
 
+- if @diff
+  .row
+    .span12
+      %hr
+      %h4 Git Diff (./src)
+      ~ raw @diff
+
 .row
   .span12
     %hr
