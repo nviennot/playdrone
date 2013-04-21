@@ -14,6 +14,7 @@ class Stack::IndexSources < Stack::Base
 
       sources = Dir["#{prefix}**/*.java"].map do |filename|
         { :_type    => 'source',
+          :_parent  => env[:app_id],
           :app_id   => env[:app_id],
           :filename => filename.split(prefix).last,
           :lines    => File.open(filename) { |f| f.readlines.map(&:chomp) } }

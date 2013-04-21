@@ -24,11 +24,12 @@ class App < ES::Model
   def initialize(attributes={}, &block)
     super
     downloads = self.downloads.to_i
-    self._boost = Math.log10(downloads.zero? ? 1 : downloads)
+    self._boost = 10 * Math.log10(downloads.zero? ? 1 : downloads)
   end
 
   property :_id,                :type => :string,  :index    => :not_analyzed
-  property :_boost,             :type => :float
+  property :_boost
+
   property :title,              :type => :string,  :analyzer => :simple
   property :description,        :type => :string,  :analyzer => :simple       # html
   property :recent_changes,     :type => :string,  :index    => :not_analyzed # html
