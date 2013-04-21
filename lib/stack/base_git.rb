@@ -124,6 +124,10 @@ class Stack::BaseGit < Stack::Base
       env[:touched_repo] = true
     end
 
+    def set_head
+      Rugged::Reference.create(repo, 'HEAD', branch_ref, true)
+    end
+
     def read_file(file_name)
       file = last_committed_tree[file_name]
       return nil unless file
