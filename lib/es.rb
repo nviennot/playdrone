@@ -12,16 +12,23 @@ module ES
   def self.create_index(index_name, options={})
     # number_of_replicas doesn't count master
     index(index_name).create(:index => options.reverse_merge(:number_of_shards => 10, :number_of_replicas => 1))
+  rescue Stretcher::RequestError => e
+    raise e unless e.http_response.body['error'] =~ /IndexAlreadyExistsException/
   end
 
   def self.create_all_indexes
-    3.times.each { |day| create_index((Date.today + day.days).to_s) }
-    create_index(:live)
-    App.update_mapping(:_all)
+    2.times.each { |day| create_index((Date.today + day.days).to_s) }
+    create_index(:live, :number_of_shards => 100)
+    update_all_mappings
   end
 
   def self.delete_all_indexes
     index(:_all).delete
+  end
+
+  def self.update_all_mappings
+    App.update_mapping(:_all)
+    Source.update_mapping(:live)
   end
 
   class Model < Hashie::Dash

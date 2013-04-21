@@ -10,8 +10,9 @@ class Stack::DecompileApk < Stack::BaseGit
 
     env[:need_apk].call
     output = exec_and_capture('script/decompile', env[:scratch], env[:apk_path].basename)
+    env[:app].decompiled = $?.success?
 
-    unless $?.success?
+    unless env[:app].decompiled
       if output =~ /fatal error/        ||
          output =~ /OutOfMemoryError/   ||
          output =~ /StackOverflowError/ ||
@@ -42,11 +43,11 @@ class Stack::DecompileApk < Stack::BaseGit
     has_files = git.last_committed_tree.count > 0
     return unless has_files
 
-    env[:need_src] = lambda do |include_filter|
+    env[:need_src] = lambda do |options|
       env[:src_dir] = env[:scratch].join('src')
       FileUtils.mkpath(env[:src_dir])
 
-      git.read_files :include_filter => include_filter do |filename, content|
+      git.read_files(options) do |filename, content|
         path = env[:src_dir].join(filename)
         if content
           File.open(path, 'wb') { |f| f.write(content) }
