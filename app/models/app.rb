@@ -114,4 +114,6 @@ class App < ES::Model
   property :forward_locked,  :type => :boolean
   property :decompiled,      :type => :boolean
   property :has_native_libs, :type => :boolean
+  property :market_released, :type => :boolean
+  property :apk_updated,     :type => :boolean
 end
