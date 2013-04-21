@@ -171,6 +171,8 @@ class Stack::BaseGit < Stack::Base
 
   def call(env)
     git = Git.new(env, self.class.git_options)
-    git.tag_exist? ? parse_from_git(env, git) : persist_to_git(env, git)
+
+    should_process = env[:reprocess].to_s == git.branch.to_s || !git.tag_exist?
+    should_process ? persist_to_git(env, git) : parse_from_git(env, git)
   end
 end
