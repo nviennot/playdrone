@@ -16,6 +16,7 @@ class Stack::DecompileApk < Stack::BaseGit
       if output =~ /fatal error/        ||
          output =~ /OutOfMemoryError/   ||
          output =~ /StackOverflowError/ ||
+         output =~ /ClassCastException/ ||
          output =~ /Killed/
 
         # Too bad, the decompiler sucks
