@@ -152,9 +152,7 @@ printf '%s' '
 .blink { text-decoration: blink; }
 
 </style>
-</head>
 
-<body class="f9 b9">
 <pre>
 '
 
@@ -323,3 +321,4 @@ for c in unicode(sys.stdin.read(), encoding):
 " 2>/dev/null ||
 sed 's/[¡µ]//g' # just strip aternative flag chars
 )
+printf '</pre>\n'
