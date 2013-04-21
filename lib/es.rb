@@ -17,7 +17,7 @@ module ES
   end
 
   def self.create_all_indexes
-    2.times.each { |day| create_index((Date.today + day.days).to_s) }
+    3.times.each { |day| create_index((Date.today + day.days).to_s) }
     create_index(:live, :number_of_shards => 100)
     update_all_mappings
   end
@@ -49,8 +49,10 @@ module ES
     end
 
     def self.update_mapping(index_name)
-      index(index_name).put_mapping(self.name.underscore => { :properties => self.mapping,
-                                                              :_all       => { :enabled => false } })
+      mapping_options              = self.mapping.select { |k, v| k =~ /^_/ }
+      mapping_options[:properties] = self.mapping.reject { |k, v| k =~ /^_/ }
+      mapping_options[:_all] = { :enabled => false }
+      index(index_name).put_mapping(self.name.underscore => mapping_options)
     end
 
     def self.find(index_name, id)
