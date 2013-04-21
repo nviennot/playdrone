@@ -7,6 +7,6 @@ class PurgeBranch
   end
 
   def self.purge_all(branch)
-    App.each { |app_id| perform_async(app_id, branch) }.count
+    App.all.each { |app_id| perform_async(app_id, branch) }.count
   end
 end

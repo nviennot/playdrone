@@ -3,8 +3,6 @@ class App < ES::Model
   class MissingPlusOneCount < RuntimeError; end
 
   class << self
-    include Enumerable
-
     def discovered_app(app_id)
       if Redis.instance.sadd('apps', app_id)
         # New app!
@@ -16,9 +14,9 @@ class App < ES::Model
       app_ids.each { |app_id| discovered_app(app_id) }
     end
 
-    def each(&block)
+    def all
       # TODO batches
-      Redis.instance.sort('apps', :order => 'alpha').each(&block)
+      Redis.instance.sort('apps', :order => 'alpha').each
     end
   end
 

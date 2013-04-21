@@ -1,0 +1,59 @@
+%br
+.row
+  .span8
+    %h1 #{@app.title} #{@app.version_string}
+  .span4.inline
+    %a.logo{:href => '/search'} Google Play With Me
+  .span12
+    %hr
+
+.row
+  .span6
+    - if @app.description.present?
+      %h4 Description
+      %p= raw @app.description
+    - if @app.recent_changes.present?
+      %hr
+      %h4 What's new
+      %p= raw @app.recent_changes
+
+  .span6
+    %h4 Stats
+    %table.table.table-condensed.table-bordered.app_info
+      %tbody
+        %tr
+          %td.property Google Play Link
+          %td.value
+            = @app_eid
+            =link_to @app_id, "https://play.google.com/store/apps/details?id=#{@app_id}"
+        %tr
+          %td.property Creator
+          %td.value= @app.developer_name
+        %tr
+          %td.property Rating
+          %td.value= number_with_precision @app.star_rating, :precision => 2
+        %tr
+          %td.property Number of Ratings
+          %td.value= number_to_human @app.ratings_count
+        %tr
+          %td.property Install Size
+          %td.value= number_to_human_size @app.installation_size
+        %tr
+          %td.property Download Count
+          %td.value &gt; #{number_to_human @app.downloads}
+    %h4 Permissions
+    %table.table.table-condensed.table-bordered.permissions
+      %tbody
+        - @app.permission.sort.each do |perm|
+          %tr
+            %td.permission= perm
+
+.row
+  .span12
+    %hr
+    %h4 #{@results.total} Files
+    %h5 Scoped under ./#{@app_id.gsub(/\./, "/")}
+
+    %ul.unstyled
+      - @results.results.each do |source|
+        %li= link_to source[:filename], "/apps/#{@app_id}/#{source[:filename]}"

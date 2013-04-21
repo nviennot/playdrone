@@ -6,6 +6,6 @@ GooglePlayCrawler::Application.routes.draw do
   resources :libs, :only => :index
 
   get 'search' => 'sources#search'
-  # get 'apps/:id'           => 'packages#show', :apk_eid => /[^\/]+-[^\/]+/
+  get 'apps/:app_id'           => 'apps#show',    :app_id => /[^\/]+/
   get 'apps/:app_id/:filename' => 'sources#show', :app_id => /[^\/]+/, :filename => /.+/
 end
