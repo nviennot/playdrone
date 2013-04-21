@@ -4,7 +4,7 @@ module Market
 
   class FaradayMiddleware < Faraday::Response::Middleware
     def call(env)
-      # Note that first_usable calls rate_limit!
+      # Note that first_usable does the rate limit accounting
       account = Account.first_usable
       env[:account] = account
 
