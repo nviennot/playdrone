@@ -37,7 +37,6 @@ class Stack::DecompileApk < Stack::BaseGit
     git.commit do |index|
       index.add_dir(env[:src_dir])
     end
-
     git.set_head
 
     @stack.call(env)

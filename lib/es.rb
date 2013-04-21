@@ -16,8 +16,9 @@ module ES
     raise e unless e.http_response.body['error'] =~ /IndexAlreadyExistsException/
   end
 
-  def self.create_all_indexes
-    3.times.each { |day| create_index((Date.today + day.days).to_s) }
+  def self.create_all_indexes(start_date=nil)
+    start_date ||= Date.today
+    3.times.each { |day| create_index((start_date + day.days).to_s) }
     create_index(:live, :number_of_shards => 100)
     update_all_mappings
   end
