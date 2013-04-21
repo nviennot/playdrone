@@ -107,5 +107,6 @@ class App < ES::Model
 
   ### Crawler specific indexes ###
 
-  property :decompiled, :type => :boolean
+  property :forward_locked, :type => :boolean
+  property :decompiled,     :type => :boolean
 end

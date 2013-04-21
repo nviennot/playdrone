@@ -7,7 +7,7 @@ class Stack::FetchMarketDetails < Stack::BaseGit
     # TODO Use discovered apps
     # app_details.related_app_ids
 
-    if env[:crawled_at] != Date.today ||
+    if env[:crawled_at] != Date.today &&
        env[:crawled_at] != Date.today - 1.day
       raise "Missed the time to crawl data. Crap."
     end

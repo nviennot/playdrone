@@ -17,8 +17,8 @@ class Stack::DecompileApk < Stack::BaseGit
          output =~ /OutOfMemoryError/   ||
          output =~ /StackOverflowError/ ||
          output =~ /Killed/
+
         # Too bad, the decompiler sucks
-        # TODO write it in the app metadata
         Rails.logger.info "Cannot decompile #{env[:app_id]}"
         Rails.logger.info output
 
@@ -29,7 +29,7 @@ class Stack::DecompileApk < Stack::BaseGit
       raise DecompilationError.new(output)
     end
 
-    env[:need_src] = ->{}
+    env[:need_src] = ->(_){}
     env[:src_dir] = env[:scratch].join('src')
 
     git.commit do |index|
