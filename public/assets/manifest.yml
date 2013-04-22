@@ -3,6 +3,8 @@ favicon.png: favicon-7598c48ee24c784a47d6eb82ddbcf70b.png
 favicon/index.png: favicon-7598c48ee24c784a47d6eb82ddbcf70b.png
 logo.png: logo-acc6e6151822b7c69fbb50006fe25445.png
 logo/index.png: logo-acc6e6151822b7c69fbb50006fe25445.png
+application.js: application-1873b65a61bf9d074f9fbee9e64de288.js
+application/index.js: application-1873b65a61bf9d074f9fbee9e64de288.js
 application.css: application-2754411f13c28926df68a92e6b937f15.css
 application/index.css: application-2754411f13c28926df68a92e6b937f15.css
 fontawesome-webfont.eot: fontawesome-webfont-635909f146e208b3509acdf3b154bf0d.eot
