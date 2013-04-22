@@ -1,8 +1,5 @@
 development:
-  urls:
-    - 'http://localhost:9200'
+  url: 'http://localhost:9200'
 
 production:
-  urls:
-    - 'http://node1:9200/'
-    - 'http://node2:9200/'
+  url: 'http://node1:9200'
