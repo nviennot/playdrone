@@ -23,7 +23,9 @@ class Stack::IndexSources < Stack::Base
       if sources.present?
         Source.index(:live).delete_query(:term => {:app_id => env[:app_id] })
         # TODO TypedIndex doesn't have a bulk_index, could fix Stretcher.
-        ES.index(:live).bulk_index(sources)
+        StatsD.measure 'stack.index_sources' do
+          ES.index(:live).bulk_index(sources)
+        end
       end
     end
 

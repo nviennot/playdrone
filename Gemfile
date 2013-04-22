@@ -13,6 +13,7 @@ gem 'rugged', git: 'git://github.com/nviennot/rugged.git', :branch => :developme
 gem 'middleware'
 gem 'multi_json'
 gem 'oj'
+gem 'statsd-instrument'
 
 # Front end only
 gem 'unicorn', :require => false
