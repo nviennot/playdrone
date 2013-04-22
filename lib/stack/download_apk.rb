@@ -10,11 +10,14 @@ class Stack::DownloadApk < Stack::BaseGit
     app = env[:app]
     return unless app.free
 
-    response = StatsD.measure 'market.download' do
+    download_info = nil
+    response = nil
+
+    StatsD.measure 'market.download' do
       download_info = Market.purchase(app.id, app.version_code)
       app.forward_locked = download_info.forward_locked
 
-      Faraday.new(:ssl => {:verify => false}) do |f|
+      response = Faraday.new(:ssl => {:verify => false}) do |f|
         f.response :follow_redirects
         f.adapter  :net_http
       end.get do |req|
@@ -28,7 +31,7 @@ class Stack::DownloadApk < Stack::BaseGit
       if response.body.size < 100
         raise DownloadError.new "Oops: #{response.status} // #{response.body}"
       else
-        raise DownloadError.new "Got #{response.body.size} bytes, not #{apk.asset_size} (status=#{response.status})"
+        raise DownloadError.new "Got #{response.body.size} bytes, not #{download_info.download_size} (status=#{response.status})"
       end
     end
 

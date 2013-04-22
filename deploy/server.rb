@@ -1,5 +1,9 @@
 namespace :deploy do
-  desc "Restart the application"
+  task :stop do
+    run "service sidekiq-market stop"
+    run "service sidekiq-bg stop"
+  end
+
   task :restart do
     STDERR.puts "Not restarting, do it manually"
   end

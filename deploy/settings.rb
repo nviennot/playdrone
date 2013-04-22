@@ -1,4 +1,6 @@
-set :repository, 'git@github.com:nviennot/google-play-crawler.git'
+#set :repository, 'git@github.com:nviennot/google-play-crawler.git'
+set :repository, 'pafy@viennot.biz:/home/pafy/google-play-crawler.git'
+
 set :scm, :git
 set :branch, 'master'
 set :deploy_via, :remote_cache
