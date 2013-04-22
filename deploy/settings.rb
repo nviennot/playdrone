@@ -18,3 +18,4 @@ set :rvm_type, :system
 
 role :unicorn, '10.1.1.11'
 role :sidekiq, '10.1.1.11', '10.1.1.12'
+role :metrics, '10.1.1.12'

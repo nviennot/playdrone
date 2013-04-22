@@ -12,4 +12,14 @@ namespace :deploy do
     run "service sidekiq-market restart"
     run "service sidekiq-bg restart"
   end
+
+  task :restart_metrics, :roles => :metrics do
+    run "service metrics restart"
+  end
+
+  task :restart_all do
+    restart_unicorn
+    restart_metrics
+    restart_sidekiq
+  end
 end
