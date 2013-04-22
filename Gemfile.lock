@@ -208,6 +208,7 @@ GEM
       multi_json (~> 1.0)
       rack (~> 1.0)
       tilt (~> 1.1, != 1.3.0)
+    statsd-instrument (1.5.0)
     temple (0.6.3)
     therubyracer (0.11.4)
       libv8 (~> 3.11.8.12)
@@ -256,6 +257,7 @@ DEPENDENCIES
   sidekiq!
   sinatra
   slim
+  statsd-instrument
   stretcher!
   therubyracer
   twitter-bootstrap-rails!

@@ -9,7 +9,9 @@ class Stack::DecompileApk < Stack::BaseGit
     return unless env[:app].free
 
     env[:need_apk].call
-    output = exec_and_capture('script/decompile', env[:scratch], env[:apk_path].basename)
+    output = StatsD.measure 'stack.decompile' do
+      exec_and_capture('script/decompile', env[:scratch], env[:apk_path].basename)
+    end
     env[:app].decompiled = $?.success?
 
     unless env[:app].decompiled
@@ -34,10 +36,12 @@ class Stack::DecompileApk < Stack::BaseGit
     env[:need_src] = ->(_){}
     env[:src_dir] = env[:scratch].join('src')
 
-    git.commit do |index|
-      index.add_dir(env[:src_dir])
+    StatsD.measure 'stack.persist_src' do
+      git.commit do |index|
+        index.add_dir(env[:src_dir])
+      end
+      git.set_head
     end
-    git.set_head
 
     @stack.call(env)
   end

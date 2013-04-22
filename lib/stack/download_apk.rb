@@ -10,17 +10,18 @@ class Stack::DownloadApk < Stack::BaseGit
     app = env[:app]
     return unless app.free
 
-    download_info = Market.purchase(app.id, app.version_code)
-    app.forward_locked = download_info.forward_locked
+    response = StatsD.measure 'market.download' do
+      download_info = Market.purchase(app.id, app.version_code)
+      app.forward_locked = download_info.forward_locked
 
-    conn = Faraday.new(:ssl => {:verify => false}) do |f|
-      f.response :follow_redirects
-      f.adapter  :net_http
-    end
-    response = conn.get do |req|
-      req.url download_info.download_url
-      req.headers['User-Agent'] = 'Android-Market/2 (sapphire PLAT-RC33); gzip'
-      req.headers['Cookie'] = download_info.cookie
+      Faraday.new(:ssl => {:verify => false}) do |f|
+        f.response :follow_redirects
+        f.adapter  :net_http
+      end.get do |req|
+        req.url download_info.download_url
+        req.headers['User-Agent'] = 'Android-Market/2 (sapphire PLAT-RC33); gzip'
+        req.headers['Cookie'] = download_info.cookie
+      end
     end
 
     if response.body.size != download_info.download_size
@@ -33,9 +34,11 @@ class Stack::DownloadApk < Stack::BaseGit
 
     apk_filename = "#{app.id}-#{app.version_code}.apk"
 
-    git.commit do |index|
-      index.add_file("download_info.json", MultiJson.dump(download_info.delivery_data, :pretty => true))
-      index.add_file(apk_filename, response.body)
+    StatsD.measure 'stack.persist_apk' do
+      git.commit do |index|
+        index.add_file("download_info.json", MultiJson.dump(download_info.delivery_data, :pretty => true))
+        index.add_file(apk_filename, response.body)
+      end
     end
 
     env[:need_apk] = ->{}

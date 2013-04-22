@@ -46,4 +46,14 @@ module Stack
     end
     @clean_branch_stack.call(options.dup)
   end
+
+  class << self
+    extend StatsD::Instrument
+    statsd_count   :process_app,      'stack.process_app'
+    statsd_measure :process_app,      'stack.process_app'
+    statsd_count   :process_app_fast, 'stack.process_app_fast'
+    statsd_measure :process_app_fast, 'stack.process_app_fast'
+    statsd_count   :purge_branch,     'stack.purge_branch'
+    statsd_measure :purge_branch,     'stack.purge_branch'
+  end
 end

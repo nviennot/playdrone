@@ -109,4 +109,13 @@ module Market
     end
     PurchaseResult.new result.body
   end
+
+  class << self
+    extend StatsD::Instrument
+    statsd_count   :search, 'market.search'
+    statsd_measure :search, 'market.search'
+    statsd_count   :details, 'market.details'
+    statsd_measure :details, 'market.details'
+    # purchase is measured in download_apk.rb
+  end
 end
