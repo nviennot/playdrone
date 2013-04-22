@@ -1,16 +1,15 @@
 namespace :deploy do
-  desc "Start the application"
-  task :start do
-    # fill that up
-  end
-
-  desc "Stop the application"
-  task :stop do
-    # fill that up
-  end
-
   desc "Restart the application"
   task :restart do
-    # fill that up
+    STDERR.puts "Not restarting, do it manually"
+  end
+
+  task :restart_unicorn, :roles => :unicorn do
+    run "service unicorn restart"
+  end
+
+  task :restart_sidekiq, :roles => :sidekiq do
+    run "service sidekiq-market restart"
+    run "service sidekiq-bg restart"
   end
 end
