@@ -15,6 +15,9 @@ module Stack
             use DownloadApk
             use DecompileApk
             use IndexSources
+            use FindAmazonTokens
+            use FindTwitterTokens
+            use FindFacebookTokens
             use LookForNativeLibraries
     end
     @create_app_stack.call(options.dup)
