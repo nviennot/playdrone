@@ -12,13 +12,21 @@ namespace :deploy do
     run "service unicorn restart"
   end
 
-  task :restart_sidekiq, :roles => :sidekiq do
+  task :restart_market, :roles => :sidekiq do
     run "service sidekiq-market restart"
+  end
+
+  task :restart_bg, :roles => :sidekiq do
     run "service sidekiq-bg restart"
   end
 
   task :restart_metrics, :roles => :metrics do
     run "service metrics restart"
+  end
+
+  task :restart_sidekiq do
+    restart_market
+    restart_bg
   end
 
   task :restart_all do
