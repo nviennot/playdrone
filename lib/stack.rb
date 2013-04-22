@@ -11,7 +11,7 @@ module Stack
       use LockApp
         use PrepareFS
           use FetchMarketDetails
-          use IndexApp
+          use IndexAppAfter
             use DownloadApk
             use DecompileApk
             use IndexSources
