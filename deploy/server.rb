@@ -1,7 +1,7 @@
 namespace :deploy do
   task :stop do
-    run "service sidekiq-market stop"
     run "service sidekiq-bg stop"
+    run "service sidekiq-market stop"
   end
 
   task :restart do

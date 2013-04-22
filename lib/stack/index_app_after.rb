@@ -1,4 +1,4 @@
-class Stack::IndexApp < Stack::Base
+class Stack::IndexAppAfter < Stack::Base
   def call(env)
     @stack.call(env)
 
