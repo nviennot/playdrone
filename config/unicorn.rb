@@ -7,8 +7,8 @@
 # documentation.
 #
 
-if ENV["RACK_ENV"] == 'production'
-  user 'www-data', 'www-data'
+if ENV["RAILS_ENV"] == 'production'
+  user 'deploy', 'deploy'
 
   # Use at least one worker per core if you're on a dedicated server,
   # more will usually help for _short_ waits on databases/caches.
