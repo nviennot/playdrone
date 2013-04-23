@@ -3,9 +3,9 @@ class App < ES::Model
 
   class << self
     def discovered_app(app_id)
-      if Redis.instance.sadd('apps', app_id)
-        # New app!
-        ProcessAppFast.perform_async(app_id, Date.today)
+      node, added = Node.register_app(app_id)
+      if added
+        ProcessAppFast.perform_async_on_node(node, app_id, Date.today)
       end
     end
 

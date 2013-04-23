@@ -1,12 +1,12 @@
 class PurgeBranch
-  include Sidekiq::Worker
-  sidekiq_options :queue => name.underscore, :backtrace => true, :timeout => 1.minute
+  include NodeWorker
+  sidekiq_options :timeout => 1.minute
 
-  def perform(app_id, branch)
+  def node_perform(app_id, branch)
     Stack.purge_branch(:app_id => app_id, :purge_branch => branch)
   end
 
   def self.purge_all(branch)
-    App.all.each { |app_id| perform_async(app_id, branch) }.count
+    App.all.each { |app_id| perform_async_on_node(Node.get_node_for_app(app_id), app_id, branch) }.count
   end
 end

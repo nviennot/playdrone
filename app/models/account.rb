@@ -68,8 +68,9 @@ class Account < Hashie::Dash
       end
     end
     auth_token
-  rescue AuthFailed
+  rescue AuthFailed => e
     disable!
+    raise e
   end
 
   def disable!
