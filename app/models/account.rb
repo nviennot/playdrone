@@ -2,7 +2,7 @@ class Account < Hashie::Dash
   class AuthFailed < RuntimeError; end
 
   # Just in case...
-  MAX_QUERIES_PER_MIN = 50
+  MAX_QUERIES_PER_MIN = 120
 
   AUTH_TOKEN_EXPIRE = 1.hour
 
