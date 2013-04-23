@@ -1,9 +1,4 @@
 namespace :deploy do
-  task :stop do
-    run "service sidekiq-bg stop"
-    run "service sidekiq-market stop"
-  end
-
   task :restart do
     STDERR.puts "Not restarting, do it manually"
   end
@@ -30,8 +25,35 @@ namespace :deploy do
   end
 
   task :restart_all do
-    restart_unicorn
     restart_metrics
+    restart_unicorn
     restart_sidekiq
+  end
+
+  task :stop_unicorn, :roles => :unicorn do
+    run "service unicorn stop || true"
+  end
+
+  task :stop_market, :roles => :sidekiq do
+    run "service sidekiq-market stop || true"
+  end
+
+  task :stop_bg, :roles => :sidekiq do
+    run "service sidekiq-bg stop || true"
+  end
+
+  task :stop_metrics, :roles => :metrics do
+    run "service metrics stop || true"
+  end
+
+  task :stop_sidekiq do
+    stop_bg
+    stop_market
+  end
+
+  task :stop_all do
+    stop_sidekiq
+    stop_unicorn
+    stop_metrics
   end
 end
