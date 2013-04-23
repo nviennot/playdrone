@@ -20,6 +20,7 @@ class Stack::DecompileApk < Stack::BaseGit
          output =~ /StackOverflowError/   ||
          output =~ /ClassCastException/   ||
          output =~ /NullPointerException/ ||
+         output =~ /StringIndexOutOfBoundsException/ ||
          output =~ /Killed/
 
         # Too bad, the decompiler sucks
