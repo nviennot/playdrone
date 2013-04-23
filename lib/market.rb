@@ -11,6 +11,7 @@ module Market
         builder.options[:open_timeout] = 10
         builder.options[:read_timeout] = 10
         builder.adapter :net_http_persistent
+        builder.proxy 'http://54.242.9.77:8888' if Rails.env.production? && !Dir.exists?('/home/vagrant')
     end
   end
 
