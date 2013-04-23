@@ -45,7 +45,7 @@ module Market
     else
       params = {}
       params[:c] = 3 # App category
-      params[:q] = query
+      params[:q] = query.unpack("C*").pack("U*")
       params[:n] = options[:per_page] if options[:per_page]
       params[:o] = options[:start]    if options[:start]
       SearchResult.new api.get('search', params).body
