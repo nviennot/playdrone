@@ -29,7 +29,9 @@ end
 
 namespace :metrics do
   desc "Submit metrics"
-  task :run, [:interval] => :environment do |t, args|
+  task :run, [:interval] do |t, args|
+    require File.join(Rails.root, "config", "environment")
+
     interval = (args.interval || 10).to_i
     loop do
       begin
