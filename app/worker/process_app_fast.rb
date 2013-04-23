@@ -6,7 +6,7 @@ class ProcessAppFast
     options.symbolize_keys!
     crawled_at = Date.parse(crawled_at) if crawled_at.is_a? String
     Stack.process_app_fast(options.merge(:app_id => app_id, :crawled_at => crawled_at))
-    ProcessApp.perform_async_on_node(self.class.node, app_id, Date.today)
+    ProcessApp.perform_async_on_node(self.class.node, app_id, crawled_at)
   end
 
   def self.process_all(crawled_at, options={})
