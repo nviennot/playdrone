@@ -2,4 +2,4 @@ development:
   url: 'redis://localhost/'
 
 production:
-  url: 'redis://node1/'
+  url: 'redis://redis/'

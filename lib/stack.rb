@@ -33,7 +33,6 @@ module Stack
       use LockApp
         use PrepareFS
           use FetchMarketDetails
-          use DownloadApk
     end
     @create_app_fast_stack.call(options.dup)
   end

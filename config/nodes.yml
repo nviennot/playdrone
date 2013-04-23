@@ -1,0 +1,7 @@
+development:
+  - 'localhost'
+
+# Overridden by the chef scripts
+production:
+  - 'node1'
+  - 'node2'
