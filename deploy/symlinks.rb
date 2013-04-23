@@ -1,15 +1,15 @@
 namespace :deploy do
   namespace :symlinks do
     task :additional, except: { no_release: true } do
-      symlinks = [
-        'repos',
-        'scratch',
-      ]
+      symlinks = {}
+      symlinks["/srv/repos"]   = "repos"
+      symlinks["/srv/scratch"] = "scratch"
+      symlinks["#{shared_path}/nodes.yml"] = "config/nodes.yml"
 
       cmd = []
-      symlinks.each do |file|
-        cmd << "rm -rf #{release_path}/#{file}"
-        cmd << "ln -Tfs /srv/#{file} #{release_path}/#{file}"
+      symlinks.each do |src, dst|
+        cmd << "rm -rf #{release_path}/#{dst}"
+        cmd << "ln -Tfs #{src} #{release_path}/#{dst}"
       end
 
       run cmd.join(' && ')
