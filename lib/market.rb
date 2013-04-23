@@ -73,6 +73,8 @@ module Market
         res = ::GooglePlay::ResponseWrapper.new.parse_from_string(pf[:response]).to_hash
         res[:payload][:list_response][:doc].map { |r| r[:child].map { |app| app[:docid] } }
       end.flatten.uniq
+    rescue
+      []
     end
   end
 
