@@ -1,8 +1,7 @@
 class Stack::FindTwitterTokens < Stack::BaseTokenFinder
 
-  use_git :branch => :twitter_tokens
-
-  def find_tokens(src_dir)
+  def find_tokens(env)
+    src_dir = env[:src_dir]
     twitter = {
       :consumer_key        => [],
       :consumer_secret     => [],
@@ -57,6 +56,6 @@ class Stack::FindTwitterTokens < Stack::BaseTokenFinder
     end
 
     twitter.values.map { |v| v.uniq! }
-    twitter
+    env[:twitter_tokens] = twitter
   end
 end
