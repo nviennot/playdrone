@@ -3,7 +3,8 @@ class Stack::BaseTokenFinder < Stack::Base
   def call(env)
     filter = /.*\.java/
     env[:need_src].call(:include_filter => filter)
-    Rails.logger.info find_tokens(env)
+    result= find_tokens(env)
+    Rails.logger.info result
     @stack.call(env)
   end
 

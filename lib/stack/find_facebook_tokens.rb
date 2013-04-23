@@ -3,10 +3,9 @@ class Stack::FindFacebookTokens < Stack::BaseTokenFinder
   def find_tokens(env)
     src_dir = env[:src_dir]
     facebook = { :app_id => [], :app_secret => [] }
-    Dir["#{src_dir}/**/*.java"].each do |filename|
-      File.open(filename) do |file|
-        contents = File.read(file).encode!('UTF-8', 'UTF-8', :invalid => :replace)
-        contents.each_line do |line|
+    lines = exec_and_capture('script/find_facebook_tokens',src_dir)
+    #Rails.logger.info lines
+    lines.each_line do |line|
           if line =~ /"(\d{13,17})"/
             app_id = $1
             facebook[:app_id] << app_id
@@ -17,8 +16,6 @@ class Stack::FindFacebookTokens < Stack::BaseTokenFinder
             facebook[:app_secret] << app_secret
           end
         end
-      end
-    end
     facebook.values.map { |v| v.uniq! }
     env[:facebook_tokens] = facebook
   end
