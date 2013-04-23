@@ -37,11 +37,16 @@ module Market
         raise Market::TooManyRequests
       end
 
-      env[:body] = ::GooglePlay::ResponseWrapper.new.parse_from_string(env[:body]).to_hash
+      if env[:status] == 401
+        env[:account].disable!
+        raise Account::AuthFailed
+      end
 
       unless env[:status] == 200
         raise Market::BadRequest.new :status => env[:status], :body => env[:body]
       end
+
+      env[:body] = ::GooglePlay::ResponseWrapper.new.parse_from_string(env[:body]).to_hash
     end
   end
 end
