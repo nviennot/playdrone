@@ -33,7 +33,8 @@ class Node
       redis.call('zincrby', 'nodes', 1, node)
       return {node, 1}
     SCRIPT
-    @@register_app.eval(Redis.instance, :argv => [app_id])
+    node, added = @@register_app.eval(Redis.instance, :argv => [app_id])
+    return [node, added == 1]
   end
 
   def self.get_node_for_app(app_id)
