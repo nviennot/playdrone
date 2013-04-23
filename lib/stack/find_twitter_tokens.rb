@@ -9,13 +9,12 @@ class Stack::FindTwitterTokens < Stack::BaseTokenFinder
       :access_token_secret => [],
     }
 
-    Dir["#{src_dir}/**/*.java"].each do |filename|
-      File.open(filename) do |file|
-        contents = File.read(file).encode!('UTF-8', 'UTF-8', :invalid => :replace)
-        contents.each_line do |line|
+    lines = exec_and_capture('script/find_twitter_tokens',src_dir)
+    #Rails.logger.info lines
+    lines.each_line do |line|
         if line =~ /(twitter|consumer|key|secret|access|token|oath).*\"[0-9a-zA-Z]{15,50}\"/i
           line = line.gsub(/ /,"")
-
+          #Rails.logger.info line
           # look for ConfigurationBuilder calls
           if line =~ /setOAuthConsumer\((.*?),(.*?)\)/
             consumer_key = $1
@@ -38,10 +37,10 @@ class Stack::FindTwitterTokens < Stack::BaseTokenFinder
           end
 
           # look for assignment of promising sounding variables
-          if line =~ /consumer.*?secret=\"([0-9a-zA-Z]{35,})\"/i
+          if line =~ /consumer.*?secret.*?=\"([0-9a-zA-Z]{35,})\"/i
             twitter[:consumer_secret] << $1
           end
-          if line =~ /consumer.*?key=\"([0-9a-zA-Z]{18,25})\"/i
+          if line =~ /consumer.*?key=.*?\"([0-9a-zA-Z]{18,25})\"/i
             twitter[:consumer_key] << $1
           end
 
@@ -52,8 +51,6 @@ class Stack::FindTwitterTokens < Stack::BaseTokenFinder
           end
         end
       end
-    end
-    end
 
     twitter.values.map { |v| v.uniq! }
     env[:twitter_tokens] = twitter
