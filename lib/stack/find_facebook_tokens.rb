@@ -1,8 +1,7 @@
 class Stack::FindFacebookTokens < Stack::BaseTokenFinder
 
-  use_git :branch => :facebook_tokens
-
-  def find_tokens(src_dir)
+  def find_tokens(env)
+    src_dir = env[:src_dir]
     facebook = { :app_id => [], :app_secret => [] }
     Dir["#{src_dir}/**/*.java"].each do |filename|
       File.open(filename) do |file|
@@ -21,7 +20,7 @@ class Stack::FindFacebookTokens < Stack::BaseTokenFinder
       end
     end
     facebook.values.map { |v| v.uniq! }
-    facebook
+    env[:facebook_tokens] = facebook
   end
 
 end

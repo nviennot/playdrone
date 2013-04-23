@@ -1,8 +1,7 @@
 class Stack::FindAmazonTokens < Stack::BaseTokenFinder
 
-  use_git :branch => :amazon_tokens
-
-  def find_tokens(src_dir)
+  def find_tokens(env)
+    src_dir = env[:src_dir]
     aws = { :key => [], :secret => [] }
     Dir["#{src_dir}/**/*.java"].each do |filename|
       File.open(filename) do |file|
@@ -23,7 +22,6 @@ class Stack::FindAmazonTokens < Stack::BaseTokenFinder
       end
     end
     aws.values.map { |v| v.uniq! }
-    aws
+    env[:amazon_tokens] = aws
   end
-
 end
