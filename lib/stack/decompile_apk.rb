@@ -21,6 +21,7 @@ class Stack::DecompileApk < Stack::BaseGit
          output =~ /ClassCastException/   ||
          output =~ /NullPointerException/ ||
          output =~ /StringIndexOutOfBoundsException/ ||
+         output =~ /dexlib\.Code\.Instruction/ ||
          output =~ /Killed/
 
         # Too bad, the decompiler sucks
