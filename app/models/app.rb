@@ -88,7 +88,7 @@ class App < ES::Model
           :permission         => app[:details][:app_details][:permission], # this is an array
           :crawled_at         => nil, # to be filled by caller
           :uploaded_at        => Date.parse(app[:details][:app_details][:upload_date]),
-          :downloads          => app[:details][:app_details][:num_downloads].split('-')[0].gsub(/[^0-9]/,'').to_i,
+          :downloads          => (app[:details][:app_details][:num_downloads] || '0').split('-')[0].gsub(/[^0-9]/,'').to_i,
           :comment_count      => app[:aggregate_rating][:comment_count],
           :ratings_count      => app[:aggregate_rating][:ratings_count],
           :one_star_count     => app[:aggregate_rating][:one_star_ratings],

@@ -15,10 +15,12 @@ class Stack::DecompileApk < Stack::BaseGit
     env[:app].decompiled = $?.success?
 
     unless env[:app].decompiled
-      if output =~ /fatal error/        ||
-         output =~ /OutOfMemoryError/   ||
-         output =~ /StackOverflowError/ ||
-         output =~ /ClassCastException/ ||
+      if output =~ /fatal error/          ||
+         output =~ /OutOfMemoryError/     ||
+         output =~ /StackOverflowError/   ||
+         output =~ /ClassCastException/   ||
+         output =~ /NullPointerException/ ||
+         output =~ /StringIndexOutOfBoundsException/ ||
          output =~ /Killed/
 
         # Too bad, the decompiler sucks

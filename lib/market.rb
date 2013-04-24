@@ -11,6 +11,7 @@ module Market
         builder.options[:open_timeout] = 10
         builder.options[:read_timeout] = 10
         builder.adapter :net_http_persistent
+        builder.proxy 'http://54.242.9.77:8888' if Rails.env.production? && !Dir.exists?('/home/vagrant')
     end
   end
 
@@ -44,7 +45,7 @@ module Market
     else
       params = {}
       params[:c] = 3 # App category
-      params[:q] = query
+      params[:q] = query.unpack("C*").pack("U*")
       params[:n] = options[:per_page] if options[:per_page]
       params[:o] = options[:start]    if options[:start]
       SearchResult.new api.get('search', params).body
@@ -72,6 +73,8 @@ module Market
         res = ::GooglePlay::ResponseWrapper.new.parse_from_string(pf[:response]).to_hash
         res[:payload][:list_response][:doc].map { |r| r[:child].map { |app| app[:docid] } }
       end.flatten.uniq
+    rescue
+      []
     end
   end
 
@@ -116,6 +119,7 @@ module Market
     statsd_measure :search, 'market.search'
     statsd_count   :details, 'market.details'
     statsd_measure :details, 'market.details'
-    # purchase is measured in download_apk.rb
+    statsd_count   :purchase, 'market.purchase'
+    statsd_measure :purchase, 'market.purchase'
   end
 end
