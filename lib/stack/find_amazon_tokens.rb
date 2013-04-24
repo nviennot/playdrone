@@ -5,7 +5,7 @@ class Stack::FindAmazonTokens < Stack::BaseTokenFinder
     aws = { :key => [], :secret => [] }
     lines = exec_and_capture('script/find_amazon_tokens',src_dir)
     lines.each_line do |line|
-      #Rails.logger.info line
+      Rails.logger.info line
       if line =~ /"([^",() ]{40})"/
         secret = $1
         if secret =~ /[0-9]/ && secret =~ /([A-Z].*){4}/ && secret =~ /([a-z].*){4}/
