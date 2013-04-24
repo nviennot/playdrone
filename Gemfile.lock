@@ -24,11 +24,11 @@ GIT
 
 GIT
   remote: git://github.com/nviennot/rugged.git
-  revision: cfc015d7fffb692afc4f60aadd40b36401125f0c
-  branch: development
+  revision: 6c6993487ae87f293e36faba8369c671e1885efe
+  branch: without-gil
   submodules: true
   specs:
-    rugged (0.17.0.b8)
+    rugged (0.18.0.b1)
 
 GIT
   remote: https://github.com/nviennot/protobuf.git
