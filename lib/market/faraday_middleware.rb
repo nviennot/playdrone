@@ -42,11 +42,12 @@ module Market
         raise Account::AuthFailed
       end
 
+      parsed_body = ::GooglePlay::ResponseWrapper.new.parse_from_string(env[:body]).to_hash rescue nil
+      env[:body] = parsed_body if parsed_body
+
       unless env[:status] == 200
         raise Market::BadRequest.new :status => env[:status], :body => env[:body]
       end
-
-      env[:body] = ::GooglePlay::ResponseWrapper.new.parse_from_string(env[:body]).to_hash
     end
   end
 end
