@@ -16,6 +16,22 @@ set :normalize_asset_timestamps, false
 set :rake, 'bundle exec rake'
 set :rvm_type, :system
 
-role :unicorn, '10.1.1.11'
-role :sidekiq, '10.1.1.11', '10.1.1.12'
-role :metrics, '10.1.1.12'
+if ENV['VAGRANT']
+  role :unicorn, '10.1.1.11'
+  role :sidekiq, '10.1.1.11', '10.1.1.12'
+  role :metrics, '10.1.1.12'
+else
+  role :unicorn, 'node01.googleplaywith.me', 'node02.googleplaywith.me',
+                 'node03.googleplaywith.me', 'node04.googleplaywith.me',
+                 'node05.googleplaywith.me', 'node06.googleplaywith.me',
+                 'node07.googleplaywith.me', 'node08.googleplaywith.me',
+                 'node09.googleplaywith.me', 'node10.googleplaywith.me'
+
+  role :sidekiq, 'node01.googleplaywith.me', 'node02.googleplaywith.me',
+                 'node03.googleplaywith.me', 'node04.googleplaywith.me',
+                 'node05.googleplaywith.me', 'node06.googleplaywith.me',
+                 'node07.googleplaywith.me', 'node08.googleplaywith.me',
+                 'node09.googleplaywith.me', 'node10.googleplaywith.me'
+
+  role :metrics, 'node01.googleplaywith.me'
+end
