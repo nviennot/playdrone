@@ -83,7 +83,7 @@ class App < ES::Model
           :available_if_owned => app[:availability][:available_if_owned],
           :version_code       => app[:details][:app_details][:version_code],
           :version_string     => app[:details][:app_details][:version_string],
-          :installation_size  => app[:details][:app_details][:installation_size],
+          :installation_size  => app[:details][:app_details][:installation_size].to_i,
           :permission         => app[:details][:app_details][:permission], # this is an array
           :uploaded_at        => Date.parse(app[:details][:app_details][:upload_date]),
           :downloads          => (app[:details][:app_details][:num_downloads] || '0').split('-')[0].gsub(/[^0-9]/,'').to_i,
