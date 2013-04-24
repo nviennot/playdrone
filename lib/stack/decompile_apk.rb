@@ -15,6 +15,13 @@ class Stack::DecompileApk < Stack::BaseGit
     env[:app].decompiled = $?.success?
 
     unless env[:app].decompiled
+      if output =~ /mv: cannot stat .*smali.: No such file or directory/
+        # No sources, an application with just resources (themes)
+        git.commit :message => "No sources (Theme pack?)"
+        git.set_head
+        return
+      end
+
       if output =~ /fatal error/          ||
          output =~ /OutOfMemoryError/     ||
          output =~ /StackOverflowError/   ||
@@ -33,6 +40,7 @@ class Stack::DecompileApk < Stack::BaseGit
         Rails.logger.info output
 
         git.commit :message => "Failed to decompile"
+        git.set_head
         return
       end
 
