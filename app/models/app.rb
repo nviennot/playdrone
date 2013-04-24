@@ -44,7 +44,7 @@ class App < ES::Model
   property :available_if_owned, :type => :boolean # what is this? I guess we'll find out
   property :version_code,       :type => :integer
   property :version_string,     :type => :string,  :index    => :no
-  property :installation_size,  :type => :integer
+  property :installation_size,  :type => :integer # TODO XXX FIXME this should be long, going with a workaround.
   property :permission,         :type => :string,  :index    => :not_analyzed
   property :uploaded_at,        :type => :date,    :store    => true
   property :downloads,          :type => :integer, :store    => true
@@ -64,7 +64,7 @@ class App < ES::Model
   # }},
 
   def self.from_market(app)
-    begin
+    app = begin
       new :_id                => app[:docid],
           :title              => app[:title],
           :description        => app[:description_html],
@@ -100,6 +100,10 @@ class App < ES::Model
       _e.set_backtrace(e.backtrace)
       raise _e
     end
+
+    # TODO FIXME index the installation_size as long type
+    app.installation_size = [app.installation_size, 2**31-1].min
+    app
   end
 
   # FetchMarketDetails attributes
