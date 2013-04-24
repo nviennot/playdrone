@@ -30,9 +30,10 @@ class Stack::DecompileApk < Stack::BaseGit
          output =~ /OutOfBoundException/  ||
          output =~ /StringIndexOutOfBoundsException/ ||
          output =~ /dexlib\.Code\.Instruction/       ||
-         output =~ /File name too long/   ||
-         output =~ /Could not decode/     ||
-         output =~ /Segmentation fault/   ||
+         output =~ /File name too long/     ||
+         output =~ /Could not decode/       ||
+         output =~ /Segmentation fault/     ||
+         output =~ /androlib\.res\.decoder/ ||
          output =~ /Killed/
 
         # Too bad, the decompiler sucks
