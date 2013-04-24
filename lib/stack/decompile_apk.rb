@@ -20,9 +20,10 @@ class Stack::DecompileApk < Stack::BaseGit
          output =~ /StackOverflowError/   ||
          output =~ /ClassCastException/   ||
          output =~ /NullPointerException/ ||
+         output =~ /OutOfBoundException/  ||
          output =~ /StringIndexOutOfBoundsException/ ||
          output =~ /dexlib\.Code\.Instruction/       ||
-         output =~ /Could not decode XML/ ||
+         output =~ /Could not decode/     ||
          output =~ /Segmentation fault/   ||
          output =~ /Killed/
 
