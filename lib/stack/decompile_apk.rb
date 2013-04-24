@@ -22,18 +22,21 @@ class Stack::DecompileApk < Stack::BaseGit
         return
       end
 
-      if output =~ /fatal error/          ||
-         output =~ /OutOfMemoryError/     ||
-         output =~ /StackOverflowError/   ||
-         output =~ /ClassCastException/   ||
-         output =~ /NullPointerException/ ||
-         output =~ /OutOfBoundException/  ||
-         output =~ /StringIndexOutOfBoundsException/ ||
+      if output =~ /fatal error/                     ||
+         output =~ /OutOfMemoryError/                ||
+         output =~ /StackOverflowError/              ||
+         output =~ /ClassCastException/              ||
+         output =~ /NullPointerException/            ||
+         output =~ /OutOfBoundException/             ||
+         output =~ /DexException/                    ||
          output =~ /dexlib\.Code\.Instruction/       ||
-         output =~ /File name too long/     ||
-         output =~ /Could not decode/       ||
-         output =~ /Segmentation fault/     ||
-         output =~ /androlib\.res\.decoder/ ||
+         output =~ /File name too long/              ||
+         output =~ /Could not decode/                ||
+         output =~ /Segmentation fault/              ||
+         output =~ /androlib\.res\.decoder/          ||
+         output =~ /glibc detected/                  ||
+         output =~ /Can't find framework resources/  ||
+         output =~ /UndefinedResObject/              ||
          output =~ /Killed/
 
         # Too bad, the decompiler sucks
