@@ -9,7 +9,7 @@ class Stack::FindAmazonTokens < Stack::BaseTokenFinder
       if line =~ /"([^",() ]{40})"/
         secret = $1
         if secret =~ /[0-9]/ && secret =~ /([A-Z].*){4}/ && secret =~ /([a-z].*){4}/
-          aws[:secret] << secret
+          aws[:secret] << secret unless secret == "3i2ndDfv2rTHiSisAbouNdArYfORhtTPEefj3q2f"
         end
       end
 
