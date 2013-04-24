@@ -55,16 +55,21 @@ class Stack::FetchMarketDetails < Stack::BaseGit
   end
 
   def instantiate_app(env, raw_app)
+    populate_yesterday_app(env)
+
     if raw_app
       env[:app] = App.from_market(raw_app)
     else
-      env[:app] = App.new.tap { |app| app._id = env[:app_id] }
+      if env[:yesterday_app]
+        env[:app] = env[:yesterday_app].dup
+      else
+        env[:app] = App.new.tap { |app| app._id = env[:app_id] }
+      end
       env[:app_not_found] = true
     end
 
     env[:app].crawled_at = env[:crawled_at]
 
-    populate_yesterday_app(env)
     if env[:yesterday_app]
       env[:app].market_released = false
       env[:app].apk_updated     = raw_app ? false : (env[:yesterday_app].version_code != env[:app].version_code)

@@ -63,7 +63,11 @@ class Stack::DownloadApk < Stack::BaseGit
   def parse_from_git(env, git)
     app = env[:app]
     return unless app.free
-    return if git.read_file('not_found')
+
+    if git.read_file('not_found')
+      env[:app_not_found] = true
+      return
+    end
 
     # Lazy loading of the APK, it's heavy
     env[:need_apk] = lambda do
