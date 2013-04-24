@@ -2,7 +2,10 @@
 # $1 == src dir
 
 GREP=`which grep`
-# extended grep, don't print filenames, ignore case, recurse subdirs
+# -E extended grep
+# -h don't print filenames
+# -i ignore case
+# -r recurse subdirs
 $GREP -E -h -i -r \
-	'(twitter|consumer|key|secret|access|token|oath).*"[[:alnum:]]{15,50}"' \
+	-e '(twitter|consumer|key|secret|access|token|oath).*["=][[:alnum:]]{15,50}["&]' \
 	--include="*.java" $1 2>&1 || exit 1

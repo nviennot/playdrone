@@ -2,4 +2,10 @@
 # $1 == src dir
 
 GREP=`which grep`
-$GREP -r -E -e 'AKIA.{16}' --include="*.java" $1 2>&1 || exit 1
+# -E extended grep
+# -h don't print filenames
+# -r recurse subdirs
+$GREP -E -h -r \
+  -e 'AKIA.{16}' \
+  -e '["=][0-9a-zA-Z\+\/]{40}[&"]' \
+  --include="*.java" $1 2>&1 || exit 1
