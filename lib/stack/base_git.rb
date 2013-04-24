@@ -107,8 +107,8 @@ class Stack::BaseGit < Stack::Base
       commit[:committer][:time]  = app.crawled_at.to_time
 
       commit[:author]         = commit[:committer].dup
-      commit[:author][:email] = app.developer_email if app.developer_email.present?
-      commit[:author][:name]  = app.developer_name  if app.developer_name.present?
+      commit[:author][:email] = app.developer_email.gsub(/(<|>)/, '_') if app.developer_email.present?
+      commit[:author][:name]  = app.developer_name.gsub(/(<|>)/, '_') if app.developer_name.present?
       commit[:author][:time]  = app.uploaded_at.to_time
 
       commit[:message]    = full_message
