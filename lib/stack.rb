@@ -10,12 +10,12 @@ module Stack
     @create_app_stack ||= ::Middleware::Builder.new do
       use LockApp
         use PrepareFS
-          use FetchMarketDetails
           use IndexAppAfter
-            use DownloadApk
-            use DecompileApk
-            use IndexSources
-            use LookForNativeLibraries
+            use FetchMarketDetails
+              use DownloadApk
+              use DecompileApk
+              use IndexSources
+              use LookForNativeLibraries
     end
     @create_app_stack.call(options.dup)
   end

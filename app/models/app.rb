@@ -46,7 +46,6 @@ class App < ES::Model
   property :version_string,     :type => :string,  :index    => :no
   property :installation_size,  :type => :integer
   property :permission,         :type => :string,  :index    => :not_analyzed
-  property :crawled_at,         :type => :date,    :store    => true
   property :uploaded_at,        :type => :date,    :store    => true
   property :downloads,          :type => :integer, :store    => true
   property :comment_count,      :type => :integer
@@ -86,7 +85,6 @@ class App < ES::Model
           :version_string     => app[:details][:app_details][:version_string],
           :installation_size  => app[:details][:app_details][:installation_size],
           :permission         => app[:details][:app_details][:permission], # this is an array
-          :crawled_at         => nil, # to be filled by caller
           :uploaded_at        => Date.parse(app[:details][:app_details][:upload_date]),
           :downloads          => (app[:details][:app_details][:num_downloads] || '0').split('-')[0].gsub(/[^0-9]/,'').to_i,
           :comment_count      => app[:aggregate_rating][:comment_count],
@@ -104,11 +102,18 @@ class App < ES::Model
     end
   end
 
-  ### Crawler specific indexes ###
-
-  property :forward_locked,  :type => :boolean
-  property :decompiled,      :type => :boolean
-  property :has_native_libs, :type => :boolean
+  # FetchMarketDetails attributes
+  property :market_removed,  :type => :boolean
   property :market_released, :type => :boolean
   property :apk_updated,     :type => :boolean
+  property :crawled_at,      :type => :date, :store => true
+
+  # DownloadApk attributes
+  property :forward_locked,  :type => :boolean
+
+  # DecompileApk attributes
+  property :decompiled,      :type => :boolean
+
+  # LookForNativeLibraries attributes
+  property :has_native_libs, :type => :boolean
 end

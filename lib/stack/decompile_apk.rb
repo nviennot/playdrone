@@ -23,6 +23,7 @@ class Stack::DecompileApk < Stack::BaseGit
          output =~ /OutOfBoundException/  ||
          output =~ /StringIndexOutOfBoundsException/ ||
          output =~ /dexlib\.Code\.Instruction/       ||
+         output =~ /File name too long/   ||
          output =~ /Could not decode/     ||
          output =~ /Segmentation fault/   ||
          output =~ /Killed/
