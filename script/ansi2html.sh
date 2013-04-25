@@ -283,7 +283,7 @@ python -c "
 
 import sys
 import locale
-encoding=locale.getpreferredencoding()
+encoding='utf-8'
 
 old='abcdefghijklmnopqrstuvwxyz{}\`~'
 new='▒␉␌␍␊°±␤␋┘┐┌└┼⎺⎻─⎼⎽├┤┴┬│≤≥π£◆·'
@@ -318,7 +318,7 @@ for c in unicode(sys.stdin.read(), encoding):
     elif state == ALTERNATIVE:
       c = c.translate(table)
   sys.stdout.write(c.encode(encoding))
-" 2>/dev/null ||
+" 2>&1 ||
 sed 's/[¡µ]//g' # just strip aternative flag chars
 )
 printf '</pre>\n'
