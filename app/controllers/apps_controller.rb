@@ -9,9 +9,11 @@ class AppsController < ApplicationController
         return head :not_found if params[:no_redirect]
         return fetch_from_node(node, @app_id)
       end
-    end
 
-    @app = App.find(:live, @app_id)
+      @app = App.find('2013-04-23', @app_id)
+    else
+      @app = App.find(:live, @app_id)
+    end
 
     diff_src = params[:show_diff].try(:gsub, /[^a-zA-Z]/,'') # gsub for bash injection
     git_cmd = diff_src ? "git log --color -p `git rev-list --max-parents=0 src`..src -- #{diff_src}" :

@@ -5,13 +5,13 @@ class Stack::IndexAppAfter < Stack::Base
     if env[:app_not_found]
       if env[:yesterday_app]
         env[:app].save(env[:crawled_at])
-        env[:app].save(:live) if env[:crawled_at] == Date.today
+        env[:app].save(:live)
       else
         # TODO Cleanup live index
       end
     else
       env[:app].save(env[:crawled_at])
-      env[:app].save(:live) if env[:crawled_at] == Date.today
+      env[:app].save(:live)
     end
   end
 end
