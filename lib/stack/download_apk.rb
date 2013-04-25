@@ -14,7 +14,16 @@ class Stack::DownloadApk < Stack::BaseGit
     response = nil
 
     StatsD.measure 'market.download' do
-      download_info = Market.purchase(app.id, app.version_code)
+      begin
+        download_info = Market.purchase(app.id, app.version_code)
+      rescue Market::NotFound => e
+        env[:app_not_found] = true
+        git.commit do |index|
+          index.add_file("not_found", e.to_s)
+        end
+        return
+      end
+
       app.forward_locked = download_info.forward_locked
 
       response = Faraday.new(:ssl => {:verify => false}) do |f|
@@ -53,8 +62,14 @@ class Stack::DownloadApk < Stack::BaseGit
 
   def parse_from_git(env, git)
     app = env[:app]
+    return unless app.free
 
-    # Lazy loading of the APK
+    if git.read_file('not_found')
+      env[:app_not_found] = true
+      return
+    end
+
+    # Lazy loading of the APK, it's heavy
     env[:need_apk] = lambda do
       apk_filename = "#{app.id}-#{app.version_code}.apk"
       env[:apk_path] = env[:scratch].join(apk_filename)

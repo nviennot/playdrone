@@ -61,7 +61,7 @@ module ES
     end
 
     def save(index_name)
-      self.class.index(index_name).put(self.id, self)
+      self.class.index(index_name).put(self.id, self.reject { |k, v| v.nil? })
     end
   end
 end
