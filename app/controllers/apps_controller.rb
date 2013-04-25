@@ -1,6 +1,16 @@
 class AppsController < ApplicationController
   def show
     @app_id = params[:app_id]
+
+    if Rails.env.production? && !Dir.exists?('/home/vagrant')
+      node = Node.find_node_for_app(@app_id)
+      return head :not_found unless node
+      if node != Node.current_node
+        return head :not_found if params[:no_redirect]
+        return fetch_from_node(node, @app_id)
+      end
+    end
+
     @app = App.find(:live, @app_id)
 
     diff_src = params[:show_diff].try(:gsub, /[^a-zA-Z]/,'') # gsub for bash injection
@@ -15,5 +25,15 @@ class AppsController < ApplicationController
       :sort   => { :filename => { :order  => :asc } },
       :fields => [:filename]
     })
+  end
+
+  def fetch_from_node(node, app_id)
+    original_params = params.reject { |k,v| k.to_sym.in? request.path_parameters.keys }
+    r = Faraday.new(:url => "http://#{node}/") do |faraday|
+      faraday.request :basic_auth, "bien", "jacobien" # really not nice, deal with it.
+      faraday.adapter  Faraday.default_adapter
+    end.get "/apps/#{app_id}", original_params.merge(:no_redirect => true)
+
+    render :text => r.body, :status => r.status
   end
 end
