@@ -1,6 +1,6 @@
 #!/bin/sh
 MPATH=`dirname $0`
-FOLDER=`echo $1 | sed -e 's/\.apk//g'`
+FOLDER=`echo $1 | sed -e 's/\.apk$//g'`
 $MPATH/apktool d -f $1                      || exit 1
 mkdir $FOLDER/src                           || exit 1
 mv $FOLDER/smali $FOLDER/.smali             || exit 1

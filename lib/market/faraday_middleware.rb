@@ -1,6 +1,7 @@
 module Market
   class TooManyRequests < RuntimeError; end
   class BadRequest      < RuntimeError; end
+  class NotFound        < RuntimeError; end
 
   class FaradayMiddleware < Faraday::Response::Middleware
     def call(env)
@@ -42,11 +43,16 @@ module Market
         raise Account::AuthFailed
       end
 
+      parsed_body = ::GooglePlay::ResponseWrapper.new.parse_from_string(env[:body]).to_hash rescue nil
+      env[:body] = parsed_body if parsed_body
+
+      if env[:status] == 500 && env[:body].to_s =~ /(Item not found|could not be found)/
+        raise Market::NotFound.new :status => env[:status], :body => env[:body]
+      end
+
       unless env[:status] == 200
         raise Market::BadRequest.new :status => env[:status], :body => env[:body]
       end
-
-      env[:body] = ::GooglePlay::ResponseWrapper.new.parse_from_string(env[:body]).to_hash
     end
   end
 end

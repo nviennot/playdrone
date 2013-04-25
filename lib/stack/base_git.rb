@@ -58,10 +58,19 @@ class Stack::BaseGit < Stack::Base
     end
 
     def full_message
+      if env[:app_not_found]
+        return "[#{role}] App removed"
+      end
+
       msg  = "[#{role}] Processed v#{app.version_string}"
       msg += "\n\n#{message}" if message
-      msg += new_branch? ? "\n\nInitial Commit" :
-                           "\n\nWhat's New:\n-----------\n\n#{format_text(app.recent_changes)}"
+
+      if new_branch?
+        msg += "\n\nInitial Commit"
+      elsif app.apk_updated
+        msg += "\n\nWhat's New:\n-----------\n\n#{format_text(app.recent_changes)}"
+      end
+
       msg += "\n\nVersion Code: #{app.version_code}"
     end
 
@@ -109,7 +118,7 @@ class Stack::BaseGit < Stack::Base
       commit[:author]         = commit[:committer].dup
       commit[:author][:email] = app.developer_email.gsub(/(<|>)/, '_') if app.developer_email.present?
       commit[:author][:name]  = app.developer_name.gsub(/(<|>)/, '_') if app.developer_name.present?
-      commit[:author][:time]  = app.uploaded_at.to_time
+      commit[:author][:time]  = (app.uploaded_at || env[:crawled_at]).to_time
 
       commit[:message]    = full_message
 

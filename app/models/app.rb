@@ -44,9 +44,8 @@ class App < ES::Model
   property :available_if_owned, :type => :boolean # what is this? I guess we'll find out
   property :version_code,       :type => :integer
   property :version_string,     :type => :string,  :index    => :no
-  property :installation_size,  :type => :integer
+  property :installation_size,  :type => :integer # TODO XXX FIXME this should be long, going with a workaround.
   property :permission,         :type => :string,  :index    => :not_analyzed
-  property :crawled_at,         :type => :date,    :store    => true
   property :uploaded_at,        :type => :date,    :store    => true
   property :downloads,          :type => :integer, :store    => true
   property :comment_count,      :type => :integer
@@ -65,7 +64,7 @@ class App < ES::Model
   # }},
 
   def self.from_market(app)
-    begin
+    app = begin
       new :_id                => app[:docid],
           :title              => app[:title],
           :description        => app[:description_html],
@@ -84,9 +83,8 @@ class App < ES::Model
           :available_if_owned => app[:availability][:available_if_owned],
           :version_code       => app[:details][:app_details][:version_code],
           :version_string     => app[:details][:app_details][:version_string],
-          :installation_size  => app[:details][:app_details][:installation_size],
+          :installation_size  => app[:details][:app_details][:installation_size].to_i,
           :permission         => app[:details][:app_details][:permission], # this is an array
-          :crawled_at         => nil, # to be filled by caller
           :uploaded_at        => Date.parse(app[:details][:app_details][:upload_date]),
           :downloads          => (app[:details][:app_details][:num_downloads] || '0').split('-')[0].gsub(/[^0-9]/,'').to_i,
           :comment_count      => app[:aggregate_rating][:comment_count],
@@ -102,13 +100,24 @@ class App < ES::Model
       _e.set_backtrace(e.backtrace)
       raise _e
     end
+
+    # TODO FIXME index the installation_size as long type
+    app.installation_size = [app.installation_size, 2**31-1].min
+    app
   end
 
-  ### Crawler specific indexes ###
-
-  property :forward_locked,  :type => :boolean
-  property :decompiled,      :type => :boolean
-  property :has_native_libs, :type => :boolean
+  # FetchMarketDetails attributes
+  property :market_removed,  :type => :boolean
   property :market_released, :type => :boolean
   property :apk_updated,     :type => :boolean
+  property :crawled_at,      :type => :date, :store => true
+
+  # DownloadApk attributes
+  property :forward_locked,  :type => :boolean
+
+  # DecompileApk attributes
+  property :decompiled,      :type => :boolean
+
+  # LookForNativeLibraries attributes
+  property :has_native_libs, :type => :boolean
 end

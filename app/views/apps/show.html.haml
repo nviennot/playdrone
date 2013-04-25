@@ -41,12 +41,15 @@
         %tr
           %td.property Download Count
           %td.value &gt; #{number_to_human @app.downloads}
-    %h4 Permissions
+    %h4 Permissions (#{@app.permission.size})
     %table.table.table-condensed.table-bordered.permissions
       %tbody
-        - @app.permission.sort.each do |perm|
+        - @app.permission.sort[0...6].each do |perm|
           %tr
             %td.permission= perm
+        - if @app.permission.size > 6
+          %tr
+            %td.permission #{@app.permission.size - 6} other permissions not shown
 
 .row
   .span12

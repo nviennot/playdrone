@@ -1,8 +1,4 @@
 namespace :deploy do
-  task :restart do
-    STDERR.puts "Not restarting, do it manually"
-  end
-
   task :restart_unicorn, :roles => :unicorn do
     run "service unicorn restart"
   end
@@ -24,7 +20,7 @@ namespace :deploy do
     restart_bg
   end
 
-  task :restart_all do
+  task :restart do
     restart_metrics
     restart_unicorn
     restart_sidekiq
@@ -51,7 +47,7 @@ namespace :deploy do
     stop_market
   end
 
-  task :stop_all do
+  task :stop do
     stop_sidekiq
     stop_unicorn
     stop_metrics
