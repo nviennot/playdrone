@@ -15,6 +15,9 @@ class AppsController < ApplicationController
       @app = App.find(:live, @app_id)
     end
 
+    # Some apps don't have any permissions
+    @app.permission ||= []
+
     diff_src = params[:show_diff].try(:gsub, /[^a-zA-Z]/,'') # gsub for bash injection
     git_cmd = diff_src ? "git log --color -p `git rev-list --max-parents=0 src`..src -- #{diff_src}" :
                          "git log --color --stat=160 `git rev-list --max-parents=0 src`..src"
