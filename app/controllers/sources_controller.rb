@@ -8,10 +8,12 @@ class SourcesController < ApplicationController
     @results = Source.index(:live).search({
       :size => 1,
 
-      :query => {
+      :filter => {
         :bool => {
-          :must => { :term => { :app_id   => @app_id } },
-          :must => { :term => { :filename => @filename } }
+          :must => [
+            { :term => { :app_id   => @app_id } },
+            { :term => { :filename => @filename } }
+          ]
         }
       },
 
