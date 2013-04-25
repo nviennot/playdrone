@@ -28,6 +28,7 @@ class Stack::DecompileApk < Stack::BaseGit
          output =~ /ClassCastException/              ||
          output =~ /NullPointerException/            ||
          output =~ /OutOfBoundException/             ||
+         output =~ /IndexOutOfBoundsException/       ||
          output =~ /DexException/                    ||
          output =~ /dexlib\.Code\.Instruction/       ||
          output =~ /File name too long/              ||
