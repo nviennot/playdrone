@@ -8,11 +8,9 @@ class AppsController < ApplicationController
       if node != Node.current_node
         return fetch_from_node(node, @app_id)
       end
-
-      @app = App.find('2013-04-23', @app_id)
-    else
-      @app = App.find(:live, @app_id)
     end
+
+    @app = App.find(:live, @app_id)
 
     # Some apps don't have any permissions
     @app.permission ||= []
