@@ -72,7 +72,7 @@ class Stack::FetchMarketDetails < Stack::BaseGit
 
     if env[:yesterday_app]
       env[:app].market_released = false
-      env[:app].apk_updated     = raw_app ? false : (env[:yesterday_app].version_code != env[:app].version_code)
+      env[:app].apk_updated     = !raw_app ? false : (env[:yesterday_app].version_code != env[:app].version_code)
       env[:app].market_removed  = !!raw_app
     else
       # XXX If we don't have the data from the day before, we are going to make bad decisions
