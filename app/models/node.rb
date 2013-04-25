@@ -40,4 +40,8 @@ class Node
   def self.get_node_for_app(app_id)
     register_app(app_id)[0]
   end
+
+  def self.find_node_for_app(app_id)
+    Redis.instance.get("apps:#{app_id}")
+  end
 end
