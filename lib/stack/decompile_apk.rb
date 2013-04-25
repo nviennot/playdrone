@@ -63,6 +63,8 @@ class Stack::DecompileApk < Stack::BaseGit
       git.set_head
     end
 
+    env[:need_git_gc] = true
+
     @stack.call(env)
   end
 
