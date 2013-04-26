@@ -34,7 +34,7 @@ module AppsHelper
       end
 
       name = options[:name_lookup] ? options[:name_lookup].call(term) : term
-      link_to(name, params.merge(facet => target), :class => css) + "<span class='count'>#{f['count']}</span> ".html_safe
+      link_to(name, params.merge(facet => target, :page => nil), :class => css) + "<span class='count'>#{f['count']}</span> ".html_safe
     end
   end
 
