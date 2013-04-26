@@ -3,6 +3,7 @@
     .facets
       = list_facet :currency,          'Currency'
       = list_facet :downloads,         'Downloads', :sort => true, :reverse => true
+      = list_facet :app_type,          'App Type'
       = bool_facet :free,              'Free',                'Paid'
       = bool_facet :top_developer,     'Top Dev',             'Regular Dev'
       = bool_facet :editors_choice,    'Editor Choice',       'Regular App'
