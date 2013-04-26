@@ -1,0 +1,16 @@
+.row.header
+  .span12
+    %a.logo{:href => '/'} Google Play With Me
+
+.row
+  .span8.offset3
+    = form_tag '/', :class => 'form-inline search', :method => :get do
+      = text_field_tag :query,  params[:query],  :autocomplete => :off, :class => 'input-xxlarge',
+                       :placeholder => 'Application Title'
+      = button_tag :id => 'search', :class => 'btn btn-primary' do
+        %i.icon-search
+        %span Search
+
+- if @results
+  #results
+    = render 'results'

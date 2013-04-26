@@ -1,4 +1,65 @@
 class AppsController < ApplicationController
+  def index
+    user_query = params[:query]
+    per_page   = (params[:per_page] || 25).to_i
+    page       = (params[:page] || 1).to_i
+    from       = (page-1) * per_page
+
+    query = {
+      :from => from,
+      :size => per_page,
+
+      :sort => { :downloads => :desc },
+
+      :query => [
+        { :match_all => {} },
+        { :query_string => {
+            :fields => [:title],
+            :query  => user_query,
+          }
+        }
+      ][user_query.blank? ? 0 : 1],
+
+      :filter => {
+        :and => [
+          { :terms => { :currency        => params[:currency]        } },
+          { :terms => { :downloads       => params[:downloads]       } },
+          { :term  => { :free            => params[:free]            } },
+          { :term  => { :top_developer   => params[:top_developer]   } },
+          { :term  => { :editors_choice  => params[:editors_choice]  } },
+          { :term  => { :apk_updated     => params[:apk_updated]     } },
+          { :term  => { :market_removed  => params[:market_removed]  } },
+          { :term  => { :has_native_libs => params[:has_native_libs] } },
+        ].select { |h| h.values[0].values[0].present? }.compact,
+      }.select { |_, v| v.present? },
+
+      :facets => {
+        :currency        => { :terms => { :field => :currency, :size => 100 } },
+        :downloads       => { :terms => { :field => :downloads, :size => 100 } },
+        :free            => { :terms => { :field => :free } },
+        :top_developer   => { :terms => { :field => :top_developer} },
+        :editors_choice  => { :terms => { :field => :editors_choice} },
+        :apk_updated     => { :terms => { :field => :apk_updated} },
+        :market_removed  => { :terms => { :field => :market_removed} },
+        :has_native_libs => { :terms => { :field => :has_native_libs} },
+      },
+
+      :fields => [:app_id, :title, :downloads]
+    }
+
+    if params[:filter_filters]
+      query[:query] = {
+        :filtered => {
+          :query  => query.delete(:query),
+          :filter => query.delete(:filter)
+        }.select { |_, v| v.present? }
+      }
+    end
+
+    @results = App.index(Date.today - 1).search(query)
+    @pagination = WillPaginate::Collection.new(page, per_page, @results.total)
+  end
+
   def show
     @app_id = params[:app_id]
 
@@ -32,6 +93,8 @@ class AppsController < ApplicationController
       :fields => [:filename]
     })
   end
+
+  private
 
   def fetch_from_node(node, app_id)
     r = Faraday.new(:url => "http://#{node}/") do |faraday|

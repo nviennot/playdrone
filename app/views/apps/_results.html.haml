@@ -1,0 +1,49 @@
+.row
+  .span10.offset1
+    .facets
+      = list_facet :currency,          'Currency'
+      = list_facet :downloads,         'Downloads', :sort => true, :reverse => true
+      = bool_facet :free,              'Free',                'Paid'
+      = bool_facet :top_developer,     'Top Dev',             'Regular Dev'
+      = bool_facet :editors_choice,    'Editor Choice',       'Regular App'
+      = bool_facet :apk_updated,       'Apk Updated',         'Not Updated'
+      -# = bool_facet :market_removed, 'Removed from Market', 'Still There'
+      = bool_facet :has_native_libs,   'Has Native Libs',     'No Native Libs'
+
+      %label.checkbox{:style => "float:left"}
+        = check_box_tag :filter_filters, 'yes', params[:filter_filters],
+          :onclick => "window.location='#{url_for(params.merge(:filter_filters => params[:filter_filters] ? nil : true))}'"
+        Filter filters
+
+      %div{:style => "float:right"}
+        = link_to "Search Sources →", "/sources"
+      %div{:style => "clear:both"}
+    %hr
+
+.row
+  .span5.offset1
+    %p
+      Matched #{@results.total} apps
+      (took #{@results.raw['took']/1000.0}s)
+
+  .span5.source-paginate
+    = will_paginate @pagination
+
+.row
+  .span10.offset1
+    %table.table
+      %thead
+        %tr
+          %th Title
+          %th Android Package
+          %th Downloads
+      %tbody
+        - @results.results.each do |app|
+          %tr
+            %td= app.title
+            %td= link_to app._id, "/apps/#{app._id}"
+            %td= number_with_delimiter(app.downloads)
+
+.row
+  .span10.offset1.source-paginate
+    = will_paginate @pagination
