@@ -3,14 +3,14 @@
   .span8
     %h1 #{@app.title} #{@app.version_string}
   .span4.inline
-    %a.logo{:href => '/search'} Google Play With Me
+    %a.logo{:href => '/'} Google Play With Me
   .span12
     %hr
 
 .row
   .span12.git-path
     %h4
-      Git Access:
+      Git Repository:
     = text_field_tag :query, @repo_path, :class => 'input git-path'
     %hr
 

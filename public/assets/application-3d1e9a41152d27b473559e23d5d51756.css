@@ -16,7 +16,7 @@
 .facets .count{font-size:0.8em;color:#777;}
 .git-diff pre{background:#444;color:white;line-height:1.2em;}
 .git-path h4{display:inline-block;vertical-align:middle;margin-top:0em;margin-bottom:0em;}
-.git-path input{display:inline-block;vertical-align:middle;font-family:Monaco,"Liberation Mono",Courier,monospace;width:50em;margin-top:0.7em;margin-left:1em;margin-bottom:0em;}
+.git-path input{display:inline-block;vertical-align:middle;font-family:Monaco,"Liberation Mono",Courier,monospace;width:50em;margin-top:0em;margin-left:1em;margin-bottom:0em;}
 .clearfix{*zoom:1;}.clearfix:before,.clearfix:after{display:table;content:"";line-height:0;}
 .clearfix:after{clear:both;}
 .hide-text{font:0/0 a;color:transparent;text-shadow:none;background-color:transparent;border:0;}
@@ -1180,7 +1180,7 @@ ul.icons{list-style-type:none;text-indent:-0.75em;}ul.icons li [class^="icon-"],
 .icon-github-alt:before{content:"\f113";}
 .icon-folder-close-alt:before{content:"\f114";}
 .icon-folder-open-alt:before{content:"\f115";}
-a.logo{background-image:url(/assets/logo.png);display:block;width:341px;height:57px;text-indent:-10000px;margin:20px auto;}
+a.logo{background-image:url(/assets/logo-acc6e6151822b7c69fbb50006fe25445.png);display:block;width:341px;height:57px;text-indent:-10000px;margin:20px auto;}
 .inline a.logo{margin:0 auto;}
 .row.spacer{height:200px;}
 /* Adapted from https://github.com/pie4dan/CodeRay-GitHub-Theme */

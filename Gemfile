@@ -35,6 +35,7 @@ group :development do
   gem 'capistrano',        :require => false
   gem 'capistrano_colors', :require => false
   gem 'rvm-capistrano',    :require => false
+  gem 'guard-livereload',  :require => false
 end
 
 group :assets do
