@@ -11,16 +11,19 @@ class AppsController < ApplicationController
     end
 
     @app = App.find(:live, @app_id)
+    @repo_path = "git://#{node}.googleplaywith.me/#{@app_id.gsub(/\./, '/')}.git"
 
     # Some apps don't have any permissions
     @app.permission ||= []
 
-    ENV['HOME'] = '/home/deploy' if Rails.env.production? # for the .gitconfig
-    diff_src = params[:show_diff].try(:gsub, /[^a-zA-Z]/,'') # gsub for bash injection
-    git_cmd = diff_src ? "git log --color -p `git rev-list --max-parents=0 src --`..src -- #{diff_src}" :
-                         "git log --color --stat=160 `git rev-list --max-parents=0 src --`..src"
-    @diff = `cd #{Repository.new(@app_id).path} && HOME=#{Dir.home} #{git_cmd} |
-             #{Rails.root.join('script/ansi2html.sh')} --palette=linux` rescue nil
+    if Rails.env.production?
+      ENV['HOME'] = '/home/deploy' if Rails.env.production? # for the .gitconfig
+      diff_src = params[:show_diff].try(:gsub, /[^a-zA-Z]/,'') # gsub for bash injection
+      git_cmd = diff_src ? "git log --color -p `git rev-list --max-parents=0 src --`..src -- #{diff_src}" :
+                           "git log --color --stat=160 `git rev-list --max-parents=0 src --`..src"
+      @diff = `cd #{Repository.new(@app_id).path} && HOME=#{Dir.home} #{git_cmd} |
+               #{Rails.root.join('script/ansi2html.sh')} --palette=linux` rescue nil
+    end
 
     @results = Source.index(:live).search({
       :size   => 100000,
