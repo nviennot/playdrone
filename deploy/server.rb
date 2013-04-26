@@ -8,7 +8,8 @@ namespace :deploy do
   end
 
   task :restart_bg, :roles => :sidekiq do
-    run "service sidekiq-bg restart"
+    run "service sidekiq-bg1 restart"
+    run "service sidekiq-bg2 restart"
   end
 
   task :restart_metrics, :roles => :metrics do
