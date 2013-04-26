@@ -8,6 +8,13 @@
     %hr
 
 .row
+  .span12.git-path
+    %h4
+      Git Access:
+    = text_field_tag :query, @repo_path, :class => 'input git-path'
+    %hr
+
+.row
   .span6
     - if @app.description.present?
       %h4 Description
@@ -54,7 +61,7 @@
 .row
   .span12
     %hr
-    - if @diff.size > 17500 # Couldn't be more lazy. Bite me.
+    - if @diff.to_s.size > 17500 # Couldn't be more lazy. Bite me.
       %h4#diff What's Really New
       %p
         - if params[:show_diff]
