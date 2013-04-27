@@ -6,7 +6,7 @@ class Stack::PurgeBranch < Stack::Base
     repo.refs(/^refs\/(tags|heads)\/#{branch}-/).each(&:delete!)
 
     # garbage collection is done by PrepareFS
-    env[:touched_repo] = true
+    env[:need_git_gc] = true
 
     @stack.call(env)
   end
