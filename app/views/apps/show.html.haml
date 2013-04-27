@@ -3,8 +3,15 @@
   .span8
     %h1 #{@app.title} #{@app.version_string}
   .span4.inline
-    %a.logo{:href => '/search'} Google Play With Me
+    %a.logo{:href => '/'} Google Play With Me
   .span12
+    %hr
+
+.row
+  .span12.git-path
+    %h4
+      Git Repository:
+    = text_field_tag :query, @repo_path, :class => 'input git-path'
     %hr
 
 .row
@@ -54,7 +61,7 @@
 .row
   .span12
     %hr
-    - if @diff.size > 17500 # Couldn't be more lazy. Bite me.
+    - if @diff.to_s.size > 17500 # Couldn't be more lazy. Bite me.
       %h4#diff What's Really New
       %p
         - if params[:show_diff]

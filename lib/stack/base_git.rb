@@ -129,8 +129,6 @@ class Stack::BaseGit < Stack::Base
       Rugged::Commit.create(repo, commit).tap do |commit_sha|
         Rugged::Reference.create(repo, tag_ref, commit_sha)
       end
-
-      env[:touched_repo] = true
     end
 
     def set_head

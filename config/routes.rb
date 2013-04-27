@@ -5,7 +5,9 @@ GooglePlayCrawler::Application.routes.draw do
   resource :accounts, :only => [:new, :create]
   resources :libs, :only => :index
 
-  get 'search' => 'sources#search'
+  get '/'                      => 'apps#index'
+  get 'search'                 => redirect('/')
+  get 'sources'                => 'sources#search'
   get 'apps/:app_id'           => 'apps#show',    :app_id => /[^\/]+/
   get 'apps/:app_id/:filename' => 'sources#show', :app_id => /[^\/]+/, :filename => /.+/
 end
