@@ -40,9 +40,10 @@ class Stack::BaseTokenFinder < Stack::Base
 
     lines.split("\n").split("--").map do |group|
       regexps.map do |regexp|
-        match = group.map { |l| l =~ regexp; $1 }.flatten.compact.select { |l| is_random(l) }.first
-        break unless match
-        match
+        matches = group.map { |l| l =~ regexp; $1 }.flatten.compact
+        matches = matches.select { |l| is_random(l) } if self.class.random_threshold
+        break if matches.empty?
+        matches.first
       end
     end.compact.uniq
   end
