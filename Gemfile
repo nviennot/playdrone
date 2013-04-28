@@ -15,6 +15,7 @@ gem 'multi_json'
 gem 'oj'
 gem 'statsd-instrument'
 gem 'airbrake'
+gem 'whenever', :require => false
 
 # Front end only
 gem 'unicorn', :require => false
