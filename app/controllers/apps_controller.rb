@@ -24,6 +24,7 @@ class AppsController < ApplicationController
         :and => [
           { :terms => { :currency        => params[:currency]        } },
           { :terms => { :downloads       => params[:downloads]       } },
+          { :terms => { :app_type        => params[:app_type]        } },
           { :term  => { :free            => params[:free]            } },
           { :term  => { :top_developer   => params[:top_developer]   } },
           { :term  => { :editors_choice  => params[:editors_choice]  } },
@@ -34,8 +35,9 @@ class AppsController < ApplicationController
       }.select { |_, v| v.present? },
 
       :facets => {
-        :currency        => { :terms => { :field => :currency, :size => 100 } },
+        :currency        => { :terms => { :field => :currency,  :size => 100 } },
         :downloads       => { :terms => { :field => :downloads, :size => 100 } },
+        :app_type        => { :terms => { :field => :app_type,  :size => 100 } },
         :free            => { :terms => { :field => :free } },
         :top_developer   => { :terms => { :field => :top_developer} },
         :editors_choice  => { :terms => { :field => :editors_choice} },
