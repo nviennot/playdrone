@@ -36,7 +36,8 @@ namespace :deploy do
   end
 
   task :stop_bg, :roles => :sidekiq do
-    run "service sidekiq-bg stop || true"
+    run "service sidekiq-bg1 stop || true"
+    run "service sidekiq-bg2 stop || true"
   end
 
   task :stop_metrics, :roles => :metrics do
