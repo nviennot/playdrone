@@ -4,7 +4,7 @@ module Market
   def self.api
     # Keep the connection open (one connection per thread)
     Thread.current[:market_connection] ||=
-      Faraday.new(:url => 'https://android.clients.google.com/fdfe/') do |builder|
+      Faraday.new(:url => 'https://android.clients.google.com/fdfe/', :ssl => {:verify => false}) do |builder|
         builder.use     Market::FaradayMiddleware
         builder.request :url_encoded
 
