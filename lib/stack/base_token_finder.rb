@@ -1,10 +1,11 @@
 class Stack::BaseTokenFinder < Stack::Base
   class << self
-    attr_accessor :token_name, :token_filters, :random_threshold
+    attr_accessor :token_name, :token_filters, :random_threshold, :proximity
     def tokens(token_name, options={})
-      @token_name       = "#{token_name}_token"
-      @random_threshold = options.delete(:random_threshold)
-      @token_filters    = options
+      @token_name        = "#{token_name}_token"
+      @random_threshold  = options.delete(:random_threshold)
+      @proximity         = options.delete(:proximity)
+      @token_filters     = options
     end
   end
 
@@ -35,8 +36,9 @@ class Stack::BaseTokenFinder < Stack::Base
     _regexps = filters.values
     regexps = filters.values.map { |r| Regexp.new(r) }
 
-    lines = exec_and_capture(["grep -E -C3 -R -h '#{_regexps.first}' #{src_dir}/src",
-                              *_regexps[1..-1].map { |r| "grep -E -C2 '#{r}'" }].join(" | "))
+    proximity = self.class.proximity ? self.class.proximity : regexps.count + 1
+    lines = exec_and_capture(["grep -E -C#{proximity} -R -h '#{_regexps.first}' #{src_dir}/src",
+                              *_regexps[1..-1].map { |r| "grep -E -C#{proximity} '#{r}'" }].join(" | "))
 
     lines.split("\n").split("--").map do |group|
       regexps.map do |regexp|
