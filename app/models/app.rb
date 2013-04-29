@@ -125,4 +125,19 @@ class App < ES::Model
   property :twitter_token_count,           :type => :integer
   property :twitter_token_consumer_secret, :type => :string, :index => :not_analyzed
   property :twitter_token_consumer_key,    :type => :string, :index => :not_analyzed
+
+  # FindAmazonTokens
+  property :amazon_token_count,             :type => :integer
+  property :amazon_token_access_key_id,     :type => :string, :index => :not_analyzed
+  property :amazon_token_secret_access_key, :type => :string, :index => :not_analyzed
+
+  # FindFacebookTokens
+  property :facebook_token_count,      :type => :integer
+  property :facebook_token_app_id,     :type => :string, :index => :not_analyzed
+  property :facebook_token_app_secret, :type => :string, :index => :not_analyzed
+
+  # FindLinkedinTokens
+  property :linkedin_token_count,      :type => :integer
+  property :linkedin_token_api_key,    :type => :string, :index => :not_analyzed
+  property :linkedin_token_secret_key, :type => :string, :index => :not_analyzed
 end
