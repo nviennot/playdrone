@@ -23,6 +23,7 @@ module Stack
               use FindBitlyv1Tokens
               use FindYelpv1Tokens
               use FindFlickrTokens
+              use FindGoogleMapsTokens
               use LookForNativeLibraries
     end
     @create_app_stack.call(options.dup)

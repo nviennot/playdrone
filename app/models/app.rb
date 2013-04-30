@@ -160,4 +160,8 @@ class App < ES::Model
   property :flickr_token_api_key, :type => :string, :index => :not_analyzed
   property :flickr_token_api_sec, :type => :string, :index => :not_analyzed
 
+  # FindGoogleMapsTokens
+  property :google_maps_token_count,           :type => :integer
+  property :google_maps_token_api_key_release, :type => :string, :index => :not_analyzed
+  property :google_maps_token_api_key_debug,   :type => :string, :index => :not_analyzed
 end
