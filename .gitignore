@@ -5,3 +5,5 @@ tmp/
 *.swo
 repos/
 scratch/
+graphs/*.pdf
+graphs/*.dat
