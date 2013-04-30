@@ -19,6 +19,10 @@ module Stack
               use FindAmazonTokens
               use FindFacebookTokens
               use FindLinkedinTokens
+              use FindFoursquareTokens
+              use FindBitlyv1Tokens
+              use FindYelpv1Tokens
+              use FindFlickrTokens
               use LookForNativeLibraries
     end
     @create_app_stack.call(options.dup)

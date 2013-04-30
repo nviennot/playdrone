@@ -140,4 +140,24 @@ class App < ES::Model
   property :linkedin_token_count,      :type => :integer
   property :linkedin_token_api_key,    :type => :string, :index => :not_analyzed
   property :linkedin_token_secret_key, :type => :string, :index => :not_analyzed
+
+  # FindFoursquareTokens
+  property :foursquare_token_count,         :type => :integer
+  property :foursquare_token_client_id,     :type => :string, :index => :not_analyzed
+  property :foursquare_token_client_secret, :type => :string, :index => :not_analyzed
+
+  # FindBitlyv1Tokens
+  property :bitlyv1_token_count,   :type => :integer
+  property :bitlyv1_token_login,   :type => :string, :index => :not_analyzed
+  property :bitlyv1_token_api_key, :type => :string, :index => :not_analyzed
+
+  # FindYelpv1Tokens
+  property :yelpv1_token_count, :type => :integer
+  property :yelpv1_token_ywsid, :type => :string, :index => :not_analyzed
+
+  # FindFlickrTokens
+  property :flickr_token_count,   :type => :integer
+  property :flickr_token_api_key, :type => :string, :index => :not_analyzed
+  property :flickr_token_api_sec, :type => :string, :index => :not_analyzed
+
 end
