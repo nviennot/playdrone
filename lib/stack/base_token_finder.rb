@@ -44,16 +44,18 @@ class Stack::BaseTokenFinder < Stack::Base
 
     must_have = filters.values.map { |r| r[:must_have] }
 
-    proximity = self.class.proximity ? self.class.proximity : regexps.count + 1
+    proximity = self.class.proximity ? self.class.proximity : regexps.count - 1
     lines = exec_and_capture(["grep -E -C#{proximity} -R -h '#{_regexps.first}' #{src_dir}/src",
                               *_regexps[1..-1].map { |r| "grep -E -C#{proximity} '#{r}'" }].join(" | "))
 
     lines.split("\n").split("--").map do |group|
       regexps.each_with_index.map do |regexp, index|
-        matches = group.map { |l| l =~ regexp; $1 }.flatten.compact
+        matches = group.map { |l| l.scan(regexp) }.flatten.compact
         matches = matches.select { |l| is_random(l) } if self.class.random_threshold
         matches = matches.select { |l| l =~ must_have[index] } if must_have[index]
         break if matches.empty?
+        # XXX somewhat shady .. it's possible to have two matches in the same group ..
+        binding.pry
         matches.first
       end
     end.compact.uniq
