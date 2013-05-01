@@ -16,6 +16,7 @@ module Stack
               use DecompileApk
               use IndexSources
               use LookForNativeLibraries
+              use Signature
     end
     @create_app_stack.call(options.dup)
   end
