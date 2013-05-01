@@ -182,6 +182,7 @@ GEM
     net-ssh (2.6.7)
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
+    nokogiri (1.5.9)
     oj (2.0.10)
     polyglot (0.3.3)
     pry (0.9.12.1)
@@ -289,6 +290,7 @@ DEPENDENCIES
   less-rails
   middleware
   multi_json
+  nokogiri
   oj
   protobuf!
   rails

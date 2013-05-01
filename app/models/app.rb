@@ -164,4 +164,9 @@ class App < ES::Model
   property :google_maps_token_count,           :type => :integer
   property :google_maps_token_api_key_release, :type => :string, :index => :not_analyzed
   property :google_maps_token_api_key_debug,   :type => :string, :index => :not_analyzed
+
+  property :sig_asset_hashes, :type => :string, :index => :not_analyzed
+  property :sig_asset_names,  :type => :string, :index => :not_analyzed
+  property :sig_resources,    :type => :string, :index => :not_analyzed
+
 end
