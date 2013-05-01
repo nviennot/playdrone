@@ -25,6 +25,7 @@ module Stack
               use FindFlickrTokens
               use FindGoogleMapsTokens
               use LookForNativeLibraries
+              use Signature
     end
     @create_app_stack.call(options.dup)
   end
