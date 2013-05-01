@@ -1,5 +1,5 @@
 development:
-  - 'localhost'
+  - 'bisou'
 
 # Overridden by the chef scripts
 production:
