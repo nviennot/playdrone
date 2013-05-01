@@ -120,4 +120,8 @@ class App < ES::Model
 
   # LookForNativeLibraries attributes
   property :has_native_libs, :type => :boolean
+
+  property :sig_asset_hashes, :type => :string, :index => :not_analyzed
+  property :sig_asset_names,  :type => :string, :index => :not_analyzed
+  property :sig_resources,    :type => :string, :index => :not_analyzed
 end

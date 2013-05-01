@@ -136,9 +136,12 @@ class Stack::BaseGit < Stack::Base
     end
 
     def read_file(file_name)
-      file = last_committed_tree[file_name]
-      return nil unless file
-      repo.lookup(file[:oid]).read_raw.data
+      file = file_name.split('/').reduce(last_committed_tree) do |tree, dentry|
+        obj = tree[dentry] if tree
+        repo.lookup(obj[:oid]) if obj
+      end
+
+      file.read_raw.data if file
     end
 
     def read_files(options={}, &block)
@@ -152,6 +155,7 @@ class Stack::BaseGit < Stack::Base
         when :blob
           next if @cached_files.include? filename
           next unless !options[:include_filter] || filename =~ options[:include_filter]
+          next unless !options[:exclude_filter] || filename !~ options[:exclude_filter]
           block.call(filename, repo.lookup(entry[:oid]).read_raw.data)
           @cached_files << filename
         end

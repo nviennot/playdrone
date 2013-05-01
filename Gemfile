@@ -16,6 +16,7 @@ gem 'oj'
 gem 'statsd-instrument'
 gem 'airbrake'
 gem 'whenever', :require => false
+gem 'nokogiri', :require => false
 
 # Front end only
 gem 'unicorn', :require => false
