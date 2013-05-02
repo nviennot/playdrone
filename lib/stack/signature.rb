@@ -2,20 +2,17 @@ require 'nokogiri'
 require 'digest/md5'
 
 class Stack::Signature < Stack::BaseGit
-  use_git :branch => :signature
+  use_git :branch => :signature_v2
 
   def persist_to_git(env, git)
     signature = {}
 
     signature[:asset_hashes] = []
-    signature[:asset_names]  = []
     signature[:resources]    = []
 
-    env[:src_git].read_files(:include_filter => /^(res|assets)/,
-                             :exclude_filter => /\.xml$/) do |filename, content|
+    env[:src_git].read_files(:include_filter => /^(res|assets)/) do |filename, content|
       next unless content # directory
-      signature[:asset_hashes] << Digest::MD5.hexdigest(content)
-      signature[:asset_names]  << filename.split('/').last
+      signature[:asset_hashes] << { filename => Digest::MD5.hexdigest(content) }
     end
 
     public_xml = env[:src_git].read_file('res/values/public.xml')
@@ -24,9 +21,6 @@ class Stack::Signature < Stack::BaseGit
         node.attributes['name'].value
       end
     end
-
-    signature[:asset_hashes].uniq!
-    signature[:asset_names].uniq!
     signature[:resources].uniq!
 
     git.commit do |index|
@@ -44,8 +38,8 @@ class Stack::Signature < Stack::BaseGit
   end
 
   def match(env, signature)
-    env[:app].sig_asset_hashes = signature[:asset_hashes]
-    env[:app].sig_asset_names  = signature[:asset_names]
-    env[:app].sig_resources    = signature[:resources]
+    # TODO
+    env[:app].sig_asset_hashes = []
+    env[:app].sig_resources    = []
   end
 end
