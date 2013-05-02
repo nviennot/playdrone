@@ -21,9 +21,12 @@ module Stack
               use FindLinkedinTokens
               use FindFoursquareTokens
               use FindBitlyv1Tokens
+              use FindBitlyv2Tokens
               use FindYelpv1Tokens
+              use FindYelpv2Tokens
               use FindFlickrTokens
               use FindGoogleMapsTokens
+              use FindGoogleOauth2Tokens
               use LookForNativeLibraries
               use Signature
     end
