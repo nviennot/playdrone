@@ -12,3 +12,7 @@ def Redis.instance
 
   @_redis_instance = redis
 end
+
+def Redis.for_apps
+  @_redis_for_apps ||= Redis.new(:db => 1, :driver => :hiredis)
+end

@@ -27,19 +27,36 @@ class Stack::Signature < Stack::BaseGit
       index.add_file('signature.json', MultiJson.dump(signature, :pretty => true))
     end
 
-    match(env, signature)
+    filter_signatures(env, signature)
     @stack.call(env)
   end
 
   def parse_from_git(env, git)
-    signature = MultiJson.load(git.read_file('signature.json'), :symbolize_keys => true)
-    match(env, signature)
+    signature = MultiJson.load(git.read_file('signature.json'))
+    filter_signatures(env, signature)
     @stack.call(env)
   end
 
-  def match(env, signature)
-    # TODO
-    env[:app].sig_asset_hashes = []
-    env[:app].sig_resources    = []
+  def filter_signatures(env, signature)
+    manifest = Nokogiri::XML(env[:src_git].read_file('AndroidManifest.xml'))
+    icon_name = manifest.css('application').first.attr('android:icon').split('/').last rescue "icon"
+
+    blacklisted_filenames = [
+      "#{icon_name}\\.png$",
+      "ic_launcher\\.png$",
+      "\\.xml$",
+    ]
+    blacklisted_filenames_re = Regexp.new("(#{blacklisted_filenames.join('|')})")
+    asset_hashes = signature['asset_hashes'].map { |h| h.keys.first =~ blacklisted_filenames_re ? nil : h.values.first }.compact
+    resources    = signature['resources']
+
+    asset_hashes_blacklist = SimilarApp.blacklist(:sig_asset_hashes)
+    resources_blacklist    = SimilarApp.blacklist(:sig_resources)
+
+    env[:app].sig_asset_hashes = asset_hashes.reject { |s| asset_hashes_blacklist.include? s }
+    env[:app].sig_resources    = resources.reject    { |s| resources_blacklist.include? s }
+
+    env[:app].sig_asset_hashes_count = env[:app].sig_asset_hashes.count
+    env[:app].sig_resources_count    = env[:app].sig_resources.count
   end
 end

@@ -106,40 +106,6 @@ class App < ES::Model
     app
   end
 
-  def get_similar_apps(options={})
-    field      = options[:field]     || :sig_resources
-    threshold  = options[:threshold] || 0.8
-    min_count  = options[:min_count] || 10
-
-    return {} if self[field].try(:size).to_i < min_count
-
-    # maxClausecount == 1024 in ES by default, and it's sufficient
-    signatures = self[field][0...1024]
-
-    result = App.index(Date.today - 1).search(
-      :size => 1000,
-      :fields => [:_id, field],
-
-      :query => {
-        :terms => {
-          field => signatures,
-          :minimum_match => (signatures.size * threshold).to_i
-        }
-      },
-
-      :filter => { :bool => { :must_not => { :term => { :_id => self.id } } } }
-    )
-
-    matches = {}
-    result.results.each do |match|
-      score = (match[field] & self[field]).size.to_f / 
-              (match[field] | self[field]).size.to_f
-      matches[match._id] = score if score >= threshold
-    end
-
-    Hash[matches.sort_by { |k,v| v }]
-  end
-
   # FetchMarketDetails attributes
   property :market_removed,  :type => :boolean
   property :market_released, :type => :boolean
@@ -155,7 +121,10 @@ class App < ES::Model
   # LookForNativeLibraries attributes
   property :has_native_libs, :type => :boolean
 
-  property :sig_asset_hashes, :type => :string, :index => :not_analyzed
-  property :sig_asset_names,  :type => :string, :index => :not_analyzed
-  property :sig_resources,    :type => :string, :index => :not_analyzed
+  property :sig_asset_hashes,       :type => :string, :index => :not_analyzed
+  property :sig_asset_hashes_count, :type => :integer
+  property :sig_resources,          :type => :string, :index => :not_analyzed
+  property :sig_resources_count,    :type => :integer
+  # to remove
+  property :sig_asset_names, :type => :string, :index => :not_analyzed
 end

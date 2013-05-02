@@ -56,8 +56,12 @@ module ES
       index(index_name).put_mapping(self.name.underscore => mapping_options)
     end
 
-    def self.find(index_name, id)
-      new index(index_name).get(id)
+    def self.find(index_name, id, options={})
+      begin
+        new index(index_name).get(id)
+      rescue Stretcher::RequestError::NotFound => e
+        options[:no_raise] ? nil : raise(e)
+      end
     end
 
     def save(index_name)
