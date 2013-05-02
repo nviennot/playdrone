@@ -55,7 +55,6 @@ class Stack::BaseTokenFinder < Stack::Base
         matches = matches.select { |l| l =~ must_have[index] } if must_have[index]
         break if matches.empty?
         # XXX somewhat shady .. it's possible to have two matches in the same group ..
-        binding.pry
         matches.first
       end
     end.compact.uniq

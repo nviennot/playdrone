@@ -151,9 +151,21 @@ class App < ES::Model
   property :bitlyv1_token_login,   :type => :string, :index => :not_analyzed
   property :bitlyv1_token_api_key, :type => :string, :index => :not_analyzed
 
+  # FindBitlyv2Tokens
+  property :bitlyv2_token_count,         :type => :integer
+  property :bitlyv2_token_client_id,     :type => :string, :index => :not_analyzed
+  property :bitlyv2_token_client_secret, :type => :string, :index => :not_analyzed
+
   # FindYelpv1Tokens
   property :yelpv1_token_count, :type => :integer
   property :yelpv1_token_ywsid, :type => :string, :index => :not_analyzed
+
+  # FindYelpv2Tokens
+  property :yelpv2_token_count,           :type => :integer
+  property :yelpv2_token_consumer_key,    :type => :string, :index => :not_analyzed
+  property :yelpv2_token_consumer_secret, :type => :string, :index => :not_analyzed
+  property :yelpv2_token_token,           :type => :string, :index => :not_analyzed
+  property :yelpv2_token_token_secret,    :type => :string, :index => :not_analyzed
 
   # FindFlickrTokens
   property :flickr_token_count,   :type => :integer
@@ -164,6 +176,11 @@ class App < ES::Model
   property :google_maps_token_count,           :type => :integer
   property :google_maps_token_api_key_release, :type => :string, :index => :not_analyzed
   property :google_maps_token_api_key_debug,   :type => :string, :index => :not_analyzed
+
+  # FindGoogleOauth2Tokens
+  property :google_oauth2_token_count,         :type => :integer
+  property :google_oauth2_token_client_id,     :type => :string, :index => :not_analyzed
+  property :google_oauth2_token_client_secret, :type => :string, :index => :not_analyzed
 
   property :sig_asset_hashes, :type => :string, :index => :not_analyzed
   property :sig_asset_names,  :type => :string, :index => :not_analyzed
