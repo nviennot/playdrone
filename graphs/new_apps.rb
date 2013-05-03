@@ -18,21 +18,31 @@ result = App.index('2013*').search(
         :value_script => "doc['market_removed'].value == 'T' ? 1 : 0",
         :interval => :day
       }
+    },
+
+    :updated => {
+      :date_histogram => {
+        :key_field => :crawled_at,
+        :value_script => "doc['apk_updated'].value == 'T' ? 1 : 0",
+        :interval => :day
+      }
     }
   }
 )
 
-data = result.facets.in.entries[1][1].zip(result.facets.out.entries[1][1]).map do |day_in, day_out|
-  day = day_in['time'] / 1000
-  if day == 1367020800
-    # no good data
-    [day, day_out['total'], day_out['total']]
-  else
-    [day, day_in['total'], day_out['total']]
-  end
-end
+data = result.facets.in['entries'].size.times.map do |i|
+  day_in      = result.facets.in['entries'][i]
+  day_out     = result.facets.out['entries'][i]
+  day_updated = result.facets.updated['entries'][i]
 
-data = data[3..-1]
+  day = day_in['time'] / 1000
+  if Time.at(day).to_date <= Date.parse("2013-04-26")
+    # no good data
+    nil
+  else
+    [day, day_in['total'], day_out['total'], day_updated['total']]
+  end
+end.compact
 
 File.open(ARGV[0], 'w') do |f|
   data.each do |d|
