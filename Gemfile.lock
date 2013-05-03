@@ -23,15 +23,13 @@ GIT
       slim
 
 GIT
-  remote: git://github.com/nviennot/rugged.git
-  revision: cfc015d7fffb692afc4f60aadd40b36401125f0c
-  branch: development
-  submodules: true
+  remote: git://github.com/nviennot/hiredis-rb.git
+  revision: 92ab2914e1134f7eace18453ff796034d26650c8
   specs:
-    rugged (0.17.0.b8)
+    hiredis (0.4.5)
 
 GIT
-  remote: https://github.com/nviennot/protobuf.git
+  remote: git://github.com/nviennot/protobuf.git
   revision: 06871a5a50b5d49fb4e3f6df3b1ee11aca39b676
   branch: dev
   specs:
@@ -40,6 +38,14 @@ GIT
       ffi
       multi_json
       thor
+
+GIT
+  remote: git://github.com/nviennot/rugged.git
+  revision: cfc015d7fffb692afc4f60aadd40b36401125f0c
+  branch: development
+  submodules: true
+  specs:
+    rugged (0.17.0.b8)
 
 GIT
   remote: https://github.com/seyhunak/twitter-bootstrap-rails.git
@@ -145,7 +151,6 @@ GEM
     hashie (1.2.0)
     highline (1.6.18)
     hike (1.2.2)
-    hiredis (0.4.5)
     http_parser.rb (0.5.3)
     i18n (0.6.1)
     journey (1.0.4)
@@ -285,7 +290,7 @@ DEPENDENCIES
   guard-livereload
   haml-rails
   hashie
-  hiredis
+  hiredis!
   jquery-rails
   less-rails
   middleware

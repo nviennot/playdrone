@@ -2,11 +2,11 @@ source 'https://rubygems.org/'
 
 gem 'rails'
 gem 'redis'
-gem 'hiredis'
+gem 'hiredis', :git => 'git://github.com/nviennot/hiredis-rb.git'
 gem 'sidekiq', :git => 'git://github.com/mperham/sidekiq.git'
 gem 'faraday'
 gem 'faraday_middleware'
-gem 'protobuf', git: 'https://github.com/nviennot/protobuf.git', :branch => 'dev'
+gem 'protobuf', git: 'git://github.com/nviennot/protobuf.git', :branch => 'dev'
 gem 'stretcher', git: 'git://github.com/PoseBiz/stretcher.git'
 gem 'hashie'
 gem 'rugged', git: 'git://github.com/nviennot/rugged.git', :branch => :development, :submodules => true
