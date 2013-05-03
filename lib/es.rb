@@ -9,9 +9,18 @@ module ES
     server.index(index_name)
   end
 
+  def self.update_index(index_name, options={})
+    index(index_name).instance_eval do
+      request(:put, "_settings", :index => options.reverse_merge(:refresh_interval => 10*1000,
+                                                                 :number_of_replicas => 0))
+    end
+  end
+
   def self.create_index(index_name, options={})
     # number_of_replicas doesn't count master
-    index(index_name).create(:index => options.reverse_merge(:number_of_shards => 10, :number_of_replicas => 1))
+    index(index_name).create(:index => options.reverse_merge(:refresh_interval => 10*1000,
+                                                             :number_of_replicas => 0,
+                                                             :number_of_shards => 10))
   rescue Stretcher::RequestError => e
     raise e unless e.http_response.body['error'] =~ /IndexAlreadyExistsException/
   end
@@ -19,7 +28,7 @@ module ES
   def self.create_all_indexes(start_date=nil)
     start_date ||= Date.today
     2.times.each { |day| create_index((start_date + day.days).to_s) }
-    create_index(:live, :number_of_shards => 100)
+    create_index(:live, :number_of_shards => 100, :number_of_replicas => 1)
     update_all_mappings
   end
 
