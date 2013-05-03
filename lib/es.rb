@@ -37,8 +37,10 @@ module ES
   end
 
   def self.update_all_mappings
-    App.update_mapping(:_all)
-    Source.update_mapping(:live)
+    App.update_mapping(Date.today)
+    App.update_mapping(Date.today + 1)
+    App.update_mapping(:_all) rescue nil
+    Source.update_mapping(:live) rescue nil
   end
 
   class Model < Hashie::Dash
