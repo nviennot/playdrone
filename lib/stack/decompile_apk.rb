@@ -7,7 +7,9 @@ class Stack::DecompileApk < Stack::BaseGit
 
   def persist_to_git(env, git)
     return unless env[:app].free
-    return if env[:app_id] == 'com.snowdream.find.sexygirls' # decompiler gets stuck on this one
+    return if env[:app_id].in? %w(com.snowdream.find.sexygirls
+                                  com.planemo.mudras
+                                  com.snowdream.find.superstars) # decompiler gets stuck on these ones
 
     env[:need_apk].call
     output = StatsD.measure 'stack.decompile' do

@@ -73,7 +73,7 @@ class AppsController < ApplicationController
       end
     end
 
-    @app = App.find(:live, @app_id)
+    @app = App.find(Date.today - 1, @app_id)
     @repo_path = "git://#{node}.googleplaywith.me/#{@app_id.gsub(/\./, '/')}.git"
 
     # Some apps don't have any permissions
@@ -88,7 +88,7 @@ class AppsController < ApplicationController
                #{Rails.root.join('script/ansi2html.sh')} --palette=linux` rescue nil
     end
 
-    @results = Source.index(:live).search({
+    @results = Source.index(Date.today - 1).search({
       :size   => 100000,
       :query  => { :term     => { :app_id => @app_id } },
       :sort   => { :filename => { :order  => :asc } },
