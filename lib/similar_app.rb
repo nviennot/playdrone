@@ -20,6 +20,7 @@ module SimilarApp
       threshold  = options[:threshold] || 0.8
       min_count  = options[:min_count] || 5
       cutoff     = options[:cutoff]    || 100
+      # TODO field + cutoff
 
       return [] if app[field].try(:size).to_i < min_count
 
