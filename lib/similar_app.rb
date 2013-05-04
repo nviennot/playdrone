@@ -20,6 +20,7 @@ module SimilarApp
       threshold  = options[:threshold] || 0.8
       min_count  = options[:min_count] || 5
       cutoff     = options[:cutoff]    || 100
+      # TODO field + cutoff
 
       return [] if app[field].try(:size).to_i < min_count
 
@@ -32,7 +33,7 @@ module SimilarApp
         signatures_for_es = signatures_for_es.shuffle[0...1024]
       end
 
-      result = App.index(Date.today - 1).search(
+      result = App.index(Date.today - 2).search(
         :size => 100,
         :fields => [:_id, :downloads, field],
 
@@ -121,7 +122,7 @@ module SimilarApp
     end
 
     def process(app_id, options={})
-      app = App.find(Date.today - 1, app_id, :no_raise => true)
+      app = App.find(Date.today - 2, app_id, :no_raise => true)
       if app
         similar_apps = get_similar_apps(app, options)
         merge(similar_apps)
