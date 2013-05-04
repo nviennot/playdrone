@@ -2,16 +2,16 @@ require 'set'
 
 module SimilarApp
   class << self
-    def blacklist(field)
+    def blacklist(field, cutoff)
       @blacklist_set ||= {}
-      @blacklist_set[field.to_s] ||= begin
-        blacklist_file = Rails.root.join("lib", "blacklists", "#{field.to_s.gsub(/^sig_/,'')}.blacklist")
+      @blacklist_set["#{field}_#{cutoff}"] ||= begin
+        blacklist_file = Rails.root.join("lib", "blacklists", "#{field.to_s.gsub(/^sig_/,'')}_#{cutoff}.blacklist")
         Set.new File.open(blacklist_file).readlines.map(&:chomp)
       end
     end
 
-    def filter_app_signature(app, field)
-      bl = blacklist(field)
+    def filter_app_signature(app, field, cutoff)
+      bl = blacklist(field, cutoff)
       Set.new(app[field].reject { |s| bl.include? s })
     end
 
@@ -19,10 +19,11 @@ module SimilarApp
       field      = options[:field]     || :sig_resources
       threshold  = options[:threshold] || 0.8
       min_count  = options[:min_count] || 5
+      cutoff     = options[:cutoff]    || 100
 
       return [] if app[field].try(:size).to_i < min_count
 
-      app_signature = filter_app_signature(app, field)
+      app_signature = filter_app_signature(app, field, cutoff)
 
       signatures_for_es = app_signature.to_a
       if signatures_for_es.size > 1024
@@ -46,7 +47,7 @@ module SimilarApp
       # result contains app
       similar_apps = []
       result.results.each do |match|
-        match_signature = filter_app_signature(match, field)
+        match_signature = filter_app_signature(match, field, cutoff)
         score = (match_signature & app_signature).size.to_f / 
                 (match_signature | app_signature).size.to_f
 

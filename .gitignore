@@ -7,3 +7,4 @@ repos/
 scratch/
 graphs/*.pdf
 graphs/*.dat
+graphs/*.cache
