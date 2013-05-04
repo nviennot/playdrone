@@ -17,7 +17,9 @@ set mxtics (10)
 set arrow from 100,1 to 100,1000000 nohead lc 2 lw 3
 set arrow from 300,1 to 300,1000000 nohead lc 2 lw 3
 set arrow from 1000,1 to 1000,1000000 nohead lc 2 lw 3
-set label "300" at 270, 0.42
+set arrow from 3000,1 to 3000,1000000 nohead lc 2 lw 3
+set label "300" at 260, 0.42
+set label "3000" at 2500, 0.42
 
 plot 'resource_blacklist.dat' using 1:2 lt 1 lc 1 lw 3 pt 1 with linespoints t "Resource Names", \
                            '' using 1:3 lt 1 lc 3 lw 3 pt 2 with linespoints t "Asset Hashes"
