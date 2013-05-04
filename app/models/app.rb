@@ -38,6 +38,7 @@ class App < ES::Model
   property :editors_choice,     :type => :boolean
   property :content_rating,     :type => :integer
   property :app_type,           :type => :string,  :index    => :not_analyzed
+  property :category,           :type => :string,  :index    => :not_analyzed
   property :free,               :type => :boolean
   property :price,              :type => :float # always in USD
   property :currency,           :type => :string,  :index    => :not_analyzed
@@ -76,6 +77,7 @@ class App < ES::Model
           :editors_choice     => !!app[:annotations][:badge_for_doc],
           :content_rating     => app[:details][:app_details][:content_rating],
           :app_type           => app[:details][:app_details][:app_type],
+          :category           => app[:details][:app_details][:app_category],
           :free               => app[:offer][0][:micros].zero?,
           :price              => ((app[:offer][0][:currency_code] == 'USD' || app[:offer][0][:micros].zero?) ?
                                   app[:offer][0][:micros] : app[:offer][0][:converted_price][0][:micros]) / 1000000.0,

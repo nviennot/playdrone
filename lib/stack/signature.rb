@@ -32,7 +32,7 @@ class Stack::Signature < Stack::BaseGit
   end
 
   def parse_from_git(env, git)
-    signature = MultiJson.load(git.read_file('signature.json'))
+    signature = MultiJson.load(git.read_file('signature.json')).symbolize_keys
     filter_signatures(env, signature)
     @stack.call(env)
   end
@@ -47,8 +47,8 @@ class Stack::Signature < Stack::BaseGit
       # "\\.xml$",
     # ]
     #blacklisted_filenames_re = Regexp.new("(#{blacklisted_filenames.join('|')})")
-    #asset_hashes = signature['asset_hashes'].map { |h| h.keys.first =~ blacklisted_filenames_re ? nil : h.values.first }.compact
-    resources    = signature['resources']
+    #asset_hashes = signature[:asset_hashes].map { |h| h.keys.first =~ blacklisted_filenames_re ? nil : h.values.first }.compact
+    resources    = signature[:resources]
 
     #asset_hashes_blacklist = SimilarApp.blacklist(:sig_asset_hashes)
     resources_blacklist_100    = SimilarApp.blacklist(:sig_resources, 100)
