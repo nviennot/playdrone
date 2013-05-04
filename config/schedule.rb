@@ -5,6 +5,8 @@ end
 
 every :day, :at => '2:00am' do
   command "service sidekiq-market restart"
-  command "service sidekiq-bg1 restart"
-  command "service sidekiq-bg2 restart"
+
+  6.times do |i|
+    command "service sidekiq-bg#{i+1} restart"
+  end
 end
