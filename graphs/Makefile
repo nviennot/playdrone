@@ -1,4 +1,4 @@
-FIGS = native_libs native_libs_ratings paid_ratings new_apps
+FIGS = native_libs native_libs_ratings paid_ratings new_apps resource_blacklist
 
 PDF_FILES = $(FIGS:=.pdf)
 DAT_FILES = $(FIGS:=.dat)
