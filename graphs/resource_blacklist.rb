@@ -41,21 +41,21 @@ else
   end
 end
 
-
 counts_resources = result_resources.map { |f| f['count'] }
 counts_asset_hashes = result_asset_hashes.map { |f| f['count'] }
 
-buckets = [
-  9.times.map { |i| (i+1)*10 },
-  9.times.map { |i| (i+1)*100 },
-  9.times.map { |i| (i+1)*1000 },
-  9.times.map { |i| (i+1)*10000 }
-].flatten
+buckets = []
+initial = 10
+while initial < 1_000_000 do
+  buckets << initial
+  initial = (initial * 1.2).to_i
+end
 
 data = buckets.map do |bucket|
   count_resources = counts_resources.select { |c| c > bucket }.count
   count_asset_hashes = counts_asset_hashes.select { |c| c > bucket }.count
-  [bucket, count_resources, count_asset_hashes.zero? ? nil : count_asset_hashes]
+  [bucket, count_resources.zero? ? nil : count_resources,
+           count_asset_hashes.zero? ? nil : count_asset_hashes]
 end
 
 File.open(ARGV[0], 'w') do |f|
