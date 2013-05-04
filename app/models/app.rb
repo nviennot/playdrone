@@ -123,18 +123,25 @@ class App < ES::Model
   # LookForNativeLibraries attributes
   property :has_native_libs, :type => :boolean
 
-  property :sig_resources,          :type => :string, :index => :not_analyzed
   property :sig_resources_100,      :type => :string, :index => :not_analyzed
   property :sig_resources_300,      :type => :string, :index => :not_analyzed
   property :sig_resources_1000,     :type => :string, :index => :not_analyzed
-
-  property :sig_resources_count,      :type => :integer
   property :sig_resources_count_100,  :type => :integer
   property :sig_resources_count_300,  :type => :integer
   property :sig_resources_count_1000, :type => :integer
 
+  property :sig_asset_hashes_100,  :type => :string, :index => :not_analyzed
+  property :sig_asset_hashes_300,  :type => :string, :index => :not_analyzed
+  property :sig_asset_hashes_1000, :type => :string, :index => :not_analyzed
+  property :sig_asset_hashes_count_100,  :type => :integer
+  property :sig_asset_hashes_count_300,  :type => :integer
+  property :sig_asset_hashes_count_1000, :type => :integer
+
   # to remove
-  property :sig_asset_names, :type => :string, :index => :not_analyzed
+  property :sig_asset_names,        :type => :string, :index => :not_analyzed
+
+  property :sig_resources,          :type => :string, :index => :not_analyzed
+  property :sig_resources_count,    :type => :integer
   property :sig_asset_hashes,       :type => :string, :index => :not_analyzed
   property :sig_asset_hashes_count, :type => :integer
 end
