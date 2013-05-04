@@ -126,5 +126,16 @@ module SimilarApp
         merge(similar_apps)
       end
     end
+
+    ##########################################################################3
+
+    def get_matching_sets
+      root_apps = Redis.for_apps.keys 'root:*'
+      sets = Redis.for_apps.pipelined do
+        root_apps.map { |app| Redis.for_apps.smembers(app) }
+      end
+      root_apps.map! { |app| app.gsub(/^root:/, '') }
+      Hash[root_apps.zip(sets).sort_by { |r| -r[1].count }]
+    end
   end
 end
