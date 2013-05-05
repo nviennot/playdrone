@@ -121,11 +121,13 @@ module SimilarApp
     end
 
     def process(app_id, options={})
-      app = App.find("signatures", app_id, :no_raise => true)
-      if app
-        cutoff = options.delete(:cutoff)
-        raise "cutoff?" unless cutoff
+      cutoff = options.delete(:cutoff)
+      raise "cutoff?" unless cutoff
 
+      app = App.find("signatures", app_id, :no_raise => true,
+                     :fields => ["sig_resources_#{cutoff}", "sig_asset_hashes_#{cutoff}"])
+
+      if app
         similar_apps_resources = get_similar_apps(app, options.merge(:field => "sig_resources_#{cutoff}"))
         similar_apps_hashes    = get_similar_apps(app, options.merge(:field => "sig_asset_hashes_#{cutoff}"))
 
@@ -204,7 +206,9 @@ module SimilarApp
       app_ids = get_decompiled_app_ids
       [100, 300, 1000, 3000].each do |cutoff|
         [0.6, 0.7, 0.8, 0.9, 1.0].reverse.each do |threshold|
-          batch(:app_ids => app_ids, :threshold => threshold, :cutoff => cutoff)
+          batch(:app_ids => app_ids, :min_count => 1,
+                                     :threshold => threshold,
+                                     :cutoff    => cutoff)
         end
       end
       true

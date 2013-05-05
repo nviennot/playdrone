@@ -69,7 +69,11 @@ module ES
 
     def self.find(index_name, id, options={})
       begin
-        new index(index_name).get(id)
+        params = {:fields => options[:fields].join(',') } if options[:fields]
+        new(index(index_name).instance_eval do
+          result = request(:get, id, params)
+          result['_source'] || result['fields']
+        end)
       rescue Stretcher::RequestError::NotFound => e
         options[:no_raise] ? nil : raise(e)
       end
