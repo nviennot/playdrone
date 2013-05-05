@@ -1,9 +1,18 @@
-FIGS = native_libs native_libs_ratings paid_ratings new_apps resource_blacklist
+FIGS = native_libs native_libs_ratings paid_ratings new_apps resource_blacklist \
+			 dup_threshold dup_min_count dup_cluster
 
 PDF_FILES = $(FIGS:=.pdf)
 DAT_FILES = $(FIGS:=.dat)
 
+.SECONDARY:
+
 all: $(PDF_FILES)
+
+dup_%.dat: dup_all.rb
+	./dup_all.rb dup_$*.dat
+
+dup_%.pdf: dup_%.dat dup_%.plot
+	gnuplot dup_$*.plot
 
 %.pdf: %.plot %.rb
 	./$*.rb $*.dat
