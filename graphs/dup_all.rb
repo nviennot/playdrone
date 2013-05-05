@@ -4,14 +4,16 @@ MATCHES_DIR = Rails.root.join('matches')
 
 MIN_COUNTS = [1, 3, 10]
 THRESHOLDS = [0.6, 0.7, 0.8, 0.9, 1.0]
-CUTOFFS = [100, 300, 1000, 3000]
-TYPES = %w(hashes res merged)
+CUTOFFS    = [100, 300, 1000, 3000]
+TYPES      = %w(hashes res merged)
+CROSS_DEVS = [true, false]
 
 DEFAULT = {
   :type      => 'merged',
   :cutoff    => 300,
   :threshold => 0.8,
-  :min_count => 1
+  :min_count => 1,
+  :cross_dev => true
 }
 
 def get_data(options={})
@@ -19,8 +21,9 @@ def get_data(options={})
   cutoff    = options[:cutoff]    || DEFAULT[:cutoff]
   threshold = options[:threshold] || DEFAULT[:threshold]
   min_count = options[:min_count] || DEFAULT[:min_count]
+  cross_dev = options[:cross_dev].nil? ? DEFAULT[:cross_dev] : options[:cross_dev]
 
-  file = MATCHES_DIR.join("#{type}_#{cutoff}_#{threshold}_#{min_count}")
+  file = MATCHES_DIR.join("#{type}_#{cutoff}_#{threshold}_#{min_count}#{cross_dev ? '_crossdev' : ''}")
   MultiJson.load(File.open(file))
 end
 
