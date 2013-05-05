@@ -117,8 +117,11 @@ module SimilarApp
       @@merge_scripts[prefix].eval(Redis.for_apps, :keys => apps, :argv => downloads)
     end
 
-    MIN_COUNTS = [1, 3, 10]
-    THRESHOLDS = [0.6, 0.7, 0.8, 0.9, 1.0]
+    # MIN_COUNTS = [1, 3, 10]
+    # THRESHOLDS = [0.6, 0.7, 0.8, 0.9, 1.0]
+
+    MIN_COUNTS = [3]
+    THRESHOLDS = [0.8, 1.0]
 
     def process(app_id, options={})
       cutoff = options.delete(:cutoff)
