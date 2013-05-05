@@ -1,0 +1,242 @@
+[
+  {
+    "amazon": {
+      "stats": {
+        "total_candidates": 61,
+        "unique_candidates": 23,
+        "unique_tested": 23,
+        "unique_valid": 23,
+        "unique_invalid": 0,
+        "unique_untested": 0,
+        "unique_percent_valid": 1.0,
+        "unique_coverage": 1.0,
+        "total_valid": 61,
+        "total_invalid": 0,
+        "total_untested": 0,
+        "total_tested": 61,
+        "total_percent_valid": 1.0,
+        "total_coverage": 1.0
+      }
+    }
+  },
+  {
+    "bitlyv1": {
+      "stats": {
+        "total_candidates": 93,
+        "unique_candidates": 41,
+        "unique_tested": 25,
+        "unique_valid": 18,
+        "unique_invalid": 7,
+        "unique_untested": 16,
+        "unique_percent_valid": 0.72,
+        "unique_coverage": 0.6097560975609756,
+        "total_valid": 46,
+        "total_invalid": 15,
+        "total_untested": 32,
+        "total_tested": 61,
+        "total_percent_valid": 0.7540983606557377,
+        "total_coverage": 0.6559139784946236
+      }
+    }
+  },
+  {
+    "bitlyv2": {
+      "stats": {
+        "total_candidates": 4,
+        "unique_candidates": 2,
+        "unique_tested": 2,
+        "unique_valid": 1,
+        "unique_invalid": 1,
+        "unique_untested": 0,
+        "unique_percent_valid": 0.5,
+        "unique_coverage": 1.0,
+        "total_valid": 2,
+        "total_invalid": 2,
+        "total_untested": 0,
+        "total_tested": 4,
+        "total_percent_valid": 0.5,
+        "total_coverage": 1.0
+      }
+    }
+  },
+  {
+    "facebook": {
+      "stats": {
+        "total_candidates": 58,
+        "unique_candidates": 29,
+        "unique_tested": 25,
+        "unique_valid": 12,
+        "unique_invalid": 13,
+        "unique_untested": 4,
+        "unique_percent_valid": 0.48,
+        "unique_coverage": 0.8620689655172413,
+        "total_valid": 24,
+        "total_invalid": 26,
+        "total_untested": 8,
+        "total_tested": 50,
+        "total_percent_valid": 0.48,
+        "total_coverage": 0.8620689655172413
+      }
+    }
+  },
+  {
+    "flickr": {
+      "stats": {
+        "total_candidates": 57,
+        "unique_candidates": 28,
+        "unique_tested": 25,
+        "unique_valid": 19,
+        "unique_invalid": 6,
+        "unique_untested": 3,
+        "unique_percent_valid": 0.76,
+        "unique_coverage": 0.8928571428571429,
+        "total_valid": 38,
+        "total_invalid": 13,
+        "total_untested": 6,
+        "total_tested": 51,
+        "total_percent_valid": 0.7450980392156863,
+        "total_coverage": 0.8947368421052632
+      }
+    }
+  },
+  {
+    "foursquare": {
+      "stats": {
+        "total_candidates": 86,
+        "unique_candidates": 41,
+        "unique_tested": 25,
+        "unique_valid": 24,
+        "unique_invalid": 1,
+        "unique_untested": 16,
+        "unique_percent_valid": 0.96,
+        "unique_coverage": 0.6097560975609756,
+        "total_valid": 52,
+        "total_invalid": 2,
+        "total_untested": 32,
+        "total_tested": 54,
+        "total_percent_valid": 0.9629629629629629,
+        "total_coverage": 0.627906976744186
+      }
+    }
+  },
+  {
+    "google_maps": {
+      "stats": {
+        "total_candidates": 8,
+        "unique_candidates": 4,
+        "unique_tested": 4,
+        "unique_valid": 4,
+        "unique_invalid": 0,
+        "unique_untested": 0,
+        "unique_percent_valid": 1.0,
+        "unique_coverage": 1.0,
+        "total_valid": 8,
+        "total_invalid": 0,
+        "total_untested": 0,
+        "total_tested": 8,
+        "total_percent_valid": 1.0,
+        "total_coverage": 1.0
+      }
+    }
+  },
+  {
+    "google_oauth2": {
+      "stats": {
+        "total_candidates": 28,
+        "unique_candidates": 13,
+        "unique_tested": 13,
+        "unique_valid": 11,
+        "unique_invalid": 2,
+        "unique_untested": 0,
+        "unique_percent_valid": 0.8461538461538461,
+        "unique_coverage": 1.0,
+        "total_valid": 24,
+        "total_invalid": 4,
+        "total_untested": 0,
+        "total_tested": 28,
+        "total_percent_valid": 0.8571428571428571,
+        "total_coverage": 1.0
+      }
+    }
+  },
+  {
+    "linkedin": {
+      "stats": {
+        "total_candidates": 36,
+        "unique_candidates": 18,
+        "unique_tested": 18,
+        "unique_valid": 18,
+        "unique_invalid": 0,
+        "unique_untested": 0,
+        "unique_percent_valid": 1.0,
+        "unique_coverage": 1.0,
+        "total_valid": 36,
+        "total_invalid": 0,
+        "total_untested": 0,
+        "total_tested": 36,
+        "total_percent_valid": 1.0,
+        "total_coverage": 1.0
+      }
+    }
+  },
+  {
+    "twitter": {
+      "stats": {
+        "total_candidates": 593,
+        "unique_candidates": 252,
+        "unique_tested": 25,
+        "unique_valid": 16,
+        "unique_invalid": 9,
+        "unique_untested": 227,
+        "unique_percent_valid": 0.64,
+        "unique_coverage": 0.09920634920634919,
+        "total_valid": 119,
+        "total_invalid": 22,
+        "total_untested": 452,
+        "total_tested": 141,
+        "total_percent_valid": 0.8439716312056738,
+        "total_coverage": 0.23777403035413158
+      }
+    }
+  },
+  {
+    "yelpv1": {
+      "stats": {
+        "total_candidates": 15,
+        "unique_candidates": 7,
+        "unique_tested": 7,
+        "unique_valid": 7,
+        "unique_invalid": 0,
+        "unique_untested": 0,
+        "unique_percent_valid": 1.0,
+        "unique_coverage": 1.0,
+        "total_valid": 15,
+        "total_invalid": 0,
+        "total_untested": 0,
+        "total_tested": 15,
+        "total_percent_valid": 1.0,
+        "total_coverage": 1.0
+      }
+    }
+  },
+  {
+    "yelpv2": {
+      "stats": {
+        "total_candidates": 8,
+        "unique_candidates": 4,
+        "unique_tested": 4,
+        "unique_valid": 3,
+        "unique_invalid": 1,
+        "unique_untested": 0,
+        "unique_percent_valid": 0.75,
+        "unique_coverage": 1.0,
+        "total_valid": 6,
+        "total_invalid": 2,
+        "total_untested": 0,
+        "total_tested": 8,
+        "total_percent_valid": 0.75,
+        "total_coverage": 1.0
+      }
+    }
+  }
+]
