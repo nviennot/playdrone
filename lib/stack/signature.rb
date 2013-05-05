@@ -27,13 +27,13 @@ class Stack::Signature < Stack::BaseGit
       index.add_file('signature.json', MultiJson.dump(signature, :pretty => true))
     end
 
-    filter_signatures(env, signature)
+    #filter_signatures(env, signature)
     @stack.call(env)
   end
 
   def parse_from_git(env, git)
-    signature = MultiJson.load(git.read_file('signature.json')).symbolize_keys
-    filter_signatures(env, signature)
+    #signature = MultiJson.load(git.read_file('signature.json')).symbolize_keys
+    #filter_signatures(env, signature)
     @stack.call(env)
   end
 
