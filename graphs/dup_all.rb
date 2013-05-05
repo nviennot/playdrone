@@ -4,7 +4,7 @@ MATCHES_DIR = Rails.root.join('matches')
 
 MIN_COUNTS = [1, 3, 10]
 THRESHOLDS = [0.6, 0.7, 0.8, 0.9, 1.0]
-CUTOFFS = [100, 300]
+CUTOFFS = [100, 300, 1000, 3000]
 TYPES = %w(hashes res merged)
 
 DEFAULT = {
