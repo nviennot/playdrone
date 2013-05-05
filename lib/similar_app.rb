@@ -12,17 +12,12 @@ module SimilarApp
 
     def filter_app_signature(app, field)
       bl = blacklist(field)
-      Set.new(app[field].reject { |s| bl.include? s })
+      Set.new(app[field].to_a.reject { |s| bl.include? s })
     end
 
-    def get_similar_apps(app, options={})
-      field      = options[:field]     || :sig_resources_100
-      threshold  = options[:threshold] || 0.8
-      min_count  = options[:min_count] || 1
-
-      return [] if app[field].try(:size).to_i < min_count
-      app_signature = filter_app_signature(app, field)
-      return [] if app_signature.size < min_count
+    def get_similar_apps(app_signature, options={})
+      field      = options[:field]
+      threshold  = options[:threshold]
 
       signatures_for_es = app_signature.to_a
       if signatures_for_es.size > 1024
@@ -34,7 +29,7 @@ module SimilarApp
       min_matches = [(app_signature.size * threshold).round, signatures_for_es.size].min
 
       result = App.index("signatures").search(
-        :size => 100,
+        :size => 10000,
         :fields => [:_id, :downloads, field],
 
         :query => {
@@ -122,21 +117,36 @@ module SimilarApp
       @@merge_scripts[prefix].eval(Redis.for_apps, :keys => apps, :argv => downloads)
     end
 
+    MIN_COUNTS = [1, 3, 10]
+    THRESHOLDS = [0.6, 0.7, 0.8, 0.9, 1.0]
+
     def process(app_id, options={})
       cutoff = options.delete(:cutoff)
       raise "cutoff?" unless cutoff
 
       app = App.find("signatures", app_id, :no_raise => true,
                      :fields => ["sig_resources_#{cutoff}", "sig_asset_hashes_#{cutoff}"])
+      return unless app
 
-      if app
-        similar_apps_resources = get_similar_apps(app, options.merge(:field => "sig_resources_#{cutoff}"))
-        similar_apps_hashes    = get_similar_apps(app, options.merge(:field => "sig_asset_hashes_#{cutoff}"))
+      THRESHOLDS.each do |threshold|
+        MIN_COUNTS.each do |min_count|
+          similar_apps_resources = []
+          app_signature_resources = filter_app_signature(app, "sig_resources_#{cutoff}")
+          if app_signature_resources.size >= min_count
+            similar_apps_resources = get_similar_apps(app_signature_resources, :field => "sig_resources_#{cutoff}", :threshold => threshold)
+          end
 
-        merge(similar_apps_resources, 'res')
-        merge(similar_apps_hashes,    'hashes')
-        merge(similar_apps_resources, 'all')
-        merge(similar_apps_hashes,    'all')
+          similar_apps_hashes = []
+          app_signature_asset_hashes = filter_app_signature(app, "sig_asset_hashes_#{cutoff}")
+          if app_signature_asset_hashes.size >= min_count
+            similar_apps_hashes = get_similar_apps(app_signature_asset_hashes, :field => "sig_asset_hashes_#{cutoff}", :threshold => threshold)
+          end
+
+          merge(similar_apps_resources, "#{threshold}:#{min_count}:res")
+          merge(similar_apps_hashes,    "#{threshold}:#{min_count}:hashes")
+          merge(similar_apps_resources, "#{threshold}:#{min_count}:all")
+          merge(similar_apps_hashes,    "#{threshold}:#{min_count}:all")
+        end
       end
     end
 
@@ -165,15 +175,8 @@ module SimilarApp
     end
 
     def batch(options={})
-      app_ids = options.delete(:app_ids)
-
-      result_file = Rails.root.join('matches', options.values.join("_"))
-      if result_file.exist?
-        STDERR.puts "*** Skipping #{options} ***"
-        return
-      end
-
-      app_ids ||= get_decompiled_app_ids
+      app_ids = options.delete(:app_ids) || get_decompiled_app_ids
+      cutoff = options[:cutoff]
 
       raise "queue is not empty" unless get_queue_size.zero?
       Redis.for_apps.flushdb
@@ -194,24 +197,25 @@ module SimilarApp
         sleep 1
       end
 
-      result = { :resources    => get_matching_sets('res'),
-                 :asset_hashes => get_matching_sets('hashes'),
-                 :all          => get_matching_sets('all') }
-
-      File.open(result_file, 'w') do |f|
-        f.puts MultiJson.dump(result, :pretty => true)
+      THRESHOLDS.each do |threshold|
+        MIN_COUNTS.each do |min_count|
+          result_file = Rails.root.join('matches', [cutoff, threshold, min_count].join("_"))
+          result = { :resources    => get_matching_sets("#{threshold}:#{min_count}:res"),
+                     :asset_hashes => get_matching_sets("#{threshold}:#{min_count}:hashes"),
+                     :all          => get_matching_sets("#{threshold}:#{min_count}:all") }
+          File.open(result_file, 'w') do |f|
+            f.puts MultiJson.dump(result, :pretty => true)
+          end
+        end
       end
+
       true
     end
 
     def batch_all
       app_ids = get_decompiled_app_ids
       [100, 300, 1000, 3000].each do |cutoff|
-        [0.6, 0.7, 0.8, 0.9, 1.0].reverse.each do |threshold|
-          batch(:app_ids => app_ids, :min_count => 10,
-                                     :threshold => threshold,
-                                     :cutoff    => cutoff)
-        end
+        batch(:app_ids => app_ids, :cutoff => cutoff)
       end
       true
     end
