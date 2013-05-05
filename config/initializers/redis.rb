@@ -14,5 +14,5 @@ def Redis.instance
 end
 
 def Redis.for_apps
-  @_redis_for_apps ||= Redis.new(:db => 1, :driver => :hiredis)
+  @_redis_for_apps ||= Redis.new(:db => 1, :driver => :hiredis, :timeout => 10*60)
 end

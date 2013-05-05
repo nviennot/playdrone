@@ -185,9 +185,25 @@ module SimilarApp
       ).results.map(&:_id).shuffle
     end
 
+    def save_results(options={})
+      cutoff = options[:cutoff]
+
+      THRESHOLDS.each do |threshold|
+        MIN_COUNTS.each do |min_count|
+          ['res', 'hashes', 'merged'].each do |type|
+            result_file = Rails.root.join('matches', [type, cutoff, threshold, min_count].join("_"))
+            result = get_matching_sets("#{type}:#{threshold}:#{min_count}")
+            File.open(result_file, 'w') do |f|
+              f.puts MultiJson.dump(result, :pretty => true)
+            end
+          end
+        end
+      end
+      true
+    end
+
     def batch(options={})
       app_ids = options.delete(:app_ids) || get_decompiled_app_ids
-      cutoff = options[:cutoff]
 
       raise "queue is not empty" unless get_queue_size.zero?
       Redis.for_apps.flushdb
@@ -208,19 +224,7 @@ module SimilarApp
         sleep 1
       end
 
-      THRESHOLDS.each do |threshold|
-        MIN_COUNTS.each do |min_count|
-          ['res', 'hashes', 'merged'].each do |type|
-            result_file = Rails.root.join('matches', [type, cutoff, threshold, min_count].join("_"))
-            result = get_matching_sets("#{type}:#{threshold}:#{min_count}")
-            File.open(result_file, 'w') do |f|
-              f.puts MultiJson.dump(result, :pretty => true)
-            end
-          end
-        end
-      end
-
-      true
+      save_results(options)
     end
 
     def batch_all
