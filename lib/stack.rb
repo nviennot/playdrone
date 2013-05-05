@@ -15,18 +15,7 @@ module Stack
               use DownloadApk
               use DecompileApk
               use IndexSources
-              use FindTwitterTokens
-              use FindAmazonTokens
-              use FindFacebookTokens
-              use FindLinkedinTokens
-              use FindFoursquareTokens
-              use FindBitlyv1Tokens
-              use FindBitlyv2Tokens
-              use FindYelpv1Tokens
-              use FindYelpv2Tokens
-              use FindFlickrTokens
-              use FindGoogleMapsTokens
-              use FindGoogleOauth2Tokens
+              use FindTokens
               use LookForNativeLibraries
               use Signature
     end
