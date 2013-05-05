@@ -16,8 +16,8 @@ module SimilarApp
     end
 
     def get_similar_apps(app, app_signature, options={})
-      field      = options[:field]
-      threshold  = options[:threshold]
+      field = options[:field]
+      min_threshold  = options[:thresholds].min
 
       signatures_for_es = app_signature.to_a
       if signatures_for_es.size > 1024
@@ -26,10 +26,10 @@ module SimilarApp
         signatures_for_es = signatures_for_es.shuffle[0...1024]
       end
 
-      min_matches = [(app_signature.size * threshold).round, signatures_for_es.size].min
+      min_matches = [(app_signature.size * min_threshold).round, signatures_for_es.size].min
 
       result = App.index("signatures").search(
-        :size => 100,
+        :size => 100000,
         :fields => [:_id, :downloads, field],
 
         :query => {
@@ -41,17 +41,22 @@ module SimilarApp
       )
 
       # result contains app
-      similar_apps = []
-      result.results.each do |match|
-        match_signature = filter_app_signature(match, field)
-        score = (match_signature & app_signature).size.to_f / 
-                (match_signature | app_signature).size.to_f
+      matches = {}
+      options[:thresholds].each do |threshold|
+        similar_apps = []
+        similar_apps << {:id => app._id, :downloads => app.downloads, :score => 1.0}
+        result.results.each do |match|
+          match_signature = filter_app_signature(match, field)
+          score = (match_signature & app_signature).size.to_f / 
+                  (match_signature | app_signature).size.to_f
 
-        if score >= threshold && app._id != match._id
-          similar_apps << {:id => match._id, :downloads => match.downloads, :score => score}
+          if score >= threshold && app._id != match._id
+            similar_apps << {:id => match._id, :downloads => match.downloads, :score => score}
+          end
         end
+        matches[threshold] = similar_apps
       end
-      similar_apps << {:id => app._id, :downloads => app.downloads, :score => 1.0}
+      matches
     end
 
     def merge(similar_apps, prefix)
@@ -117,11 +122,8 @@ module SimilarApp
       @@merge_scripts[prefix].eval(Redis.for_apps, :keys => apps, :argv => downloads)
     end
 
-    # MIN_COUNTS = [1, 3, 10]
-    # THRESHOLDS = [0.6, 0.7, 0.8, 0.9, 1.0]
-
-    MIN_COUNTS = [3]
-    THRESHOLDS = [0.8, 1.0]
+    MIN_COUNTS = [1, 3, 10]
+    THRESHOLDS = [0.6, 0.7, 0.8, 0.9, 1.0]
 
     def process(app_id, options={})
       cutoff = options.delete(:cutoff)
@@ -131,24 +133,30 @@ module SimilarApp
                      :fields => ["_id", "downloads", "sig_resources_#{cutoff}", "sig_asset_hashes_#{cutoff}"])
       return unless app
 
+      app_signature_resources = filter_app_signature(app, "sig_resources_#{cutoff}")
+      if app_signature_resources.size >= MIN_COUNTS.min
+        similar_apps_resources = get_similar_apps(app, app_signature_resources,
+                                                  :field => "sig_resources_#{cutoff}", :thresholds => THRESHOLDS)
+      end
+
+      app_signature_asset_hashes = filter_app_signature(app, "sig_asset_hashes_#{cutoff}")
+      if app_signature_asset_hashes.size >= MIN_COUNTS.min
+        similar_apps_hashes = get_similar_apps(app, app_signature_asset_hashes,
+                                               :field => "sig_asset_hashes_#{cutoff}", :thresholds => THRESHOLDS)
+      end
+
       THRESHOLDS.each do |threshold|
         MIN_COUNTS.each do |min_count|
-          similar_apps_resources = []
-          app_signature_resources = filter_app_signature(app, "sig_resources_#{cutoff}")
           if app_signature_resources.size >= min_count
-            similar_apps_resources = get_similar_apps(app, app_signature_resources, :field => "sig_resources_#{cutoff}", :threshold => threshold)
+            merge(similar_apps_resources[threshold], "res:#{threshold}:#{min_count}")
+            merge(similar_apps_resources[threshold], "merged:#{threshold}:#{min_count}")
           end
 
-          similar_apps_hashes = []
-          app_signature_asset_hashes = filter_app_signature(app, "sig_asset_hashes_#{cutoff}")
           if app_signature_asset_hashes.size >= min_count
-            similar_apps_hashes = get_similar_apps(app, app_signature_asset_hashes, :field => "sig_asset_hashes_#{cutoff}", :threshold => threshold)
+            merge(similar_apps_hashes[threshold], "hashes:#{threshold}:#{min_count}")
+            merge(similar_apps_hashes[threshold], "merged:#{threshold}:#{min_count}")
           end
 
-          merge(similar_apps_resources, "#{threshold}:#{min_count}:res")
-          merge(similar_apps_hashes,    "#{threshold}:#{min_count}:hashes")
-          merge(similar_apps_resources, "#{threshold}:#{min_count}:all")
-          merge(similar_apps_hashes,    "#{threshold}:#{min_count}:all")
         end
       end
     end
@@ -202,12 +210,12 @@ module SimilarApp
 
       THRESHOLDS.each do |threshold|
         MIN_COUNTS.each do |min_count|
-          result_file = Rails.root.join('matches', [cutoff, threshold, min_count].join("_"))
-          result = { :resources    => get_matching_sets("#{threshold}:#{min_count}:res"),
-                     :asset_hashes => get_matching_sets("#{threshold}:#{min_count}:hashes"),
-                     :all          => get_matching_sets("#{threshold}:#{min_count}:all") }
-          File.open(result_file, 'w') do |f|
-            f.puts MultiJson.dump(result, :pretty => true)
+          ['res', 'hashes', 'merged'].each do |type|
+            result_file = Rails.root.join('matches', [type, cutoff, threshold, min_count].join("_"))
+            result = get_matching_sets("#{type}:#{threshold}:#{min_count}")
+            File.open(result_file, 'w') do |f|
+              f.puts MultiJson.dump(result, :pretty => true)
+            end
           end
         end
       end
