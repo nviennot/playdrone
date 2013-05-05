@@ -38,6 +38,12 @@ group :development do
   gem 'capistrano_colors', :require => false
   gem 'rvm-capistrano',    :require => false
   gem 'guard-livereload',  :require => false
+
+  # token validation
+  gem 'oauth',   :require => false
+  gem 'oauth2',  :require => false
+  gem 'signet',  :require => false
+  gem 'aws-sdk', :require => false
 end
 
 group :assets do
