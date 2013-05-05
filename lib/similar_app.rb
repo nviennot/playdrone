@@ -15,7 +15,7 @@ module SimilarApp
       Set.new(app[field].to_a.reject { |s| bl.include? s })
     end
 
-    def get_similar_apps(app_signature, options={})
+    def get_similar_apps(app, app_signature, options={})
       field      = options[:field]
       threshold  = options[:threshold]
 
@@ -29,7 +29,7 @@ module SimilarApp
       min_matches = [(app_signature.size * threshold).round, signatures_for_es.size].min
 
       result = App.index("signatures").search(
-        :size => 10000,
+        :size => 100,
         :fields => [:_id, :downloads, field],
 
         :query => {
@@ -47,11 +47,11 @@ module SimilarApp
         score = (match_signature & app_signature).size.to_f / 
                 (match_signature | app_signature).size.to_f
 
-        if score >= threshold
+        if score >= threshold && app._id != match._id
           similar_apps << {:id => match._id, :downloads => match.downloads, :score => score}
         end
       end
-      similar_apps
+      similar_apps << {:id => app._id, :downloads => app.downloads, :score => 1.0}
     end
 
     def merge(similar_apps, prefix)
@@ -125,7 +125,7 @@ module SimilarApp
       raise "cutoff?" unless cutoff
 
       app = App.find("signatures", app_id, :no_raise => true,
-                     :fields => ["sig_resources_#{cutoff}", "sig_asset_hashes_#{cutoff}"])
+                     :fields => ["_id", "downloads", "sig_resources_#{cutoff}", "sig_asset_hashes_#{cutoff}"])
       return unless app
 
       THRESHOLDS.each do |threshold|
@@ -133,13 +133,13 @@ module SimilarApp
           similar_apps_resources = []
           app_signature_resources = filter_app_signature(app, "sig_resources_#{cutoff}")
           if app_signature_resources.size >= min_count
-            similar_apps_resources = get_similar_apps(app_signature_resources, :field => "sig_resources_#{cutoff}", :threshold => threshold)
+            similar_apps_resources = get_similar_apps(app, app_signature_resources, :field => "sig_resources_#{cutoff}", :threshold => threshold)
           end
 
           similar_apps_hashes = []
           app_signature_asset_hashes = filter_app_signature(app, "sig_asset_hashes_#{cutoff}")
           if app_signature_asset_hashes.size >= min_count
-            similar_apps_hashes = get_similar_apps(app_signature_asset_hashes, :field => "sig_asset_hashes_#{cutoff}", :threshold => threshold)
+            similar_apps_hashes = get_similar_apps(app, app_signature_asset_hashes, :field => "sig_asset_hashes_#{cutoff}", :threshold => threshold)
           end
 
           merge(similar_apps_resources, "#{threshold}:#{min_count}:res")
