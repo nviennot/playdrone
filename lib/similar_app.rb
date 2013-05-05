@@ -21,8 +21,8 @@ module SimilarApp
       min_count  = options[:min_count] || 1
 
       return [] if app[field].try(:size).to_i < min_count
-
       app_signature = filter_app_signature(app, field)
+      return [] if app_signature.size < min_count
 
       signatures_for_es = app_signature.to_a
       if signatures_for_es.size > 1024
@@ -31,6 +31,8 @@ module SimilarApp
         signatures_for_es = signatures_for_es.shuffle[0...1024]
       end
 
+      min_matches = [(app_signature.size * threshold).round, signatures_for_es.size].min
+
       result = App.index("signatures").search(
         :size => 100,
         :fields => [:_id, :downloads, field],
@@ -38,7 +40,7 @@ module SimilarApp
         :query => {
           :terms => {
             field => signatures_for_es,
-            :minimum_match => (signatures_for_es.size * threshold).to_i
+            :minimum_match => min_matches
           }
         }
       )
@@ -150,7 +152,7 @@ module SimilarApp
     end
 
     def get_queue_size
-      Sidekiq::Stats.new.queues["match_similar_app"]
+      Sidekiq::Stats.new.queues["match_similar_app"].to_i
     end
 
     def get_decompiled_app_ids
@@ -159,7 +161,7 @@ module SimilarApp
         :query  => {:match_all => {}},
         :filter => {:term => {:decompiled => true}},
         :fields => [:_id]
-      ).results.map(&:_id)
+      ).results.map(&:_id).shuffle
     end
 
     def batch(options={})
@@ -206,7 +208,7 @@ module SimilarApp
       app_ids = get_decompiled_app_ids
       [100, 300, 1000, 3000].each do |cutoff|
         [0.6, 0.7, 0.8, 0.9, 1.0].reverse.each do |threshold|
-          batch(:app_ids => app_ids, :min_count => 1,
+          batch(:app_ids => app_ids, :min_count => 10,
                                      :threshold => threshold,
                                      :cutoff    => cutoff)
         end
