@@ -8,3 +8,4 @@ scratch/
 graphs/*.pdf
 graphs/*.dat
 graphs/*.cache
+matches/*

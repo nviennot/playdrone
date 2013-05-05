@@ -4,6 +4,7 @@ namespace :deploy do
       symlinks = {}
       symlinks["/srv/repos"]   = "repos"
       symlinks["/srv/scratch"] = "scratch"
+      symlinks["/srv/matches"] = "matches"
       symlinks["#{shared_path}/nodes.yml"] = "config/nodes.yml"
 
       cmd = []

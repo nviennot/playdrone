@@ -50,15 +50,15 @@ class Stack::Signature < Stack::BaseGit
     asset_hashes = signature[:asset_hashes].map { |h| h.keys.first =~ blacklisted_filenames_re ? nil : h.values.first }.compact
     resources    = signature[:resources]
 
-    asset_hashes_blacklist_100  = SimilarApp.blacklist(:sig_asset_hashes, 100)
-    asset_hashes_blacklist_300  = SimilarApp.blacklist(:sig_asset_hashes, 300)
-    asset_hashes_blacklist_1000 = SimilarApp.blacklist(:sig_asset_hashes, 1000)
-    asset_hashes_blacklist_3000 = SimilarApp.blacklist(:sig_asset_hashes, 3000)
+    asset_hashes_blacklist_100  = SimilarApp.blacklist(:sig_asset_hashes_100)
+    asset_hashes_blacklist_300  = SimilarApp.blacklist(:sig_asset_hashes_300)
+    asset_hashes_blacklist_1000 = SimilarApp.blacklist(:sig_asset_hashes_1000)
+    asset_hashes_blacklist_3000 = SimilarApp.blacklist(:sig_asset_hashes_3000)
 
-    resources_blacklist_100    = SimilarApp.blacklist(:sig_resources, 100)
-    resources_blacklist_300    = SimilarApp.blacklist(:sig_resources, 300)
-    resources_blacklist_1000   = SimilarApp.blacklist(:sig_resources, 1000)
-    resources_blacklist_3000   = SimilarApp.blacklist(:sig_resources, 3000)
+    resources_blacklist_100    = SimilarApp.blacklist(:sig_resources_100)
+    resources_blacklist_300    = SimilarApp.blacklist(:sig_resources_300)
+    resources_blacklist_1000   = SimilarApp.blacklist(:sig_resources_1000)
+    resources_blacklist_3000   = SimilarApp.blacklist(:sig_resources_3000)
 
     env[:app].sig_asset_hashes_100  = asset_hashes.reject { |s| asset_hashes_blacklist_100.include? s }
     env[:app].sig_asset_hashes_300  = asset_hashes.reject { |s| asset_hashes_blacklist_300.include? s }
