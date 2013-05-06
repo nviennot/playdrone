@@ -6,11 +6,10 @@ class Stack::BaseTokenFinder < Stack::Base
       @random_threshold  = options.delete(:random_threshold)
       @proximity         = options.delete(:proximity)
       @token_filters     = options.merge(options) do |k,v|
-        if v.is_a?(String)
-          { :matcher => v, :must_have => nil }
-        else
-          v
-        end
+        { :must_have        => nil,
+          :cannot_have      => nil,
+          :line_cannot_have => nil,
+        }.merge(v.is_a?(String) ? {:matcher => v} : v)
       end
     end
   end
@@ -43,6 +42,8 @@ class Stack::BaseTokenFinder < Stack::Base
     regexps = filters.values.map { |r| Regexp.new(r[:matcher]) }
 
     must_have = filters.values.map { |r| r[:must_have] }
+    cannot_have = filters.values.map { |r| r[:cannot_have] }
+    line_cannot_have = filters.values.map { |r| r[:line_cannot_have] }
 
     proximity = self.class.proximity ? self.class.proximity : regexps.count - 1
     lines = exec_and_capture(["grep -E -C#{proximity} -R -h '#{_regexps.first}' #{src_dir}/src",
@@ -50,9 +51,11 @@ class Stack::BaseTokenFinder < Stack::Base
 
     lines.split("\n").split("--").map do |group|
       regexps.each_with_index.map do |regexp, index|
+        group   = group.reject { |l| l =~ line_cannot_have[index] } if line_cannot_have[index]
         matches = group.map { |l| l.scan(regexp) }.flatten.compact
         matches = matches.select { |l| is_random(l) } if self.class.random_threshold
         matches = matches.select { |l| l =~ must_have[index] } if must_have[index]
+        matches = matches.reject { |l| l =~ cannot_have[index] } if cannot_have[index]
         break if matches.empty?
         # XXX somewhat shady .. it's possible to have two matches in the same group ..
         matches.first
