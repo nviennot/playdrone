@@ -173,3 +173,60 @@ def valid_yelpv2_tokens?(consumer_key, consumer_secret, token, token_secret)
     end
   end
 end
+
+# old way of testing S3 and EC2
+def old_test_aws_keys (key, secret)
+
+  creds = {
+    :access_key_id     => key,
+    :secret_access_key => secret
+  }
+
+  result = {
+    :access_key_id     => key,
+    :secret_access_key => secret,
+    :valid             => false,
+    :s3_active         => false,
+    :ec2_active        => false,
+    :s3_buckets        => nil,
+    :ec2_instances     => nil,
+    :s3_error          => nil,
+    :ec2_error         => nil,
+  }
+
+  begin
+    result[:s3_buckets] = AWS::S3.new(creds).buckets.count
+    result[:s3_active] = true
+    result[:valid] = true
+  rescue AWS::S3::Errors::InvalidAccessKeyId => e
+    result[:s3_error] = e.to_s
+  rescue AWS::S3::Errors::SignatureDoesNotMatch => e
+    result[:s3_error] = e.to_s
+  rescue AWS::S3::Errors::AccessDenied => e
+    result[:s3_error] = e.to_s
+    result[:valid] = true
+  rescue AWS::S3::Errors::NotSignedUp => e
+    result[:s3_error] = e.to_s
+    result[:valid] = true
+  end
+
+  begin
+    result[:ec2_instances] = AWS::EC2.new(creds).instances.count
+    result[:ec2_active] = true
+    result[:valid] = true
+  rescue AWS::EC2::Errors::AuthFailure => e
+    result[:ec2_error] = e.to_s
+  rescue AWS::EC2::Errors::InvalidAccessKeyId => e
+    result[:ec2_error] = e.to_s
+  rescue AWS::EC2::Errors::SignatureDoesNotMatch => e
+    result[:ec2_error] = e.to_s
+  rescue AWS::EC2::Errors::UnauthorizedOperation => e
+    result[:ec2_error] = e.to_s
+    result[:valid] = true
+  rescue AWS::EC2::Errors::OptInRequired => e
+    result[:ec2_error] = e.to_s
+    result[:valid] = true
+  end
+  result
+end
+
