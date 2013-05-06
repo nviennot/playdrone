@@ -10,4 +10,7 @@ GooglePlayCrawler::Application.routes.draw do
   get 'sources'                => 'sources#search'
   get 'apps/:app_id'           => 'apps#show',    :app_id => /[^\/]+/
   get 'apps/:app_id/:filename' => 'sources#show', :app_id => /[^\/]+/, :filename => /.+/
+
+  get '/matches' => 'matches#index'
+  post '/matches/:app_id' => 'matches#match', :app_id => /[^\/]+/
 end

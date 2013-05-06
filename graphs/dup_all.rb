@@ -12,7 +12,7 @@ DEFAULT = {
   :type      => 'merged',
   :cutoff    => 300,
   :threshold => 0.8,
-  :min_count => 1,
+  :min_count => 3,
   :cross_dev => false
 }
 
@@ -75,6 +75,46 @@ def cluster
 
   cluster_sizes.sort_by { |x,y| x }.map do |size, values|
     [size, CUTOFFS.map { |cutoff| values[cutoff].to_i }]
+  end
+end
+
+def rating
+  data = get_data
+  require 'set'
+  dup_apps = Set.new [data.values].flatten
+
+  buckets = Hash[['<500', 500, 1000, 5000, 10000, 50000, 100000, 500000,
+                  1000000, 5000000, 10000000, 50000000, '>50000000'].map { |dl| [dl, [ [], [] ] ] }]
+
+  app_mapping_file = Rails.root.join('matches', 'app_mapping')
+  app_mapping = MultiJson.load(File.open(app_mapping_file))
+  app_mapping.each do |id, attrs|
+    next unless attrs['sig_resources_count_300'].to_i    >= DEFAULT[:min_count] ||
+                attrs['sig_asset_hashes_count_300'].to_i >= DEFAULT[:min_count]
+    next unless attrs['star_rating'] > 0.0
+    #next if attrs['title'] =~ /wallpaper/i
+
+    downloads = attrs['downloads'].to_i
+    if downloads < 500
+      downloads = '<500'
+    elsif downloads > 50000000
+      downloads = '>50000000'
+    end
+
+    # regular, dups
+    buckets[downloads][dup_apps.include?(id) ? 1 : 0] << attrs['star_rating']
+  end
+
+  get_stats = lambda do |array|
+    return 0 if array.count.zero?
+
+    mean = array.sum/array.count.to_f
+    stddev = Math.sqrt(array.map { |v| (mean-v)**2 }.sum/array.count.to_f)
+    [mean, stddev]
+  end
+
+  data = buckets.each_with_index.map do |b, i|
+    [b[0], get_stats.call(b[1][0]), get_stats.call(b[1][1])]
   end
 end
 

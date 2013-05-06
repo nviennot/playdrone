@@ -1,8 +1,8 @@
 set terminal pdf dashed size 12,3
 set output "dup_cluster.pdf"
 
-set title "Cluster Size repartition, Different Blacklist Cutoffs\n(min_count = 1, threshold = 0.8)"
-set key reverse Left outside
+set title "Cluster Size repartition, Different Blacklist Cutoffs\n(min_count = 3, threshold = 0.8)"
+set key invert reverse Left outside
 
 set ylabel "Number of Clusters" offset +1, 0
 set xlabel "Cluster Size (excluding original app)" offset 0,+0.2

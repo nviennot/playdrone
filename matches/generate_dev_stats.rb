@@ -6,20 +6,27 @@ if app_mapping_file.exist?
   app_mapping = MultiJson.load(File.open(app_mapping_file))
 else
   File.open(app_mapping_file, 'w') do |f|
+    need_comma = false
+
     f.puts "{"
     result = App.scan_search('signatures',
       :query => {:match_all => {}},
-      :fields => [:_id, :developer_name, :free, :downloads, :star_rating, :permission],
+      :fields => [:_id, :developer_name, :free, :downloads, :star_rating, :permission,
+                  :title, :sig_resources_count_300, :sig_asset_hashes_count_300]
     ) do |data|
-      # FIXME f.puts ","
-      h = Hash[data.map { |r| [r[:_id], { 'developer_name' => r['fields']['developer_name'],
-                                          'free'           => r['fields']['free'],
-                                          'num_permissions'=> r['fields']['permission'].to_a.count,
-                                          'downloads'      => r['fields']['downloads'],
-                                          'star_rating'    => r['fields']['star_rating'] }] }]
-      f.puts MultiJson.dump(h, :pretty => true)[2..-2]
+      h = Hash[data.map { |r| [r[:_id], { 'developer_name'             => r['fields']['developer_name'],
+                                          'free'                       => r['fields']['free'],
+                                          'num_permissions'            => r['fields']['permission'].to_a.count,
+                                          'downloads'                  => r['fields']['downloads'],
+                                          'title'                      => r['fields']['title'],
+                                          'sig_resources_count_300'    => r['fields']['sig_resources_count_300'],
+                                          'sig_asset_hashes_count_300' => r['fields']['sig_asset_hashes_count_300'],
+                                          'star_rating'                => r['fields']['star_rating'] }] }]
+      f.puts "," if need_comma
+      f.print MultiJson.dump(h, :pretty => true)[2..-2]
+      need_comma = true
     end
-    f.puts "}"
+    f.puts "\n}"
   end
   app_mapping = MultiJson.load(File.open(app_mapping_file))
 end
