@@ -126,15 +126,20 @@ def count_apps_using_tokens(type)
 end
 
 # ES query for the tokens, per app
+# we want all the apps in all the indexes,
+# but only one entry per app, unless the
+# tokens changed over time.
+# so, we remove the _index and aggregate
 def get_tokens(type)
   fields = token_fields(type)
   tokenclass = token_class(type)
   count = "#{tokenclass.token_name}_count"
   App.index('_all').search(:size   => 100000,
-                           :query  => { :match_all => {} },
+                           #:query  => { :match_all => {} },
                            :filter => { :script => { :script => "doc['#{count}'].value > 0" } },
                            :fields => fields,
-                           :facets => {tokenclass.token_name => {:statistical => { :field => "#{count}" } } } ).results
+                           #:facets => {tokenclass.token_name => {:statistical => { :field => "#{count}" } } } ).results
+                          ).results.map{|x| x.except(:_index)}.uniq
 end
 
 # ES gives us this:
@@ -174,4 +179,16 @@ end
 
 def all_app_ids
   app_ids = App.index('_all').search(:size => 10000000, :query => {:match_all => {}}, :fields => [:_id]).results.map(&:_id).uniq
+end
+
+def remove_raw(tokens)
+  tokens.map{ |x| { x.keys.first => x.values.first.except(:raw).except("raw") } }
+end
+
+def save_to_file(tokens, filename)
+  File.open(filename, 'w') { |f| f.write(JSON.pretty_generate tokens) }
+end
+
+def load_from_file(filename)
+  JSON.parse(File.read(filename))
 end
