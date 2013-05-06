@@ -15,6 +15,7 @@ module Stack
               use DownloadApk
               use DecompileApk
               use IndexSources
+              use FindTokens
               use LookForNativeLibraries
               use Signature
     end

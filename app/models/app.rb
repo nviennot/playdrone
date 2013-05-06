@@ -148,4 +148,64 @@ class App < ES::Model
   property :sig_resources_count,    :type => :integer
   property :sig_asset_hashes,       :type => :string, :index => :not_analyzed
   property :sig_asset_hashes_count, :type => :integer
+
+  # FindTwitterTokens
+  property :twitter_token_count,           :type => :integer
+  property :twitter_token_consumer_secret, :type => :string, :index => :not_analyzed
+  property :twitter_token_consumer_key,    :type => :string, :index => :not_analyzed
+
+  # FindAmazonTokens
+  property :amazon_token_count,             :type => :integer
+  property :amazon_token_access_key_id,     :type => :string, :index => :not_analyzed
+  property :amazon_token_secret_access_key, :type => :string, :index => :not_analyzed
+
+  # FindFacebookTokens
+  property :facebook_token_count,      :type => :integer
+  property :facebook_token_app_id,     :type => :string, :index => :not_analyzed
+  property :facebook_token_app_secret, :type => :string, :index => :not_analyzed
+
+  # FindLinkedinTokens
+  property :linkedin_token_count,      :type => :integer
+  property :linkedin_token_api_key,    :type => :string, :index => :not_analyzed
+  property :linkedin_token_secret_key, :type => :string, :index => :not_analyzed
+
+  # FindFoursquareTokens
+  property :foursquare_token_count,         :type => :integer
+  property :foursquare_token_client_id,     :type => :string, :index => :not_analyzed
+  property :foursquare_token_client_secret, :type => :string, :index => :not_analyzed
+
+  # FindBitlyv1Tokens
+  property :bitlyv1_token_count,   :type => :integer
+  property :bitlyv1_token_login,   :type => :string, :index => :not_analyzed
+  property :bitlyv1_token_api_key, :type => :string, :index => :not_analyzed
+
+  # FindBitlyv2Tokens
+  property :bitlyv2_token_count,         :type => :integer
+  property :bitlyv2_token_client_id,     :type => :string, :index => :not_analyzed
+  property :bitlyv2_token_client_secret, :type => :string, :index => :not_analyzed
+
+  # FindYelpv1Tokens
+  property :yelpv1_token_count, :type => :integer
+  property :yelpv1_token_ywsid, :type => :string, :index => :not_analyzed
+
+  # FindYelpv2Tokens
+  property :yelpv2_token_count,           :type => :integer
+  property :yelpv2_token_consumer_key,    :type => :string, :index => :not_analyzed
+  property :yelpv2_token_consumer_secret, :type => :string, :index => :not_analyzed
+  property :yelpv2_token_token,           :type => :string, :index => :not_analyzed
+  property :yelpv2_token_token_secret,    :type => :string, :index => :not_analyzed
+
+  # FindFlickrTokens
+  property :flickr_token_count,   :type => :integer
+  property :flickr_token_api_key, :type => :string, :index => :not_analyzed
+  property :flickr_token_api_sec, :type => :string, :index => :not_analyzed
+
+  # FindGoogleMapsTokens
+  property :google_maps_token_count,   :type => :integer
+  property :google_maps_token_api_key, :type => :string, :index => :not_analyzed
+
+  # FindGoogleOauth2Tokens
+  property :google_oauth2_token_count,         :type => :integer
+  property :google_oauth2_token_client_id,     :type => :string, :index => :not_analyzed
+  property :google_oauth2_token_client_secret, :type => :string, :index => :not_analyzed
 end

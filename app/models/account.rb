@@ -3,7 +3,6 @@ class Account < Hashie::Dash
 
   # Just in case...
   MAX_QUERIES_PER_MIN = Rails.env.production? ? 50 : 2**10
-
   AUTH_TOKEN_EXPIRE = 1.hour
 
   # Not using redis hashes for the fields, it's easier to deal with expirations
