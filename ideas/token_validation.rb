@@ -88,12 +88,13 @@ def valid_foursquare_tokens?(client_id, client_secret)
 end
 
 def valid_google_maps_tokens?(api_key)
-  response = Faraday.get "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522,151.1957362&radius=500&types=food&name=harbour&sensor=false&key=#{api_key}"
-  api_response = JSON.parse(response.body, :symbolize_names => true)
-  if api_response[:status] == "OK"
-    true
+  return false if api_key == ""
+  response = Faraday.head "http://maps.googleapis.com/maps/api/staticmap?center=10021&zoom=13&size=600x300&sensor=false&key=#{api_key}"
+  case response.status
+  when 200 then true
+  when 403 then false
   else
-    Rails.logger.debug api_response
+    Rails.logger.debug response.inspect
     false
   end
 end
