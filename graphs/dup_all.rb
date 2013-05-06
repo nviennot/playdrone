@@ -13,7 +13,7 @@ DEFAULT = {
   :cutoff    => 300,
   :threshold => 0.8,
   :min_count => 1,
-  :cross_dev => true
+  :cross_dev => false
 }
 
 def get_data(options={})

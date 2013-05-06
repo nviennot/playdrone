@@ -79,6 +79,26 @@ module ES
       end
     end
 
+    def self.scan_search(index_name, query, &block)
+      require 'ruby-progressbar'
+      # XXX Size is per shard, not total
+      result = self.index(index_name).search({:search_type => :scan, :scroll => '5m', :size => 1000}, query)
+      return if result.total.zero?
+
+      scroll_id = result[:raw][:_scroll_id]
+      bar = ProgressBar.create(:format => '%t |%b>%i| %c/%C %e', :title => "Scan", :total => result.total)
+      loop do
+        result = ES.server.request(:get, '_search/scroll', :scroll => '5m', :scroll_id => scroll_id)
+        data = result.hits.hits
+        break if data.empty?
+        scroll_id = result[:_scroll_id]
+
+        bar.progress += data.size
+        block.call(data)
+      end
+      bar.finish
+    end
+
     def save(index_name)
       self.class.index(index_name).put(self.id, self.reject { |k, v| v.nil? })
     end
