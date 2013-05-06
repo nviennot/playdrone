@@ -1,8 +1,10 @@
+load 'ideas/token_validation.rb'
+
 TOKEN_TYPES = [
   :amazon,
   :bitlyv1,
   :bitlyv2,
-  :facebook, 
+  :facebook,
   :flickr,
   :foursquare,
   :google_maps,
@@ -16,11 +18,30 @@ TOKEN_TYPES = [
 MAX_TO_TEST = 25
 # get all the valid tokens
 def get_all_valid_tokens(opts={})
-  opts = {
-    :max_to_test   => MAX_TO_TEST,
-    :include_raw   => true
-  }.merge(opts)
   TOKEN_TYPES.map { |type| { type => get_valid_tokens(type, opts) } }
+end
+
+# compute the aggregate statistics on the result
+# of get_all_valid_tokens
+def aggregate_stats(valid_token_result)
+  r = {}
+  valid_token_result.map do |type|
+    type.values.last.values.first
+  end.each do |t|
+    r.merge!(t) { |k,old,new| old + new }
+  end
+
+  # recompute percentages
+  r[:unique_percent_valid] = r[:unique_valid].to_f  / r[:unique_tested]
+  r[:unique_coverage]      = r[:unique_tested].to_f / r[:unique_candidates]
+  r[:total_percent_valid]  = r[:total_valid].to_f   / r[:total_tested]
+  r[:total_coverage]       = r[:total_tested].to_f  / r[:total_candidates]
+  r
+end
+
+# extract the stats only from a complete result (:include_raw => true)
+def stats_only(valid_token_result)
+  valid_token_result.map { |x| { x.keys.first => x.values.last.values.first } }
 end
 
 # get all valid tokens of a certain type
@@ -33,6 +54,7 @@ end
 # test the credentials and return a bunch of data
 def valid_tokens(type, candidates, opts={})
   opts = {
+    :max_to_test => MAX_TO_TEST,
     :include_raw => false
   }.merge(opts)
 
