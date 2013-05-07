@@ -150,6 +150,8 @@ class App < ES::Model
   property :sig_asset_hashes_count, :type => :integer
 
   # FindTokens
+  property :token_count,                      :type => :integer
+  property :token_type_count,                 :type => :integer
   property :twitter_token_count,              :type => :integer
   property :twitter_token_consumer_secret,    :type => :string, :index => :not_analyzed
   property :twitter_token_consumer_key,       :type => :string, :index => :not_analyzed

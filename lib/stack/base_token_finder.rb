@@ -24,6 +24,9 @@ class Stack::BaseTokenFinder < Stack::BaseGit
       when /[0-9]/
         num_switches += 3 if last_class != /[0-9]/
         last_class = /[0-9]/
+      when /[_-]/
+        num_switches += 2 if last_class != /[_-]/
+        last_class = /[_-]/
       end
     end
     num_switches.to_f / str.size > threshold
@@ -40,6 +43,7 @@ class Stack::BaseTokenFinder < Stack::BaseGit
     regexps          = filters.values.map { |r| Regexp.new(r[:matcher]) }
     must_have        = filters.values.map { |r| r[:must_have] }
     cannot_have      = filters.values.map { |r| r[:cannot_have] }
+    line_must_have   = filters.values.map { |r| r[:line_must_have] }
     line_cannot_have = filters.values.map { |r| r[:line_cannot_have] }
 
     proximity = token_options[:proximity] ? token_options[:proximity] : regexps.count - 1
@@ -48,6 +52,7 @@ class Stack::BaseTokenFinder < Stack::BaseGit
 
     lines.split("\n").split("--").map do |group|
       regexps.each_with_index.map do |regexp, index|
+        group   = group.select   { |l| l =~ line_must_have[index]   } if line_must_have[index]
         group   = group.reject   { |l| l =~ line_cannot_have[index] } if line_cannot_have[index]
         matches = group.map      { |l| l.scan(regexp) }.flatten.compact
         matches = matches.select { |l| is_random(l, token_options[:random_threshold]) } if token_options[:random_threshold]
@@ -87,13 +92,19 @@ class Stack::BaseTokenFinder < Stack::BaseGit
   end
 
   def populate_app(env, all_tokens)
+    total_count = 0
     all_tokens.each do |token_name, token_keys|
       app_token_name = "#{token_name}_token"
 
       token_keys.each do |key_name, keys|
         env[:app]["#{app_token_name}_#{key_name}"] = keys
       end
-      env[:app]["#{app_token_name}_count"] = token_keys.first[1].count
+      count = token_keys.first[1].count
+      total_count += count
+      env[:app]["#{app_token_name}_count"] = count
     end
+
+    env[:app][:token_count] = total_count
+    env[:app][:token_type_count] = all_tokens.count
   end
 end
