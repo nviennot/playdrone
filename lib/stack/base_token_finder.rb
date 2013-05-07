@@ -1,20 +1,16 @@
 class Stack::BaseTokenFinder < Stack::Base
   class << self
-    attr_accessor :token_name, :token_filters, :random_threshold, :proximity
+    attr_accessor :tokens_definitions
     def tokens(token_name, options={})
-      @token_name        = "#{token_name}_token"
-      @random_threshold  = options.delete(:random_threshold)
-      @proximity         = options.delete(:proximity)
-      @token_filters     = options.merge(options) do |k,v|
-        { :must_have        => nil,
-          :cannot_have      => nil,
-          :line_cannot_have => nil,
-        }.merge(v.is_a?(String) ? {:matcher => v} : v)
-      end
+      @tokens_definitions ||= {}
+      token_def = (@tokens_definitions[token_name] ||= {})
+      token_def[:random_threshold] = options.delete(:random_threshold)
+      token_def[:proximity]        = options.delete(:proximity)
+      token_def[:token_filters]    = Hash[options.map { |k, v| [k, v.is_a?(String) ? { :matcher => v } : v ] }]
     end
   end
 
-  def is_random(str)
+  def is_random(str, threshold)
     last_class = nil
     num_switches = 0
     str.split('').each do |char|
@@ -30,31 +26,32 @@ class Stack::BaseTokenFinder < Stack::Base
         last_class = /[0-9]/
       end
     end
-    num_switches.to_f / str.size > self.class.random_threshold
+    num_switches.to_f / str.size > threshold
   end
 
-  def extract_tokens(env, filters={})
+  def extract_tokens(env, token_options)
     filter = /^src\/.*\.java$/
     env[:need_src].call(:include_filter => filter)
     src_dir = env[:src_dir]
 
-    _regexps = filters.values.map { |r| r[:matcher] }
-    regexps = filters.values.map { |r| Regexp.new(r[:matcher]) }
+    filters = token_options[:token_filters]
 
-    must_have = filters.values.map { |r| r[:must_have] }
-    cannot_have = filters.values.map { |r| r[:cannot_have] }
+    _regexps         = filters.values.map { |r| r[:matcher] }
+    regexps          = filters.values.map { |r| Regexp.new(r[:matcher]) }
+    must_have        = filters.values.map { |r| r[:must_have] }
+    cannot_have      = filters.values.map { |r| r[:cannot_have] }
     line_cannot_have = filters.values.map { |r| r[:line_cannot_have] }
 
-    proximity = self.class.proximity ? self.class.proximity : regexps.count - 1
+    proximity = token_options[:proximity] ? token_options[:proximity] : regexps.count - 1
     lines = exec_and_capture(["grep -E -C#{proximity} -R -h '#{_regexps.first}' #{src_dir}/src",
                               *_regexps[1..-1].map { |r| "grep -E -C#{proximity} '#{r}'" }].join(" | "))
 
     lines.split("\n").split("--").map do |group|
       regexps.each_with_index.map do |regexp, index|
-        group   = group.reject { |l| l =~ line_cannot_have[index] } if line_cannot_have[index]
-        matches = group.map { |l| l.scan(regexp) }.flatten.compact
-        matches = matches.select { |l| is_random(l) } if self.class.random_threshold
-        matches = matches.select { |l| l =~ must_have[index] } if must_have[index]
+        group   = group.reject   { |l| l =~ line_cannot_have[index] } if line_cannot_have[index]
+        matches = group.map      { |l| l.scan(regexp) }.flatten.compact
+        matches = matches.select { |l| is_random(l, token_options[:random_threshold]) } if token_options[:random_threshold]
+        matches = matches.select { |l| l =~ must_have[index]   } if must_have[index]
         matches = matches.reject { |l| l =~ cannot_have[index] } if cannot_have[index]
         break if matches.empty?
         # XXX somewhat shady .. it's possible to have two matches in the same group ..
@@ -64,13 +61,15 @@ class Stack::BaseTokenFinder < Stack::Base
   end
 
   def call(env)
-    tokens = extract_tokens(env, self.class.token_filters)
+    self.class.tokens_definitions.each do |token_name, token_options|
+      tokens = extract_tokens(env, token_options)
 
-    self.class.token_filters.keys.each_with_index do |key, index|
-      key = "#{self.class.token_name}_#{key}"
-      env[:app][key] = tokens.map { |t| t[index] }
+      app_token_name = "#{token_name}_token"
+      token_options[:token_filters].keys.each_with_index do |key, index|
+        env[:app]["#{app_token_name}_#{key}"] = tokens.map { |t| t[index] }
+      end
+      env[:app]["#{app_token_name}_count"] = tokens.count
     end
-    env[:app]["#{self.class.token_name}_count"] = tokens.count
 
     @stack.call(env)
   end
