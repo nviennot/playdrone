@@ -66,16 +66,18 @@ class Stack::BaseTokenFinder < Stack::BaseGit
   end
 
   def persist_to_git(env, git)
-    all_tokens = Hash[self.class.tokens_definitions.map do |token_name, token_options|
-      tokens = extract_tokens(env, token_options)
-      next unless tokens.size > 0
+    all_tokens = StatsD.measure 'stack.find_tokens' do
+      Hash[self.class.tokens_definitions.map do |token_name, token_options|
+        tokens = extract_tokens(env, token_options)
+        next unless tokens.size > 0
 
-      keys = Hash[token_options[:token_filters].keys.each_with_index.map do |key, index|
-        [key, tokens.map { |t| t[index] }]
-      end]
+        keys = Hash[token_options[:token_filters].keys.each_with_index.map do |key, index|
+          [key, tokens.map { |t| t[index] }]
+        end]
 
-      [token_name, keys]
-    end.compact]
+        [token_name, keys]
+      end.compact]
+    end
 
     git.commit do |index|
       index.add_file('tokens.json', MultiJson.dump(all_tokens, :pretty => true))
