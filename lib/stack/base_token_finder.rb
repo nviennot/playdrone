@@ -1,4 +1,4 @@
-class Stack::BaseTokenFinder < Stack::Base
+class Stack::BaseTokenFinder < Stack::BaseGit
   class << self
     attr_accessor :tokens_definitions
     def tokens(token_name, options={})
@@ -60,17 +60,40 @@ class Stack::BaseTokenFinder < Stack::Base
     end.compact.uniq
   end
 
-  def call(env)
-    self.class.tokens_definitions.each do |token_name, token_options|
+  def persist_to_git(env, git)
+    all_tokens = Hash[self.class.tokens_definitions.map do |token_name, token_options|
       tokens = extract_tokens(env, token_options)
+      next unless tokens.size > 0
 
-      app_token_name = "#{token_name}_token"
-      token_options[:token_filters].keys.each_with_index do |key, index|
-        env[:app]["#{app_token_name}_#{key}"] = tokens.map { |t| t[index] }
-      end
-      env[:app]["#{app_token_name}_count"] = tokens.count
+      keys = Hash[token_options[:token_filters].keys.each_with_index.map do |key, index|
+        [key, tokens.map { |t| t[index] }]
+      end]
+
+      [token_name, keys]
+    end.compact]
+
+    git.commit do |index|
+      index.add_file('tokens.json', MultiJson.dump(all_tokens, :pretty => true))
     end
 
+    populate_app(env, all_tokens)
     @stack.call(env)
+  end
+
+  def parse_from_git(env, git)
+    all_tokens = MultiJson.load(git.read_file('tokens.json'))
+    populate_app(env, all_tokens)
+    @stack.call(env)
+  end
+
+  def populate_app(env, all_tokens)
+    all_tokens.each do |token_name, token_keys|
+      app_token_name = "#{token_name}_token"
+
+      token_keys.each do |key_name, keys|
+        env[:app]["#{app_token_name}_#{key_name}"] = keys
+      end
+      env[:app]["#{app_token_name}_count"] = token_keys.first[1].count
+    end
   end
 end
