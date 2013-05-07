@@ -1,9 +1,10 @@
 class Stack::BaseTokenFinder < Stack::BaseGit
   class << self
     attr_accessor :tokens_definitions
-    def tokens(token_name, options={})
+    def tokens(token_name, options={}, &block)
       @tokens_definitions ||= {}
       token_def = (@tokens_definitions[token_name] ||= {})
+      token_def[:custom]           = block
       token_def[:random_threshold] = options.delete(:random_threshold)
       token_def[:proximity]        = options.delete(:proximity)
       token_def[:token_filters]    = Hash[options.map { |k, v| [k, v.is_a?(String) ? { :matcher => v } : v ] }]
@@ -33,10 +34,6 @@ class Stack::BaseTokenFinder < Stack::BaseGit
   end
 
   def extract_tokens(env, token_options)
-    filter = /^src\/.*\.java$/
-    env[:need_src].call(:include_filter => filter)
-    src_dir = env[:src_dir]
-
     filters = token_options[:token_filters]
 
     _regexps         = filters.values.map { |r| r[:matcher] }
@@ -47,7 +44,7 @@ class Stack::BaseTokenFinder < Stack::BaseGit
     line_cannot_have = filters.values.map { |r| r[:line_cannot_have] }
 
     proximity = token_options[:proximity] ? token_options[:proximity] : regexps.count - 1
-    lines = exec_and_capture(["grep -E -C#{proximity} -R -h '#{_regexps.first}' #{src_dir}/src",
+    lines = exec_and_capture(["grep -E -C#{proximity} -R -h '#{_regexps.first}' #{env[:src_dir]}/src",
                               *_regexps[1..-1].map { |r| "grep -E -C#{proximity} '#{r}'" }].join(" | "))
 
     lines.split("\n").split("--").map do |group|
@@ -66,14 +63,22 @@ class Stack::BaseTokenFinder < Stack::BaseGit
   end
 
   def persist_to_git(env, git)
+    filter = /^src\/.*\.java$/
+    env[:need_src].call(:include_filter => filter)
+
     all_tokens = StatsD.measure 'stack.find_tokens' do
       Hash[self.class.tokens_definitions.map do |token_name, token_options|
-        tokens = extract_tokens(env, token_options)
-        next unless tokens.size > 0
+        if token_options[:custom]
+          keys = token_options[:custom].call(env)
+          next unless keys && keys.size > 0
+        else
+          tokens = extract_tokens(env, token_options)
+          next unless tokens.size > 0
 
-        keys = Hash[token_options[:token_filters].keys.each_with_index.map do |key, index|
-          [key, tokens.map { |t| t[index] }]
-        end]
+          keys = Hash[token_options[:token_filters].keys.each_with_index.map do |key, index|
+            [key, tokens.map { |t| t[index] }]
+          end]
+        end
 
         [token_name, keys]
       end.compact]

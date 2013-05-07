@@ -188,4 +188,8 @@ class App < ES::Model
   property :google_oauth_token_count,         :type => :integer
   property :google_oauth_token_client_id,     :type => :string, :index => :not_analyzed
   property :google_oauth_token_client_secret, :type => :string, :index => :not_analyzed
+  property :titanium_token_count,             :type => :integer
+  property :titanium_token_api_key,           :type => :string, :index => :not_analyzed
+  property :titanium_token_oauth_key,         :type => :string, :index => :not_analyzed
+  property :titanium_token_oauth_secret,      :type => :string, :index => :not_analyzed
 end

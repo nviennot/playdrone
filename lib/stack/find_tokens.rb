@@ -43,4 +43,19 @@ class Stack::FindTokens < Stack::BaseTokenFinder
                   :token            => 'TOKEN.*?[="]([0-9a-zA-Z_-]{32})["&]',
                   :token_secret     => 'TOKEN.*?[="]([0-9a-zA-Z_-]{27})["&]',
                   :random_threshold => 0.3
+
+  tokens :titanium do |env|
+    tiapp = env[:src_git].read_file('assets/tiapp.xml')
+    if tiapp
+      xml = Nokogiri::XML(tiapp)
+
+      api_key = xml.css('property[name=acs-api-key-production]').text
+      oauth_key = xml.css('property[name=acs-oauth-key-production]').text
+      oauth_secret = xml.css('property[name=acs-oauth-secret-production]').text
+
+      if api_key.present? && oauth_key.present? && oauth_secret.present?
+        { :api_key => [api_key], :oauth_key => [oauth_key], :oauth_secret => [oauth_secret] }
+      end
+    end
+  end
 end
