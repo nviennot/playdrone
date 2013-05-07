@@ -1,0 +1,11 @@
+.row
+  .span12
+    %table.table
+      - @apps.each do |app|
+        %tr
+          %td= link_to app[:app],    "https://play.google.com/store/apps/details?id=#{app[:app]}"
+          %td= link_to app[:parent], "https://play.google.com/store/apps/details?id=#{app[:parent]}"
+        %tr
+          %td{:colspan => 2}
+            - app[:categories].each do |cat, selected|
+              = link_to cat, '#', :class => "match_cat#{selected ? ' selected' : ''}", :app => app[:app]
