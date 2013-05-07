@@ -51,7 +51,8 @@ def valid_tokens(type, candidates, opts={})
   _candidates = candidates
   Rails.logger.info "Considering #{candidates.count} #{type} token tuples"
   results[:stats][:total_candidates] = candidates.count
-  candidates = consolidate_by_frequency candidates
+  #candidates = consolidate_by_frequency candidates
+  candidates = candidates.uniq.shuffle
   Rails.logger.info "Consolidating to #{candidates.count} #{type} unique token tuples"
   results[:stats][:unique_candidates] = candidates.count
   num_to_test = opts[:max_to_test] && candidates.count > opts[:max_to_test] ? opts[:max_to_test] : candidates.count
@@ -199,5 +200,34 @@ def save_to_file(tokens, filename)
 end
 
 def load_from_file(filename)
-  JSON.parse(File.read(filename))
+  MultiJson.load(File.open(filename), :symbolize_keys => true)
 end
+
+####
+# test the tokens from the json file
+def test_tokens_from_file(filename)
+  #tokens = load_from_file(filename).except(:amazon)
+  tokens = load_from_file(filename)
+  results = {}
+  tokens.map do |type, type_tokens|
+    results[type] = valid_tokens(type, type_tokens.map{|x| x.values}, :max_to_test => 400)
+  end
+  results
+end
+
+def gather_aggregate_stats(valid_token_result)
+  r = {}
+  valid_token_result.map do |x|
+    x.last[:stats]
+  end.each do |t|
+    r.merge!(t) { |k,old,new| old + new }
+  end
+
+  # recompute percentages
+  r[:unique_percent_valid] = r[:unique_valid].to_f  / r[:unique_tested]
+  r[:unique_coverage]      = r[:unique_tested].to_f / r[:unique_candidates]
+  r[:total_percent_valid]  = r[:total_valid].to_f   / r[:total_tested]
+  r[:total_coverage]       = r[:total_tested].to_f  / r[:total_candidates]
+  r
+end
+

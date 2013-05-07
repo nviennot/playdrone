@@ -60,7 +60,8 @@ def valid_facebook_tokens?(app_id, app_secret)
   if response.body =~ /^access_token=(.*)\|(.*)$/
     true
   else
-    Rails.logger.debug response.body
+    Rails.logger.info response.body
+    Rails.logger.info " ^^ while processing #{app_id}, #{app_secret}"
     false
   end
 end
@@ -94,7 +95,8 @@ def valid_google_tokens?(api_key)
   when 200 then true
   when 403 then false
   else
-    Rails.logger.debug response.inspect
+    Rails.logger.info response.inspect
+    Rails.logger.info " ^^ while processing #{api_key}"
     false
   end
 end
@@ -111,7 +113,8 @@ def valid_google_oauth_tokens?(client_id, client_secret)
       :scope => 'https://mail.google.com/mail/feed/atom'
     })
   rescue Exception => ex
-    Rails.logger.debug ex
+    Rails.logger.info ex
+    Rails.logger.info " ^^ while processing #{client_id} #{client_secret}"
     false
   end
 end
@@ -168,7 +171,7 @@ def valid_yelpv2_tokens?(consumer_key, consumer_secret, token, token_secret)
     if api_response["error"]["id"] == "EXCEEDED_REQS"
       true
     else
-      Rails.logger.debug api_response
+      Rails.logger.info api_response
       false
     end
   end
