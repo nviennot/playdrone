@@ -87,7 +87,7 @@ def valid_foursquare_tokens?(client_id, client_secret)
   end
 end
 
-def valid_google_maps_tokens?(api_key)
+def valid_google_tokens?(api_key)
   return false if api_key == ""
   response = Faraday.head "http://maps.googleapis.com/maps/api/staticmap?center=10021&zoom=13&size=600x300&sensor=false&key=#{api_key}"
   case response.status
@@ -100,7 +100,7 @@ def valid_google_maps_tokens?(api_key)
 end
 
 # using deprecated OAuth 1.0 API so we don't need user account
-def valid_google_oauth2_tokens?(client_id, client_secret)
+def valid_google_oauth_tokens?(client_id, client_secret)
   client = Signet::OAuth1::Client.new(
     :temporary_credential_uri => 'https://www.google.com/accounts/OAuthGetRequestToken',
     :client_credential_key    => client_id,

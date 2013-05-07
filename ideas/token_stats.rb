@@ -1,24 +1,11 @@
 load 'ideas/token_validation.rb'
 
-TOKEN_TYPES = [
-  :amazon,
-  :bitlyv1,
-  :bitlyv2,
-  :facebook,
-  :flickr,
-  :foursquare,
-  :google_maps,
-  :google_oauth2,
-  :linkedin,
-  :twitter,
-  :yelpv1,
-  :yelpv2
-]
+@token_types = Stack::FindTokens.tokens_definitions.keys
 
 MAX_TO_TEST = 25
 # get all the valid tokens
 def get_all_valid_tokens(opts={})
-  TOKEN_TYPES.map { |type| { type => get_valid_tokens(type, opts) } }
+  @token_types.map { |type| { type => get_valid_tokens(type, opts) } }
 end
 
 # compute the aggregate statistics on the result
@@ -111,15 +98,15 @@ def valid_token_tuple?(type, *args)
   args.flatten!
   case type
     when :amazon        then valid_amazon_tokens?(*args)
-    when :bitlyv1       then valid_bitlyv1_tokens?(args[1], args[0])
+    when :bitlyv1       then valid_bitlyv1_tokens?(*args)
     when :bitlyv2       then valid_bitlyv2_tokens?(*args)
-    when :facebook      then valid_facebook_tokens?(args[1], args[0])
+    when :facebook      then valid_facebook_tokens?(*args)
     when :flickr        then valid_flickr_tokens?(*args)
     when :foursquare    then valid_foursquare_tokens?(*args)
-    when :google_maps   then valid_google_maps_tokens?(*args)
-    when :google_oauth2 then valid_google_oauth2_tokens?(*args)
-    when :linkedin      then valid_linkedin_tokens?(args[1], args[0])
-    when :twitter       then valid_twitter_tokens?(args[1], args[0])
+    when :google        then valid_google_tokens?(*args)
+    when :google_oauth  then valid_google_oauth_tokens?(*args)
+    when :linkedin      then valid_linkedin_tokens?(*args)
+    when :twitter       then valid_twitter_tokens?(*args)
     when :yelpv1        then valid_yelpv1_tokens?(*args)
     when :yelpv2        then valid_yelpv2_tokens?(*args)
   else
@@ -154,8 +141,7 @@ end
 # so, we remove the _index and aggregate
 def get_tokens(type)
   fields = token_fields(type)
-  tokenclass = token_class(type)
-  count = "#{tokenclass.token_name}_count"
+  count = "#{type}_token_count"
   App.index('_all').search(:size   => 100000,
                            #:query  => { :match_all => {} },
                            :filter => { :script => { :script => "doc['#{count}'].value > 0" } },
@@ -180,13 +166,14 @@ def token_tuples(type)
   end.flatten(1)
 end
 
-def token_class(type)
-  eval "Stack::Find#{type.to_s.camelize}Tokens"
-end
+#def token_class(type)
+  #eval "Stack::Find#{type.to_s.camelize}Tokens"
+#end
 
 def token_fields(type)
-  tokenclass = token_class(type)
-  fields = tokenclass.token_filters.keys.map { |key| "#{tokenclass.token_name}_#{key}" }
+  #tokenclass = token_class(type)
+  #fields = tokenclass.token_filters.keys.map { |key| "#{tokenclass.token_name}_#{key}" }
+  Stack::FindTokens.tokens_definitions[type][:token_filters].keys.map { |key| "#{type}_token_#{key}" }
 end
 
 def test_credentials(type, *creds)
@@ -194,7 +181,7 @@ def test_credentials(type, *creds)
 end
 
 def count_all
-  TOKEN_TYPES.each do |type|
+  @token_types.each do |type|
     puts "#{type}: #{(get_tokens type).count}"
   end
 end
