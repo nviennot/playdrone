@@ -47,9 +47,14 @@ def valid_bitlyv2_tokens?(client_id, client_secret)
   begin
     client.fetch_access_token!
   rescue Signet::AuthorizationError => ex
-    if ex.response.body == "INVALID_LOGIN"
-      true
-    else # INVALID_CLIENT_ID or INVALID_CLIENT_SECRET
+    case ex.response.body
+    when "INVALID_LOGIN"         then true
+    when "RATE_LIMIT_EXCEEDED"   then true
+    when "INVALID_CLIENT_ID"     then false
+    when "INVALID_CLIENT_SECRET" then false
+    else
+      Rails.logger.info ex.response.body
+      Rails.logger.info " ^^ while processing #{client_id}, #{client_secret}"
       false
     end
   end
