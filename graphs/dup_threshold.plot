@@ -1,8 +1,8 @@
-set terminal pdf dashed size 12,3
+set terminal pdf dashed size 10,2.5
 set output "dup_threshold.pdf"
 
-set title "Similar Apps vs Score Threshold\n(min_count = 3, cutoff = 300)"
-set key reverse Left outside
+#set title "Similar Apps vs Score Threshold\n(min_count = 3, cutoff = 300)"
+#set key reverse Left outside
 
 set ylabel "Number of Applications" offset +1, 0
 set xlabel "Score Threshold" offset 0,+0.2

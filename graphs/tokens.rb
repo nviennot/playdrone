@@ -1,38 +1,62 @@
 #!../script/rails runner
 
-require 'pry'
+tokens = Stack::FindTokens.tokens_definitions.keys
 
-TOKENS = Stack::FindTokens.tokens_definitions
+
+# result = App.index('tokens').search(
+  # :size => 0,
+  # :query => { :term => { :decompiled => true } },
+  # :facets => Hash[tokens.map do |token|
+    # [token, {
+      # :statistical => {
+        # :field => "#{token}_token_count"
+      # }
+    # }]
+  # end]
+# )
 
 result = App.index('tokens').search(
-  :size => 100000,
-  :query => { :match_all => {}},
-  :filter => { :range => { :token_count => { :from => 1 } } }
+  :size => 0,
+  :query => { :term => { :decompiled => true } },
+  :facets => Hash[tokens.map do |token|
+    [token, {
+      :statistical => {
+        :field => "#{token}_token_count"
+      }
+    }]
+  end]
 )
 
-data = {}
-result.results.each do |app|
-  TOKENS.each do |token, token_options|
-    keys = Hash[token_options[:token_filters].map do |key, opts|
-      v = app["#{token}_token_#{key}"].to_a.first
-      [key, v] if v
-    end.compact]
+require 'pry'
+binding.pry
 
-    if keys.present?
-      data[token] ||= []
-      data[token] << keys
-    end
-  end
-end
+# histogram = result.facets.has_native_libs.entries[1][1]
 
-File.open('tokens.json', 'w') do |f|
-  f.puts MultiJson.dump(data, :pretty => true)
-end
+# get_download_str = lambda do |i|
+  # dl = histogram[i]['key']
+  # return "#{dl}" if dl < 1_000
+  # dl /= 1000
+  # return "#{dl}k" if dl < 1_000
+  # dl /= 1000
+  # return "#{dl}M" if dl < 1_000
+# end
 
-data.each do |k, v|
-  v.uniq!
-end
+# get_download_bucket_str = lambda do |i|
+  # case i
+  # when 0                  then "<#{get_download_str.call(i+1)}"
+  # when histogram.size - 1 then ">#{get_download_str.call(i)}"
+  # else                         "#{get_download_str.call(i)}-#{get_download_str.call(i+1)}"
+  # end
+# end
 
-File.open('tokens-uniq.json', 'w') do |f|
-  f.puts MultiJson.dump(data, :pretty => true)
-end
+# data = histogram.each_with_index.map do |r, i|
+  # total = r['total'].to_i
+  # count = r['count'].to_i
+  # [get_download_bucket_str.call(i), total ,count-total]
+# end
+
+# File.open(ARGV[0], 'w') do |f|
+  # data.each do |d|
+    # f.puts d.join(' ')
+  # end
+# end

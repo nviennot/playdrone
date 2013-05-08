@@ -35,6 +35,7 @@ File.open(ARGV[0], 'w') do |f|
   (max_x+1).times do |x|
     (max_y+1).times do |y|
       f.puts [x, y, Math.log(coords[[x,y]].to_i+1)].join(' ')
+      #f.puts [x, y, coords[[x,y]].to_i].join(' ')
     end
     f.puts ''
   end
