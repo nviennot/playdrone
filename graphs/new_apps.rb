@@ -1,4 +1,5 @@
 #!../script/rails runner
+exit
 
 result = App.index('2013*').search(
   :size => 0,

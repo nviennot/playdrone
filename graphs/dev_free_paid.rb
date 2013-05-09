@@ -31,6 +31,10 @@ devs.each do |dev, free_paid|
 end
 
 
+# require 'pry'
+# require 'gsl'
+# binding.pry
+
 File.open(ARGV[0], 'w') do |f|
   (max_x+1).times do |x|
     (max_y+1).times do |y|

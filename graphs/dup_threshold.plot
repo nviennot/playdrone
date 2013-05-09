@@ -1,4 +1,4 @@
-set terminal pdf dashed size 10,2.5
+set terminal pdf dashed size 4.5,2
 set output "dup_threshold.pdf"
 
 #set title "Similar Apps vs Score Threshold\n(min_count = 3, cutoff = 300)"
