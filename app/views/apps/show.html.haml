@@ -9,9 +9,8 @@
 
 .row
   .span12.git-path
-    %h4
-      Git Repository:
-    = text_field_tag :query, @repo_path, :class => 'input git-path'
+    %h4 Git Repository
+    = text_field_tag :query, "git clone #{@repo_path} #{@app_id}", :class => 'input git-path'
     %hr
 
 .row
