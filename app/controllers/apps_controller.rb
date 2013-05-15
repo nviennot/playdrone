@@ -64,6 +64,14 @@ class AppsController < ApplicationController
     @pagination = WillPaginate::Collection.new(page, per_page, @results.total)
   end
 
+  def updated_apps_index
+    @results = App.index("2013*").search(
+      :size   => 0,
+      :query  => { :term => { :apk_updated => true } },
+      :facets => { :updates => { :terms => { :field => :_id, :size => 1000 } } }
+    )
+  end
+
   def show
     @app_id = params[:app_id]
 

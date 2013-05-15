@@ -1,0 +1,22 @@
+%br
+.row
+  .span6.offset1
+    %h1 Updated Apps
+  .span4.inline
+    %a.logo{:href => '/'} Google Play With Me
+  .span10.offset1
+    %hr
+
+.row
+  .span10.offset1
+    %table.table
+      %thead
+        %tr
+          %th Android Package
+          %th Update Count
+      %tbody
+        - @results.facets['updates']['terms'].each do |r|
+          - app_id = r['term']; update_count = r['count']
+          %tr
+            %td= link_to app_id, "/apps/#{app_id}"
+            %td= update_count
