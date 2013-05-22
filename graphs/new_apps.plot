@@ -1,4 +1,4 @@
-set terminal pdf dashed size 4.5,2
+set terminal pdf dashed size 8,4
 set output "new_apps.pdf"
 
 #set title "Apps Released and Removed on the Market"
@@ -16,13 +16,13 @@ set timefmt "%s"
 set format x "%a, %d %b"
 
 set xtics nomirror rotate by -20
-set yrange [-2000:6000]
+set yrange [-4000:6000]
 
 set xtics 86400
 
 
 set style fill solid border -1
-set boxwidth 32400 absolute
+set boxwidth 50000 absolute
 
 set ytics 1000
 
