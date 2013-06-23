@@ -39,6 +39,9 @@ data = result.facets.in['entries'].size.times.map do |i|
   if Time.at(day).to_date <= Date.parse("2013-04-26")
   elsif Time.at(day).to_date == Date.parse("2013-05-05")
   elsif Time.at(day).to_date == Date.parse("2013-05-06")
+  elsif Time.at(day).to_date == Date.parse("2013-06-03")
+  elsif Time.at(day).to_date == Date.parse("2013-06-04")
+  elsif Time.at(day).to_date == Date.parse("2013-06-05")
     # no good data
     nil
   else
