@@ -6,7 +6,7 @@ class Stack::PrepareFS < Stack::Base
 
   def call(env)
     env[:repo] = Repository.new(env[:app_id], :auto_create => true)
-    env[:need_git_gc] = false
+    env[:need_git_gc] ||= false
     Dir.mktmpdir "#{env[:app_id]}", Rails.root.join('scratch') do |dir|
       env[:scratch] = Pathname.new(dir)
       @stack.call(env)
