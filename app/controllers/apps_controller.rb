@@ -60,7 +60,7 @@ class AppsController < ApplicationController
       }
     end
 
-    @results = App.index(Date.today - 1).search(query)
+    @results = App.index(:latest).search(query)
     @pagination = WillPaginate::Collection.new(page, per_page, @results.total)
   end
 
@@ -83,7 +83,7 @@ class AppsController < ApplicationController
       end
     end
 
-    @app = App.find(Date.today - 1, @app_id)
+    @app = App.find(:latest, @app_id)
     @repo_path = "git://#{node}.googleplaywith.me/#{@app_id.gsub(/\./, '/')}.git"
 
     # Some apps don't have any permissions
