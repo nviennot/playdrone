@@ -2,6 +2,25 @@ module Stack
   # Each step in a stack must be idempotent, so the chain can fail at any point,
   # and we can retry the whole thing.
 
+  def self.reprocess_app(options={})
+    raise "missing app_id" unless options[:app_id]
+
+    @create_app_stack ||= ::Middleware::Builder.new do
+      use LockApp
+        use PrepareFS
+          use ForEachDate
+            use IndexAppAfter
+              use FetchMarketDetails
+                use DownloadApk
+                use DecompileApk
+                # use IndexSources # can be enabled if needed
+                use FindTokens
+                use LookForNativeLibraries
+                # use Signature
+    end
+    @create_app_stack.call(options.merge(:git_readonly => true))
+  end
+
   def self.process_app(options={})
     raise "missing app_id"     unless options[:app_id]
     raise "missing crawled_at" unless options[:crawled_at]

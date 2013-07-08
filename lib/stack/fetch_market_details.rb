@@ -34,34 +34,38 @@ class Stack::FetchMarketDetails < Stack::BaseGit
   def parse_from_git(env, git)
     if git.read_file('not_found')
       instantiate_app(env, nil)
+      # Chain halts
     else
       instantiate_app(env, MultiJson.load(git.read_file('metadata.json'), :symbolize_keys => true))
       @stack.call(env)
-      # Chain halts
     end
   end
 
   private
 
-  def populate_yesterday_app(env)
-    yesterday_tag_ref = "refs/tags/market_metadata-#{env[:crawled_at] - 1.day}"
-    yesterday_commit_sha = Rugged::Reference.lookup(env[:repo], yesterday_tag_ref).try(:target)
+  def populate_previous_app(env)
+    env[:crawl_dates] ||= env[:repo].tags('market_metadata-*').map { |t| Date.parse(t.gsub(/market_metadata-/, '')) }.sort
+    previous_date = env[:crawl_dates].select { |d| d < env[:crawled_at] }.last
+    return unless previous_date
 
-    return unless yesterday_commit_sha
-    yesterday_metadata = env[:repo].lookup(yesterday_commit_sha).tree['metadata.json']
-    return unless yesterday_metadata
-    yesterday_json = env[:repo].lookup(yesterday_metadata[:oid]).read_raw.data
-    env[:yesterday_app] = App.from_market(MultiJson.load(yesterday_json, :symbolize_keys => true))
+    previous_tag_ref = "refs/tags/market_metadata-#{previous_date}"
+    previous_commit_sha = Rugged::Reference.lookup(env[:repo], previous_tag_ref).try(:target)
+
+    return unless previous_commit_sha
+    previous_metadata = env[:repo].lookup(previous_commit_sha).tree['metadata.json']
+    return unless previous_metadata
+    previous_json = env[:repo].lookup(previous_metadata[:oid]).read_raw.data
+    env[:previous_app] = App.from_market(MultiJson.load(previous_json, :symbolize_keys => true))
   end
 
   def instantiate_app(env, raw_app)
-    populate_yesterday_app(env)
+    populate_previous_app(env)
 
     if raw_app
       env[:app] = App.from_market(raw_app)
     else
-      if env[:yesterday_app]
-        env[:app] = env[:yesterday_app].dup
+      if env[:previous_app]
+        env[:app] = env[:previous_app].dup
       else
         env[:app] = App.new.tap { |app| app._id = env[:app_id] }
       end
@@ -70,13 +74,11 @@ class Stack::FetchMarketDetails < Stack::BaseGit
 
     env[:app].crawled_at = env[:crawled_at]
 
-    if env[:yesterday_app]
+    if env[:previous_app]
       env[:app].market_released = false
-      env[:app].apk_updated     = raw_app ? (env[:yesterday_app].version_code != env[:app].version_code) : false
+      env[:app].apk_updated     = raw_app ? (env[:previous_app].version_code != env[:app].version_code) : false
       env[:app].market_removed  = !raw_app
     else
-      # XXX If we don't have the data from the day before, we are going to make bad decisions
-      # FIXME
       env[:app].market_released = true
       env[:app].apk_updated     = false
       env[:app].market_removed  = false

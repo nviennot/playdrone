@@ -103,6 +103,8 @@ class Stack::BaseGit < Stack::Base
     end
 
     def commit(options={}, &block)
+      raise "Must not write to git" if env[:git_readonly]
+
       self.message = options[:message]
 
       index = Index.new(repo)
@@ -139,6 +141,7 @@ class Stack::BaseGit < Stack::Base
     end
 
     def set_head
+      raise "Must not write to git" if env[:git_readonly]
       Rugged::Reference.create(repo, 'HEAD', branch_ref, true)
     end
 
@@ -190,7 +193,11 @@ class Stack::BaseGit < Stack::Base
   def call(env)
     git = Git.new(env, self.class.git_options)
 
-    should_process = env[:reprocess].to_s == git.branch.to_s || !git.tag_exist?
-    should_process ? persist_to_git(env, git) : parse_from_git(env, git)
+    if env[:git_readonly]
+      git.tag_exist? ? parse_from_git(env, git) : raise(MissingData)
+    else
+      should_process = env[:reprocess].to_s == git.branch.to_s || !git.tag_exist?
+      should_process ? persist_to_git(env, git) : parse_from_git(env, git)
+    end
   end
 end

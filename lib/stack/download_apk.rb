@@ -81,7 +81,6 @@ class Stack::DownloadApk < Stack::BaseGit
     download_info = Market::PurchaseResult.new(fake_payload)
 
     app.forward_locked = download_info.forward_locked
-    app.crawled_at = env[:crawled_at]
 
     @stack.call(env)
   end
