@@ -10,6 +10,11 @@ class Stack::DownloadApk < Stack::BaseGit
     app = env[:app]
     return unless app.free
 
+    if env[:crawled_at] < Date.today - 7.day
+      # not happening
+      return
+    end
+
     download_info = nil
     response = nil
 

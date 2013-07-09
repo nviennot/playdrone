@@ -21,12 +21,24 @@ class App < ES::Model
 
   def initialize(attributes={}, &block)
     super
-    downloads = self.downloads.to_i
-    self._boost = 10 * Math.log10(downloads.zero? ? 1 : downloads)
+
+    if self.downloads_str
+      dl = self.downloads_str.gsub(/(\+|,)/, '')
+      self.downloads = dl.to_i
+
+      case dl[0]
+      when '0' then self.downloads_max = 0
+      when '1' then self.downloads_max = 5 * self.downloads
+      when '5' then self.downloads_max = 2 * self.downloads
+      else raise "Download is weird: #{dl}"
+      end
+
+      # This average sucks a bit. Apps are likely to be closer to the lower bound.
+      self.downloads_avg = (self.downloads + self.downloads_max)/2
+    end
   end
 
   property :_id,                :type => :string,  :index    => :not_analyzed
-  property :_boost
 
   property :title,              :type => :string,  :analyzer => :simple
   property :description,        :type => :string,  :analyzer => :simple       # html
@@ -48,7 +60,12 @@ class App < ES::Model
   property :installation_size,  :type => :long
   property :permission,         :type => :string,  :index    => :not_analyzed
   property :uploaded_at,        :type => :date,    :store    => true
-  property :downloads,          :type => :long,    :store    => true
+
+  property :downloads_str,      :type => :string,  :index    => :not_analyzed
+  property :downloads,          :type => :long,    :store    => true # it's download_min, but w/e
+  property :downloads_avg,      :type => :long,    :store    => true
+  property :downloads_max,      :type => :long,    :store    => true
+
   property :comment_count,      :type => :integer
   property :ratings_count,      :type => :integer
   property :one_star_count,     :type => :integer
@@ -88,7 +105,7 @@ class App < ES::Model
           :installation_size  => app[:details][:app_details][:installation_size].to_i,
           :permission         => app[:details][:app_details][:permission], # this is an array
           :uploaded_at        => Date.parse(app[:details][:app_details][:upload_date]),
-          :downloads          => (app[:details][:app_details][:num_downloads] || '0').split('-')[0].gsub(/[^0-9]/,'').to_i,
+          :downloads_str      => app[:details][:app_details][:num_downloads] || '0',
           :comment_count      => app[:aggregate_rating][:comment_count],
           :ratings_count      => app[:aggregate_rating][:ratings_count],
           :one_star_count     => app[:aggregate_rating][:one_star_ratings],
