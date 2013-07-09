@@ -45,10 +45,10 @@ class App < ES::Model
   property :available_if_owned, :type => :boolean # what is this? I guess we'll find out
   property :version_code,       :type => :integer
   property :version_string,     :type => :string,  :index    => :no
-  property :installation_size,  :type => :integer # TODO XXX FIXME this should be long, going with a workaround.
+  property :installation_size,  :type => :long
   property :permission,         :type => :string,  :index    => :not_analyzed
   property :uploaded_at,        :type => :date,    :store    => true
-  property :downloads,          :type => :integer, :store    => true
+  property :downloads,          :type => :long,    :store    => true
   property :comment_count,      :type => :integer
   property :ratings_count,      :type => :integer
   property :one_star_count,     :type => :integer
@@ -103,8 +103,6 @@ class App < ES::Model
       raise _e
     end
 
-    # TODO FIXME index the installation_size as long type
-    app.installation_size = [app.installation_size, 2**31-1].min
     app
   end
 
@@ -116,6 +114,7 @@ class App < ES::Model
 
   # DownloadApk attributes
   property :forward_locked,  :type => :boolean
+  property :downloaded,      :type => :boolean
 
   # DecompileApk attributes
   property :decompiled,      :type => :boolean
@@ -123,31 +122,24 @@ class App < ES::Model
   # LookForNativeLibraries attributes
   property :has_native_libs, :type => :boolean
 
-  property :sig_resources_100,      :type => :string, :index => :not_analyzed
-  property :sig_resources_300,      :type => :string, :index => :not_analyzed
-  property :sig_resources_1000,     :type => :string, :index => :not_analyzed
-  property :sig_resources_3000,     :type => :string, :index => :not_analyzed
-  property :sig_resources_count_100,  :type => :integer
-  property :sig_resources_count_300,  :type => :integer
-  property :sig_resources_count_1000, :type => :integer
-  property :sig_resources_count_3000, :type => :integer
+  # Signature attributes
+  # property :sig_resources_100,      :type => :string, :index => :not_analyzed
+  # property :sig_resources_300,      :type => :string, :index => :not_analyzed
+  # property :sig_resources_1000,     :type => :string, :index => :not_analyzed
+  # property :sig_resources_3000,     :type => :string, :index => :not_analyzed
+  # property :sig_resources_count_100,  :type => :integer
+  # property :sig_resources_count_300,  :type => :integer
+  # property :sig_resources_count_1000, :type => :integer
+  # property :sig_resources_count_3000, :type => :integer
 
-  property :sig_asset_hashes_100,  :type => :string, :index => :not_analyzed
-  property :sig_asset_hashes_300,  :type => :string, :index => :not_analyzed
-  property :sig_asset_hashes_1000, :type => :string, :index => :not_analyzed
-  property :sig_asset_hashes_3000, :type => :string, :index => :not_analyzed
-  property :sig_asset_hashes_count_100,  :type => :integer
-  property :sig_asset_hashes_count_300,  :type => :integer
-  property :sig_asset_hashes_count_1000, :type => :integer
-  property :sig_asset_hashes_count_3000, :type => :integer
-
-  # to remove
-  property :sig_asset_names,        :type => :string, :index => :not_analyzed
-
-  property :sig_resources,          :type => :string, :index => :not_analyzed
-  property :sig_resources_count,    :type => :integer
-  property :sig_asset_hashes,       :type => :string, :index => :not_analyzed
-  property :sig_asset_hashes_count, :type => :integer
+  # property :sig_asset_hashes_100,  :type => :string, :index => :not_analyzed
+  # property :sig_asset_hashes_300,  :type => :string, :index => :not_analyzed
+  # property :sig_asset_hashes_1000, :type => :string, :index => :not_analyzed
+  # property :sig_asset_hashes_3000, :type => :string, :index => :not_analyzed
+  # property :sig_asset_hashes_count_100,  :type => :integer
+  # property :sig_asset_hashes_count_300,  :type => :integer
+  # property :sig_asset_hashes_count_1000, :type => :integer
+  # property :sig_asset_hashes_count_3000, :type => :integer
 
   # FindTokens
   property :token_count,                      :type => :integer

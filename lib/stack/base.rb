@@ -1,6 +1,4 @@
 class Stack::Base
-  class MissingData < RuntimeError; end
-
   attr_accessor :stack, :options
 
   def initialize(stack, options={})

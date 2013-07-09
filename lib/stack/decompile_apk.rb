@@ -72,7 +72,7 @@ class Stack::DecompileApk < Stack::BaseGit
   end
 
   def parse_from_git(env, git)
-    env[:app].decompiled = git.last_committed_tree.count > 0
+    env[:app].decompiled = git.committed_tree.count > 0
     return unless env[:app].decompiled
 
     env[:src_git] = git

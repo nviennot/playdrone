@@ -3,7 +3,9 @@ class Stack::FetchMarketDetails < Stack::BaseGit
 
   def persist_to_git(env, git)
     if env[:crawled_at] < Date.today - 1.day
-      raise "Missed the time to crawl data. Crap."
+      instantiate_app(env, :use_previous_data)
+      @stack.call(env)
+      return
     end
 
     begin
@@ -34,7 +36,6 @@ class Stack::FetchMarketDetails < Stack::BaseGit
   def parse_from_git(env, git)
     if git.read_file('not_found')
       instantiate_app(env, nil)
-      # Chain halts
     else
       instantiate_app(env, MultiJson.load(git.read_file('metadata.json'), :symbolize_keys => true))
       @stack.call(env)
@@ -55,11 +56,16 @@ class Stack::FetchMarketDetails < Stack::BaseGit
     previous_metadata = env[:repo].lookup(previous_commit_sha).tree['metadata.json']
     return unless previous_metadata
     previous_json = env[:repo].lookup(previous_metadata[:oid]).read_raw.data
-    env[:previous_app] = App.from_market(MultiJson.load(previous_json, :symbolize_keys => true))
+    env[:previous_app_raw] = MultiJson.load(previous_json, :symbolize_keys => true)
+    env[:previous_app] = App.from_market(env[:previous_app_raw])
   end
 
-  def instantiate_app(env, raw_app)
+  def instantiate_app(env, raw_app, options={})
     populate_previous_app(env)
+
+    if raw_app == :use_previous_data
+      raw_app = env[:previous_app_raw]
+    end
 
     if raw_app
       env[:app] = App.from_market(raw_app)

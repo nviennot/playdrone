@@ -18,7 +18,7 @@ module Stack
                 use LookForNativeLibraries
                 # use Signature
     end
-    @create_app_stack.call(options.merge(:git_readonly => true))
+    @create_app_stack.call(options.dup)
   end
 
   def self.process_app(options={})

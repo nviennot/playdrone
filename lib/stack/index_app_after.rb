@@ -5,7 +5,7 @@ class Stack::IndexAppAfter < Stack::Base
     if env[:app_not_found]
       # When the app disappear, only register once.
       # The day after, we won't see yesterday_app, and so we will skip it.
-      if env[:yesterday_app]
+      if env[:previous_app]
         env[:app].save(env[:crawled_at])
       end
     else

@@ -37,6 +37,10 @@ class Stack::BaseGit < Stack::Base
       "refs/tags/#{tag}"
     end
 
+    def branch_exist?
+      !!Rugged::Reference.lookup(repo, branch_ref)
+    end
+
     def tag_exist?
       !!Rugged::Reference.lookup(repo, tag_ref)
     end
@@ -45,12 +49,9 @@ class Stack::BaseGit < Stack::Base
       Rugged::Reference.lookup(repo, branch_ref).try(:target)
     end
 
-    def last_committed_tree
-      @last_committed_tree ||= repo.lookup(last_commit_sha).tree
-    end
-
-    def new_branch?
-      !last_commit_sha
+    def committed_tree
+      sha = Rugged::Reference.lookup(repo, tag_ref).try(:target)
+      @committed_tree ||= repo.lookup(sha).tree if sha
     end
 
     def format_text(html)
@@ -65,7 +66,7 @@ class Stack::BaseGit < Stack::Base
       msg  = "[#{role}] Processed v#{app.version_string}"
       msg += "\n\n#{message}" if message
 
-      if new_branch?
+      if !branch_exist?
         msg += "\n\nInitial Commit"
       elsif app.apk_updated
         msg += "\n\nWhat's New:\n-----------\n\n#{format_text(app.recent_changes)}"
@@ -103,8 +104,6 @@ class Stack::BaseGit < Stack::Base
     end
 
     def commit(options={}, &block)
-      raise "Must not write to git" if env[:git_readonly]
-
       self.message = options[:message]
 
       index = Index.new(repo)
@@ -141,12 +140,11 @@ class Stack::BaseGit < Stack::Base
     end
 
     def set_head
-      raise "Must not write to git" if env[:git_readonly]
       Rugged::Reference.create(repo, 'HEAD', branch_ref, true)
     end
 
     def read_file(file_name)
-      file = file_name.split('/').reduce(last_committed_tree) do |tree, dentry|
+      file = file_name.split('/').reduce(committed_tree) do |tree, dentry|
         obj = tree[dentry] if tree
         repo.lookup(obj[:oid]) if obj
       end
@@ -156,7 +154,7 @@ class Stack::BaseGit < Stack::Base
 
     def read_files(options={}, &block)
       @cached_files ||= Set.new
-      last_committed_tree.walk(:preorder) do |dir, entry|
+      committed_tree.walk(:preorder) do |dir, entry|
         filename = "#{dir}#{entry[:name]}"
         case entry[:type]
         when :tree
@@ -193,11 +191,7 @@ class Stack::BaseGit < Stack::Base
   def call(env)
     git = Git.new(env, self.class.git_options)
 
-    if env[:git_readonly]
-      git.tag_exist? ? parse_from_git(env, git) : raise(MissingData)
-    else
-      should_process = env[:reprocess].to_s == git.branch.to_s || !git.tag_exist?
-      should_process ? persist_to_git(env, git) : parse_from_git(env, git)
-    end
+    should_process = env[:reprocess].to_s == git.branch.to_s || !git.tag_exist?
+    should_process ? persist_to_git(env, git) : parse_from_git(env, git)
   end
 end

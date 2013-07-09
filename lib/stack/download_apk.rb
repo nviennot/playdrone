@@ -57,6 +57,8 @@ class Stack::DownloadApk < Stack::BaseGit
     env[:apk_path] = env[:scratch].join(apk_filename)
     env[:apk_path].open('wb') { |f| f.write(response.body) }
 
+    env[:app].downloaded = true
+
     @stack.call(env)
   end
 
@@ -65,7 +67,7 @@ class Stack::DownloadApk < Stack::BaseGit
     return unless app.free
 
     if git.read_file('not_found')
-      env[:app_not_found] = true
+      env[:app].downloaded = false
       return
     end
 
@@ -81,6 +83,7 @@ class Stack::DownloadApk < Stack::BaseGit
     download_info = Market::PurchaseResult.new(fake_payload)
 
     app.forward_locked = download_info.forward_locked
+    app.downloaded = true
 
     @stack.call(env)
   end
