@@ -20,7 +20,7 @@ module ES
     # number_of_replicas doesn't count master
     index(index_name).create(:index => options.reverse_merge(:refresh_interval => 10*1000,
                                                              :number_of_replicas => 0,
-                                                             :number_of_shards => 1))
+                                                             :number_of_shards => 10))
   rescue Stretcher::RequestError => e
     raise e unless e.http_response.body['error'] =~ /IndexAlreadyExistsException/
   end

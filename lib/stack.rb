@@ -5,14 +5,15 @@ module Stack
     ::Middleware::Builder.new do
       use IndexAppAfter
         use FetchMarketDetails
-          use DownloadApk
-          use DecompileApk
-          # use IndexSources # can be enabled if needed
-          use FindTokens
-          use LookForNativeLibraries
-          use LookForObfuscatedCode
-          use FindLibraries
-          # use Signature
+          use CacheApkResults
+            use DownloadApk
+            use DecompileApk
+            # use IndexSources # can be enabled if needed
+            use FindTokens
+            use LookForNativeLibraries
+            use LookForObfuscatedCode
+            use FindLibraries
+            # use Signature
     end
   end
 
