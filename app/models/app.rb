@@ -201,4 +201,10 @@ class App < ES::Model
   property :titanium_token_api_key,           :type => :string, :index => :not_analyzed
   property :titanium_token_oauth_key,         :type => :string, :index => :not_analyzed
   property :titanium_token_oauth_secret,      :type => :string, :index => :not_analyzed
+
+  # LookForObfuscatedCode
+  property :obfuscated, :type => :boolean
+
+  # FindLibraries
+  property :library, :type => :string, :index => :not_analyzed
 end

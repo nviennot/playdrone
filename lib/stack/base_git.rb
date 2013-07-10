@@ -169,6 +169,15 @@ class Stack::BaseGit < Stack::Base
         end
       end
     end
+
+    def lookup_path(path, start_tree=nil)
+      start_tree ||= committed_tree
+      path.split('/').compact.reduce(start_tree) do |tree, file|
+        return nil unless tree.is_a? Rugged::Tree
+        return nil unless tree[file]
+        repo.lookup(tree[file][:oid])
+      end
+    end
   end
 
   class << self

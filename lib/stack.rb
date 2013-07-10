@@ -1,6 +1,20 @@
 module Stack
   # Each step in a stack must be idempotent, so the chain can fail at any point,
   # and we can retry the whole thing.
+  def self.common_stack
+    ::Middleware::Builder.new do
+      use IndexAppAfter
+        use FetchMarketDetails
+          use DownloadApk
+          use DecompileApk
+          # use IndexSources # can be enabled if needed
+          use FindTokens
+          use LookForNativeLibraries
+          use LookForObfuscatedCode
+          use FindLibraries
+          # use Signature
+    end
+  end
 
   def self.reprocess_app(options={})
     raise "missing app_id" unless options[:app_id]
@@ -9,14 +23,7 @@ module Stack
       use LockApp
         use PrepareFS
           use ForEachDate
-            use IndexAppAfter
-              use FetchMarketDetails
-                use DownloadApk
-                use DecompileApk
-                # use IndexSources # can be enabled if needed
-                use FindTokens
-                use LookForNativeLibraries
-                # use Signature
+            use Stack.common_stack
     end
     @create_app_stack.call(options.dup)
   end
@@ -24,35 +31,15 @@ module Stack
   def self.process_app(options={})
     raise "missing app_id"     unless options[:app_id]
     raise "missing crawled_at" unless options[:crawled_at]
-    # can pass :reprocess => branch to reprocess it
+    # can pass :reprocess => branch to reprocess that branch
+    # do not use unless you know what you are doing.
 
     @create_app_stack ||= ::Middleware::Builder.new do
       use LockApp
         use PrepareFS
-          use IndexAppAfter
-            use FetchMarketDetails
-              use DownloadApk
-              use DecompileApk
-              use IndexSources
-              use FindTokens
-              use LookForNativeLibraries
-              use Signature
+          use Stack.common_stack
     end
     @create_app_stack.call(options.dup)
-  end
-
-  def self.process_app_fast(options={})
-    # Just to hit the market API, and do nothing else.
-    # Good for grabbing data quickly
-    raise "missing app_id"     unless options[:app_id]
-    raise "missing crawled_at" unless options[:crawled_at]
-
-    @create_app_fast_stack ||= ::Middleware::Builder.new do
-      use LockApp
-        use PrepareFS
-          use FetchMarketDetails
-    end
-    @create_app_fast_stack.call(options.dup)
   end
 
   def self.purge_branch(options={})
@@ -69,10 +56,10 @@ module Stack
 
   class << self
     extend StatsD::Instrument
+    statsd_count   :reprocess_app,    'stack.reprocess_app'
+    statsd_measure :reprocess_app,    'stack.reprocess_app'
     statsd_count   :process_app,      'stack.process_app'
     statsd_measure :process_app,      'stack.process_app'
-    statsd_count   :process_app_fast, 'stack.process_app_fast'
-    statsd_measure :process_app_fast, 'stack.process_app_fast'
     statsd_count   :purge_branch,     'stack.purge_branch'
     statsd_measure :purge_branch,     'stack.purge_branch'
   end

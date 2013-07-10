@@ -35,7 +35,7 @@ module ES
   end
 
   def self.delete_all_indexes
-    index(:_all).delete
+    index('2013-*').delete # avoid deleting the live index (sources)
   end
 
   def self.update_all_mappings
