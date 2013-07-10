@@ -8,7 +8,7 @@ namespace :deploy do
   end
 
   task :restart_bg, :roles => :sidekiq do
-    6.times do |i|
+    4.times do |i|
       run "service sidekiq-bg#{i+1} restart"
     end
   end
@@ -37,7 +37,7 @@ namespace :deploy do
   end
 
   task :stop_bg, :roles => :sidekiq do
-    6.times do |i|
+    4.times do |i|
       run "service sidekiq-bg#{i+1} stop || true"
     end
   end
