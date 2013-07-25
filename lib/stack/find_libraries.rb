@@ -1,8 +1,9 @@
 class Stack::FindLibraries < Stack::Base
   class << self
-    attr_accessor :lib_tree
+    attr_accessor :lib_tree, :rev_map
   end
   self.lib_tree = {}
+  self.rev_map = {}
 
   def self.lib(libname, paths=nil)
     paths = libname unless paths
@@ -22,6 +23,8 @@ class Stack::FindLibraries < Stack::Base
       raise "Lib conflict: #{path} on #{last_component} (#{last[last_component]})" if last[last_component]
       last[last_component] = libname
     end
+
+    rev_map[libname] = paths
   end
 
   def match(libs, repo, src_tree, lib_hash) src_tree.each_tree do |tree| name = tree[:name]
@@ -41,6 +44,10 @@ class Stack::FindLibraries < Stack::Base
     env[:app].library = libs.uniq
 
     @stack.call(env)
+  end
+
+  def self.matchers_for(lib)
+    ([*rev_map[lib]] + [lib]).compact.uniq
   end
 
   lib 'Google Ads',                             %w(com.google.ads
@@ -72,12 +79,13 @@ class Stack::FindLibraries < Stack::Base
   lib 'Google Data Lib',                        %w(com.google.gdata)
   lib 'Jackson',                                %w(org.codehaus.jackson)
   lib 'OAuth Signpost',                         %w(oauth.signpost)
-  lib 'LeadBolt stuff?',                        %w(com.pad.android)
   lib 'Google Cloud Messaging',                 %w(com.google.android.gcm)
-  lib 'MobFox',                                 %w(com.mobfox)
+  lib 'MobFox',                                 %w(com.mobfox
+                                                   com.adsdk.sdk)
   lib 'Jsoup',                                  %w(org.jsoup)
   lib 'Paypal',                                 %w(com.paypal.android)
   lib 'LeadBolt',                               %w(com.Leadbolt)
+  lib 'LeadBolt stuff?',                        %w(com.pad.android)
   lib 'ActionBarSherlock',                      %w(com.actionbarsherlock)
   lib 'Protocol Buffer',                        %w(com.google.protobuf)
   lib 'Urban Airship Push',                     %w(com.urbanairship
@@ -106,20 +114,23 @@ class Stack::FindLibraries < Stack::Base
   lib 'Appcelerator Titanium',                  %w(org.appcelerator.titanium
                                                    ti.modules.titanium)
   lib 'Appcelerator Titanium (engine?)',        %w(org.appcelerator.kroll)
-  lib 'AndEngine Live-Wallpaper',               %w(net.rbgrn)
+  lib 'AndEngine Live-Wallpaper ??',            %w(net.rbgrn)
   lib 'XML Pull',                               %w(org.xmlpull.v1)
   lib 'XML Pull Parser',                        %w(org.kxml2)
   lib 'GNU Kawa',                               %w(kawa gnu.kawa gnu.mapping gnu.lists gnu.xml
                                                    gnu.text gnu.bytecode gnu.commonlisp gnu.expr
                                                    gnu.q2.lang gnu.ecmascript gnu.math)
-  lib 'App Inventor',                           %w(com.google.youngandroid)
+  lib 'App Inventor',                           %w(com.google.youngandroid
+                                                   com.google.appinventor.components)
   lib 'FMOD',                                   %w(org.fmod)
   lib 'Bizness Apps',                           %w(com.biznessapps)
   lib 'libGDX',                                 %w(com.badlogic.gdx)
   lib 'Unity3D',                                %w(com.unity3d.player)
   lib 'PushWoosh (tests)',                      %w(com.pushwoosh.test.plugin.pushnotifications)
   lib 'Android MapView Balloons',               %w(com.readystatesoftware.mapviewballoons)
-  lib 'AndEngine',                              %w(org.anddev.andengine)
+  lib 'AndEngine',                              %w(org.anddev.andengine
+                                                   org.andengine)
+
   lib 'kSOAP 2',                                %w(org.ksoap2 org.kobjects)
   lib 'OpenFeint',                              %w(com.openfeint)
   lib 'Andromo',                                %w(com.andromo.widget)
@@ -134,20 +145,21 @@ class Stack::FindLibraries < Stack::Base
   lib 'com.appbrain'
   lib 'cmn'
   lib 'com.loopj.android.http'
-  lib 'com.appbuilder'
-  lib 'com.tapjoy'
-  lib 'com.revmob'
+  lib 'iBuildApp', %w(com.appbuilder)
+
+  lib 'TapJoy', %w(com.tapjoy)
+  lib 'RevMob', %w(com.revmob)
+
   lib 'com.inneractive.api.ads'
-  lib 'com.adsdk.sdk'
   lib 'com.google.myjson'
-  lib 'net.authorize'
+  lib 'Authorize.net', %w(net.authorize)
   lib 'com.mobclick.android'
   lib 'org.apache.harmony'
   lib 'jp.co.nobot.libAdMaker'
   lib 'com.chartboost.sdk'
-  lib 'com.tapit'
+  lib 'TapIt', %w(com.tapit)
   lib 'com.pontiflex.mobile'
-  lib 'com.mopub.mobileads'
+  lib 'MoPub', %w(com.mopub.mobileads)
   lib 'com.ring.basic'
   lib 'org.mozilla.javascript'
   lib 'org.mozilla.classfile'
@@ -156,11 +168,10 @@ class Stack::FindLibraries < Stack::Base
   lib 'com.commonsware.cwac'
   lib 'com.google.i18n.phonenumbers'
   lib 'mediba.ad.sdk.android'
-  lib 'com.google.appinventor.components'
-  lib 'com.applovin'
+  lib 'AppLovin', %w(com.applovin)
   lib 'javax.activation'
   lib 'com.google.android.vending.licensing'
-  lib 'com.ansca.corona'
+  lib 'Corona SDK', %w(com.ansca.corona)
   lib 'jp.co.imobile.android'
   lib 'com.qbiki'
   lib 'com.sun.activation.registries'
@@ -220,7 +231,12 @@ class Stack::FindLibraries < Stack::Base
   lib 'com.google.iap'
   lib 'com.omniture'
   lib 'com.papaya'
-  lib 'com.umeng.common'
+
+  # TODO merge to com.umeng
+  lib 'Umeng', %w(com.umeng.common
+                  com.umeng.analytics
+                  com.umeng.fb)
+
   lib 'com.heyzap.sdk'
   lib 'com.androidquery'
   lib 'org.simpleframework.xml'
@@ -241,7 +257,6 @@ class Stack::FindLibraries < Stack::Base
   lib 'greendroid'
   lib 'roboguice'
   lib 'net.wigle.wigleandroid'
-  lib 'com.umeng.analytics'
   lib 'org.osmdroid'
   lib 'com.baidu'
   lib 'org.jdom'
@@ -254,10 +269,9 @@ class Stack::FindLibraries < Stack::Base
   lib 'com.vercoop'
   lib 'microsoft.mappoint'
   lib 'org.dom4j'
-  lib 'org.andengine'
   lib 'com.appmk.magazine'
   lib 'com.polites.android'
-  lib 'com.amazon.inapp.purchasing'
+  lib 'Amazon In-App Purchasing', %w(com.amazon.inapp.purchasing)
   lib 'android.webkit'
   lib 'com.poqop.document'
   lib 'org.ccil.cowan.tagsoup'
@@ -367,7 +381,6 @@ class Stack::FindLibraries < Stack::Base
   lib 'com.twitter.android'
   lib 'org.apache.android.mail'
   lib 'com.twmacinta.io'
-  lib 'com.umeng.fb'
   lib 'mobi.vserv.android.adengine'
   lib 'com.feelingk.iap'
   lib 'com.shoutem'
