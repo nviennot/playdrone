@@ -8,9 +8,9 @@ class Stack::FindTokens < Stack::BaseTokenFinder
   tokens :bitlyv1, :login   => { :matcher  => '[="]([0-9a-zA-Z_]{5,31})[&"]', :must_have  => /[a-z]/, :cannot_have => /^login$/ },
                    :api_key => '[="](R_[0-9a-f]{32})[&"]'
 
-  tokens :bitlyv2, :client_id         => '(?:id|ID)[ ="]+([0-9a-f]{40})[&"]',
-                   :client_secret     => '(?:secret|SECRET)[ ="]+([0-9a-f]{40})[&"]',
-                   :random_threshold  => 0.6
+  # tokens :bitlyv2, :client_id         => '(?:id|ID)[ ="]+([0-9a-f]{40})[&"]',
+                   # :client_secret     => '(?:secret|SECRET)[ ="]+([0-9a-f]{40})[&"]',
+                   # :random_threshold  => 0.6
 
   tokens :facebook, :app_id     => {:matcher => '[="]([0-9]{13,17})[&"]', :line_must_have => /facebook/i },
                     :app_secret => {:matcher => '[="]([0-9a-f]{32})[&"]', :line_must_have => /facebook/i }
@@ -35,16 +35,16 @@ class Stack::FindTokens < Stack::BaseTokenFinder
   tokens :twitter, :consumer_key     => { :matcher => '[="]([0-9a-zA-Z]{18,25})[&"]', :line_must_have => /twitter/i },
                    :consumer_secret  => { :matcher => '[="]([0-9a-zA-Z]{35,44})[&"]', :line_must_have => /twitter/i }
 
-  tokens :yelpv1, :ywsid            => '(?:ywsid|YWSID).*?[="]([0-9a-zA-Z_-]{22})["&]',
-                  :random_threshold => 0.2
+  # tokens :yelpv1, :ywsid            => '(?:ywsid|YWSID).*?[="]([0-9a-zA-Z_-]{22})["&]',
+                  # :random_threshold => 0.2
 
-  tokens :yelpv2, :consumer_key     => 'CONSUMER.*?[="]([0-9a-zA-Z_-]{22})["&]',
-                  :consumer_secret  => 'CONSUMER.*?[="]([0-9a-zA-Z_-]{27})["&]',
-                  :token            => 'TOKEN.*?[="]([0-9a-zA-Z_-]{32})["&]',
-                  :token_secret     => 'TOKEN.*?[="]([0-9a-zA-Z_-]{27})["&]',
-                  :random_threshold => 0.3
+  # tokens :yelpv2, :consumer_key     => 'CONSUMER.*?[="]([0-9a-zA-Z_-]{22})["&]',
+                  # :consumer_secret  => 'CONSUMER.*?[="]([0-9a-zA-Z_-]{27})["&]',
+                  # :token            => 'TOKEN.*?[="]([0-9a-zA-Z_-]{32})["&]',
+                  # :token_secret     => 'TOKEN.*?[="]([0-9a-zA-Z_-]{27})["&]',
+                  # :random_threshold => 0.3
 
-  tokens :titanium do |env|
+  tokens :titanium, :api_key => ''  do |env|
     tiapp = env[:src_git].read_file('assets/tiapp.xml')
     if tiapp
       xml = Nokogiri::XML(tiapp)

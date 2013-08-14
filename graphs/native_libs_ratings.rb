@@ -47,9 +47,9 @@ buckets.each do |bucket|
 end
 
 result = {}
-result[:has_native_libs] = App.index(Date.today - 1).search(query)
+result[:has_native_libs] = App.index(:latest).search(query)
 query[:query][:filtered][:filter][:and][2][:term][:has_native_libs] = false
-result[:no_native_libs] = App.index(Date.today - 1).search(query)
+result[:no_native_libs] = App.index(:latest).search(query)
 
 result[:aggregate] = {}
 result[:no_native_libs].facets.keys.each do |dl|
@@ -58,6 +58,10 @@ result[:no_native_libs].facets.keys.each do |dl|
   result[:aggregate][dl][:no_native_libs_mean]    = result[:no_native_libs].facets[dl]['mean']
   result[:aggregate][dl][:has_native_libs_stddev] = result[:has_native_libs].facets[dl]['std_deviation']
   result[:aggregate][dl][:no_native_libs_stddev]  = result[:no_native_libs].facets[dl]['std_deviation']
+  result[:aggregate][dl][:has_native_libs_min] = result[:has_native_libs].facets[dl]['min']
+  result[:aggregate][dl][:no_native_libs_min]  = result[:no_native_libs].facets[dl]['min']
+  result[:aggregate][dl][:has_native_libs_max] = result[:has_native_libs].facets[dl]['max']
+  result[:aggregate][dl][:no_native_libs_max]  = result[:no_native_libs].facets[dl]['max']
 end
 histogram = result[:aggregate].values
 
@@ -80,8 +84,8 @@ end
 
 data = histogram.each_with_index.map do |r, i|
   [get_download_bucket_str.call(i),
-   r[:has_native_libs_mean], r[:has_native_libs_stddev],
-   r[:no_native_libs_mean],  r[:no_native_libs_stddev]]
+   r[:has_native_libs_mean], r[:has_native_libs_stddev], r[:has_native_libs_min], r[:has_native_libs_max],
+   r[:no_native_libs_mean],  r[:no_native_libs_stddev], r[:no_native_libs_min],  r[:no_native_libs_max]]
 end
 
 File.open(ARGV[0], 'w') do |f|

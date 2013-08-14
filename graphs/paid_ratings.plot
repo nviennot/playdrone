@@ -17,5 +17,5 @@ set bars front
 set style fill solid border -1
 set boxwidth 1
 
-plot 'paid_ratings.dat' using ($2):($2-$3):($2+$3):xtic(1) lt 1 lc 1 fs solid 0.5 t "Free", \
-                     '' using ($4):($4-$5):($4+$5):xtic(1) lt 1 lc 2 fs solid 0.5   t "Paid"
+plot 'paid_ratings.dat' using ($2):($4):($5):xtic(1) lt 1 lc 1 fs solid 0.5 t "Free", \
+                     '' using ($6):($8):($9):xtic(1) lt 1 lc 2 fs solid 0.5 t "Paid"

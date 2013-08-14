@@ -1,62 +1,48 @@
 #!../script/rails runner
 
-tokens = Stack::FindTokens.tokens_definitions.keys
+tokens = %w(amazon bitlyv1 facebook flickr foursquare google google_oauth linkedin twitter titanium)
 
+token_defs = Stack::FindTokens.tokens_definitions
 
-# result = App.index('tokens').search(
-  # :size => 0,
-  # :query => { :term => { :decompiled => true } },
-  # :facets => Hash[tokens.map do |token|
-    # [token, {
-      # :statistical => {
-        # :field => "#{token}_token_count"
-      # }
-    # }]
-  # end]
-# )
+results = {}
 
-result = App.index('tokens').search(
-  :size => 0,
-  :query => { :term => { :decompiled => true } },
-  :facets => Hash[tokens.map do |token|
-    [token, {
-      :statistical => {
-        :field => "#{token}_token_count"
-      }
-    }]
-  end]
-)
+(Date.parse("2013-04-27")..Date.parse("2013-06-22")).each do |day|
+  case day
+    when Date.parse("2013-05-04") then next
+    when Date.parse("2013-05-05") then next
+    when Date.parse("2013-05-06") then next
+    when Date.parse("2013-06-03") then next
+    when Date.parse("2013-06-04") then next
+    when Date.parse("2013-06-05") then next
+  end
 
-require 'pry'
-binding.pry
+  result = App.index(day.to_s).search(
+    :size => 0,
+    :query => { :term => { :decompiled => true } },
+    :facets => Hash[tokens.map do |token|
+      [token, {
+        :terms => {
+          :field => "#{token}_token_#{token_defs[token.to_sym][:token_filters].keys.first}",
+          :size => 100000
+        }
+      }]
+    end]
+  )
 
-# histogram = result.facets.has_native_libs.entries[1][1]
+  results[day] = {}
 
-# get_download_str = lambda do |i|
-  # dl = histogram[i]['key']
-  # return "#{dl}" if dl < 1_000
-  # dl /= 1000
-  # return "#{dl}k" if dl < 1_000
-  # dl /= 1000
-  # return "#{dl}M" if dl < 1_000
-# end
+  result['facets'].each do |token, values|
+    results[day][token] = values['terms'].count
+  end
+  $stderr.print '.'
+end
+$stderr.puts ''
 
-# get_download_bucket_str = lambda do |i|
-  # case i
-  # when 0                  then "<#{get_download_str.call(i+1)}"
-  # when histogram.size - 1 then ">#{get_download_str.call(i)}"
-  # else                         "#{get_download_str.call(i)}-#{get_download_str.call(i+1)}"
-  # end
-# end
-
-# data = histogram.each_with_index.map do |r, i|
-  # total = r['total'].to_i
-  # count = r['count'].to_i
-  # [get_download_bucket_str.call(i), total ,count-total]
-# end
-
-# File.open(ARGV[0], 'w') do |f|
-  # data.each do |d|
-    # f.puts d.join(' ')
-  # end
-# end
+File.open(ARGV[0], 'w') do |f|
+  lasts = nil
+  results.each do |day, values|
+    lasts ||= values
+    f.puts [day.to_time.to_i, tokens.map { |t| values[t] - lasts[t] }].compact.join(' ')
+    lasts = values
+  end
+end

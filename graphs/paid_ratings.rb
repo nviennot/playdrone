@@ -48,9 +48,9 @@ buckets.each do |bucket|
 end
 
 result = {}
-result[:free] = App.index(Date.today - 1).search(query)
+result[:free] = App.index(:latest).search(query)
 query[:query][:filtered][:filter][:and][1][:term][:free] = false
-result[:paid] = App.index(Date.today - 1).search(query)
+result[:paid] = App.index(:latest).search(query)
 
 result[:aggregate] = {}
 result[:free].facets.keys.each do |dl|
@@ -59,6 +59,10 @@ result[:free].facets.keys.each do |dl|
   result[:aggregate][dl][:paid_mean] = result[:paid].facets[dl]['mean']
   result[:aggregate][dl][:free_stddev] = result[:free].facets[dl]['std_deviation']
   result[:aggregate][dl][:paid_stddev] = result[:paid].facets[dl]['std_deviation']
+  result[:aggregate][dl][:free_min] = result[:free].facets[dl]['min']
+  result[:aggregate][dl][:paid_min] = result[:paid].facets[dl]['min']
+  result[:aggregate][dl][:free_max] = result[:free].facets[dl]['max']
+  result[:aggregate][dl][:paid_max] = result[:paid].facets[dl]['max']
 end
 histogram = result[:aggregate].values
 
@@ -81,8 +85,8 @@ end
 
 data = histogram.each_with_index.map do |r, i|
   [get_download_bucket_str.call(i),
-   r[:free_mean], r[:free_stddev],
-   r[:paid_mean],  r[:paid_stddev]]
+   r[:free_mean], r[:free_stddev], r[:free_min], r[:free_max],
+   r[:paid_mean], r[:paid_stddev], r[:paid_min], r[:paid_max]]
 end
 
 File.open(ARGV[0], 'w') do |f|
