@@ -30,7 +30,8 @@ result = App.index('2013*').search(
   }
 )
 
-data = result.facets.in['entries'].size.times.map do |i|
+data = {}
+result.facets.in['entries'].size.times.each do |i|
   day_in      = result.facets.in['entries'][i]
   day_out     = result.facets.out['entries'][i]
   day_updated = result.facets.updated['entries'][i]
@@ -45,12 +46,17 @@ data = result.facets.in['entries'].size.times.map do |i|
     # no good data
     nil
   else
-    [day, day_in['total'], day_out['total'], day_updated['total']]
+    data[Time.at(day).to_date] = [day_in['total'], day_out['total'], day_updated['total']]
   end
-end.compact
+end
 
+start_day = Date.parse("2013-04-26")
 File.open(ARGV[0], 'w') do |f|
-  data.each do |d|
-    f.puts d.join(' ')
+  (data.keys.min .. data.keys.max).each do |day|
+    if data[day]
+      f.puts [(day - start_day).to_i, data[day]].join(' ')
+    else
+      f.puts [(day - start_day).to_i, "?", "?", "?"].join(' ')
+    end
   end
 end

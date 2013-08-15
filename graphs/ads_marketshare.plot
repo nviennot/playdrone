@@ -10,17 +10,20 @@ set ylabel "Adoption (%)" offset +1, 0
 set xlabel "Day" offset 0,+0.2
 set grid y
 
-set xdata time
-set timefmt "%m/%d/%y"
-#set xrange [ "04/27/13":"05/07/13" ]
+# set xdata time
+# set timefmt "%m/%d/%y"
+# #set xrange [ "04/27/13":"05/07/13" ]
 
-set timefmt "%s"
-set format x "%a, %d %b"
+# set timefmt "%s"
+# set format x "%a, %d %b"
 
-set xtics nomirror rotate by -20
+set xtics 5
+set xrange [0:57]
+
+# set xtics nomirror rotate by -20
 #set yrange [-5000:6000]
 
-set xtics 604800
+# set xtics 604800
 
 
 #set style fill solid border -1

@@ -47,19 +47,20 @@ updated_rates = get_rate(get_result(:term => {:apk_updated => true}))
 
 results = {}
 
+start_day = Date.parse("2013-04-26")
 File.open(ARGV[0], 'w') do |f|
-  all_rates.keys.each do |day|
+  (all_rates.keys.min .. all_rates.keys.max).each do |day|
     if    day <= Date.parse("2013-04-26")
     elsif day == Date.parse("2013-05-04")
     elsif day == Date.parse("2013-05-05")
-    elsif day == Date.parse("2013-05-06")
+    # elsif day == Date.parse("2013-05-06")
     elsif day == Date.parse("2013-06-03")
     elsif day == Date.parse("2013-06-04")
-    elsif day == Date.parse("2013-06-05")
+    # elsif day == Date.parse("2013-06-05")
       # no good data
-      nil
+      f.puts [(day - start_day).to_i, "?", "?", "?"].join(' ')
     else
-      f.puts [day.to_time.to_i, all_rates[day], new_rates[day], updated_rates[day]].compact.join(' ')
+      f.puts [(day - start_day).to_i, all_rates[day], new_rates[day], updated_rates[day]].compact.join(' ')
     end
   end
 end

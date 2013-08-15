@@ -1,6 +1,6 @@
 #!../script/rails runner
 
-tokens = %w(amazon bitlyv1 facebook flickr foursquare google google_oauth linkedin twitter titanium)
+tokens = %w(twitter facebook amazon google google_oauth bitlyv1 foursquare linkedin flickr titanium)
 
 token_defs = Stack::FindTokens.tokens_definitions
 
@@ -40,9 +40,17 @@ $stderr.puts ''
 
 File.open(ARGV[0], 'w') do |f|
   lasts = nil
+  last_day = nil
   results.each do |day, values|
-    lasts ||= values
-    f.puts [day.to_time.to_i, tokens.map { |t| values[t] - lasts[t] }].compact.join(' ')
+    if last_day
+      days = (last_day..day).to_a[1..-1]
+      days.each do |interpolated_day|
+        f.puts [interpolated_day.to_time.to_i,
+                tokens.map { |t| (values[t] - lasts[t]).to_f/days.count }].compact.join(' ')
+      end
+    end
+
     lasts = values
+    last_day = day
   end
 end

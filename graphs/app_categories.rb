@@ -44,37 +44,38 @@ categories.each do |category|
 
     day = day_free['time'] / 1000
     if Time.at(day).to_date <= Date.parse("2013-04-26")
-    elsif Time.at(day).to_date == Date.parse("2013-05-04")
+    # elsif Time.at(day).to_date == Date.parse("2013-05-04")
     elsif Time.at(day).to_date == Date.parse("2013-05-05")
     elsif Time.at(day).to_date == Date.parse("2013-05-06")
     elsif Time.at(day).to_date == Date.parse("2013-06-03")
     elsif Time.at(day).to_date == Date.parse("2013-06-04")
-    elsif Time.at(day).to_date == Date.parse("2013-06-05")
+    # elsif Time.at(day).to_date == Date.parse("2013-06-05")
       # no good data
       nil
     else
       results[day] ||= {}
-      results[day][category] = {:free => day_free['total'].to_i, :paid => day_paid['total'].to_i}
+      # for now let's not get too crazy. free+paid together
+      # results[day][category] = {:free => day_free['total'].to_i, :paid => day_paid['total'].to_i}
+      results[day][category] = day_free['total'].to_i + day_paid['total'].to_i
     end
   end
 end
 
+start_day = Date.parse("2013-04-26")
 File.open(ARGV[0], 'w') do |f|
-  last_values = {}
+  lasts = nil
+  last_day = nil
   results.each do |day, values|
-    # for now let's not get too crazy. free+paid together
-    values = values.map do |k,v|
-      value = v[:free] + v[:paid]
-      if last_values[k]
-        ret = (value - last_values[k]).to_f
-      else
-        ret = 0
+    day = Time.at(day).to_date
+    if last_day
+      days = (last_day..day).to_a[1..-1]
+      days.each do |interpolated_day|
+        f.puts [(interpolated_day - start_day).to_i-1,
+                categories.map { |t| (values[t] - lasts[t]).to_f/days.count }].compact.join(' ')
       end
-
-      last_values[k] = value
-      ret
     end
 
-    f.puts [day, values].compact.join(' ')
+    lasts = values
+    last_day = day
   end
 end

@@ -8,25 +8,29 @@ set ylabel "Number of Apps" offset +1, 0
 set xlabel "Day" offset 0,+0.2
 set grid y
 
-set xdata time
-set timefmt "%m/%d/%y"
+# set xdata time
+# set timefmt "%m/%d/%y"
+# set xrange [ "04/26/13":"06/22/13" ]
 #set xrange [ "04/27/13":"05/07/13" ]
 
-set timefmt "%s"
-set format x "%a, %d %b"
+# set timefmt "%s"
+# set format x "%a, %d %b"
 
-set xtics nomirror rotate by -20
+# set xtics nomirror rotate by -10
 set yrange [-5000:6000]
 
-set xtics 604800
+set xtics 5
+set xrange [0:57]
 
 
 set style fill solid border -1
-set boxwidth 86400 absolute
+set boxwidth 1 absolute
 
 set ytics 1000
 
 set xzeroaxis lw 5 lt -1
+
+set datafile missing
 
 plot 'new_apps.dat' using 1:($2)    lt 1 lc 2 with boxes fs solid 0.6 t "Added", \
                  '' using 1:(-$3)   lt 1 lc 1 with boxes fs solid 0.6 t "Removed", \

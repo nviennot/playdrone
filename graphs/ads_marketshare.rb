@@ -78,10 +78,11 @@ end
 results = {}
 (libs + [libs]).each { |l| populate_results(results, l) }
 
+start_day = Date.parse("2013-04-26")
 File.open(ARGV[0], 'w') do |f|
   results.each do |day, values|
     total = values.delete("Total")
     value_libs = libs.map { |l| 100*values[l].to_i/total.to_f }
-    f.puts [day, value_libs].compact.join(' ')
+    f.puts [(Time.at(day).to_date - start_day).to_i, value_libs].compact.join(' ')
   end
 end

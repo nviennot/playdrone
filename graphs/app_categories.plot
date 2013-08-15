@@ -6,21 +6,25 @@ set key horizontal
 set key bottom center outside
 # set nokey
 
-set ylabel "Number of Apps" offset +1, 0
+set ylabel "Number of Apps per Day" offset +1, 0
 set xlabel "Day" offset 0,+0.2
 #set grid y
 
-set xdata time
-set timefmt "%m/%d/%y"
-#set xrange [ "04/27/13":"05/07/13" ]
+# set xdata time
+# set timefmt "%m/%d/%y"
+# set xrange [ "04/28/13":"06/22/13" ]
+# #set xrange [ "04/27/13":"05/07/13" ]
 
-set timefmt "%s"
-set format x "%a, %d %b"
+# set timefmt "%s"
+# set format x "%a, %d %b"
 
-set xtics nomirror rotate by -20
-#set yrange [-5000:6000]
+# set xtics nomirror rotate by -10
+# #set yrange [-5000:6000]
 
-set xtics 604800
+# set xtics 604800
+
+set xtics 5
+set xrange [0:57]
 
 
 #set style fill solid border -1
@@ -49,14 +53,14 @@ plot 'app_categories.dat' using 1:2        t 'Personalization'                  
                        '' using 1:18       t 'Social'                                   with lines, \
                        '' using 1:19       t 'Finance'                                  with lines, \
                        '' using 1:20       t 'Communication'                            with lines, \
-                       '' using 1:22       t 'Media and Video'                          with lines, \
-                       '' using 1:23       t 'Shopping'                                 with lines, \
-                       '' using 1:24       t 'Photography'                              with lines, \
-                       '' using 1:25       t 'Medical'                                  with lines, \
-                       '' using 1:26       t 'Transportation'                           with lines, \
-                       '' using 1:27       t 'Cards'                                    with lines, \
-                       '' using 1:28       t 'Comics'                                   with lines, \
-                       '' using 1:29       t 'Sports Games'                             with lines, \
-                       '' using 1:30       t 'Libraries and Demo'                       with lines, \
-                       '' using 1:31       t 'Weather'                                  with lines, \
-                       '' using 1:32       t 'Racing'                                   with lines
+                       '' using 1:21       t 'Media and Video'                          with lines, \
+                       '' using 1:22       t 'Shopping'                                 with lines, \
+                       '' using 1:23       t 'Photography'                              with lines, \
+                       '' using 1:24       t 'Medical'                                  with lines, \
+                       '' using 1:25       t 'Transportation'                           with lines, \
+                       '' using 1:26       t 'Cards'                                    with lines, \
+                       '' using 1:27       t 'Comics'                                   with lines, \
+                       '' using 1:28       t 'Sports Games'                             with lines, \
+                       '' using 1:29       t 'Libraries and Demo'                       with lines, \
+                       '' using 1:30       t 'Weather'                                  with lines, \
+                       '' using 1:31       t 'Racing'                                   with lines
