@@ -9,7 +9,7 @@ else
     need_comma = false
 
     f.puts "{"
-    result = App.scan_search('signatures',
+    result = App.scan_search('2013-05-12',
       :query => {:match_all => {}},
       :fields => [:_id, :developer_name, :free, :downloads, :star_rating, :permission,
                   :title, :sig_resources_count_300, :sig_asset_hashes_count_300]
@@ -19,8 +19,6 @@ else
                                           'num_permissions'            => r['fields']['permission'].to_a.count,
                                           'downloads'                  => r['fields']['downloads'],
                                           'title'                      => r['fields']['title'],
-                                          'sig_resources_count_300'    => r['fields']['sig_resources_count_300'],
-                                          'sig_asset_hashes_count_300' => r['fields']['sig_asset_hashes_count_300'],
                                           'star_rating'                => r['fields']['star_rating'] }] }]
       f.puts "," if need_comma
       f.print MultiJson.dump(h, :pretty => true)[2..-2]
