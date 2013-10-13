@@ -1,6 +1,6 @@
 load 'ideas/token_validation.rb'
 
-@token_types = Stack::FindTokens.tokens_definitions.keys
+#@token_types = Stack::FindTokens.tokens_definitions.keys
 
 MAX_TO_TEST = 25
 # get all the valid tokens
@@ -49,14 +49,14 @@ def valid_tokens(type, candidates, opts={})
     :stats => {},
   }
   _candidates = candidates
-  Rails.logger.info "Considering #{candidates.count} #{type} token tuples"
+ # Rails.logger.info "Considering #{candidates.count} #{type} token tuples"
   results[:stats][:total_candidates] = candidates.count
   #candidates = consolidate_by_frequency candidates
   candidates = candidates.uniq.shuffle
-  Rails.logger.info "Consolidating to #{candidates.count} #{type} unique token tuples"
+ # Rails.logger.info "Consolidating to #{candidates.count} #{type} unique token tuples"
   results[:stats][:unique_candidates] = candidates.count
   num_to_test = opts[:max_to_test] && candidates.count > opts[:max_to_test] ? opts[:max_to_test] : candidates.count
-  Rails.logger.info "Testing #{num_to_test} #{type} token tuples"
+ # Rails.logger.info "Testing #{num_to_test} #{type} token tuples"
   results[:stats][:unique_tested] = num_to_test
   raw_results = candidates.each_with_index.map do |tuple, index|
     { tuple => index < num_to_test ? valid_token_tuple?(type, tuple) : nil}
@@ -111,7 +111,7 @@ def valid_token_tuple?(type, *args)
     when :yelpv1        then valid_yelpv1_tokens?(*args)
     when :yelpv2        then valid_yelpv2_tokens?(*args)
   else
-    Rails.logger.error "Unknown token type: #{type}"
+   # Rails.logger.error "Unknown token type: #{type}"
   end
 end
 
@@ -147,7 +147,7 @@ def get_tokens(type)
                            #:query  => { :match_all => {} },
                            :filter => { :script => { :script => "doc['#{count}'].value > 0" } },
                            :fields => fields,
-                           #:facets => {tokenclass.token_name => {:statistical => { :field => "#{count}" } } } ).results
+                          # :facets => {tokenclass.token_name => {:statistical => { :field => "#{count}" } } } ).results
                           ).results.map{|x| x.except(:_index)}.uniq
 end
 
@@ -231,3 +231,5 @@ def gather_aggregate_stats(valid_token_result)
   r
 end
 
+
+test_tokens_from_file("/home/admin/playdrone/tokens.json")
