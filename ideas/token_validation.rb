@@ -65,8 +65,8 @@ def valid_facebook_tokens?(app_id, app_secret)
   if response.body =~ /^access_token=(.*)\|(.*)$/
     true
   else
-    #Rails.logger.info response.body
-    #Rails.logger.info " ^^ while processing #{app_id}, #{app_secret}"
+#    Rails.logger.info response.body
+#    Rails.logger.info " ^^ while processing #{app_id}, #{app_secret}"
     false
   end
 end

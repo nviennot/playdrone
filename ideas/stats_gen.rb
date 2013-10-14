@@ -65,10 +65,12 @@ def valid_token?(type, args)
     when :twitter       then valid_twitter_tokens?(args[0], args[1])
 
   else
-   # Rails.logger.error "Unknown token type: #{type}"
+    Rails.logger.error "Unknown token type: #{type}"
   end
 end
 
-#results = test_tokens_from_file("/home/Eddy/playdrone/google-play-crawler/ideas/test.json")
-results = test_tokens_from_file("/home/Eddy/playdrone/tokens.json")
-save_to_file(results, "results_full.json")
+results = test_tokens_from_file("/home/Eddy/playdrone/google-play-crawler/ideas/test.json")
+save_to_file(results, "results_test.json")
+
+#results = test_tokens_from_file("/home/Eddy/playdrone/tokens.json")
+#save_to_file(results, "results_full.json")
