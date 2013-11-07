@@ -48,6 +48,12 @@ GIT
     rugged (0.17.0.b8)
 
 GIT
+  remote: git://github.com/threedaymonk/text.git
+  revision: d2fa139529c9227419766fab1c52535b29544b3f
+  specs:
+    text (1.2.3)
+
+GIT
   remote: https://github.com/seyhunak/twitter-bootstrap-rails.git
   revision: 98366d05f29e3a920db62540512fb586fc144fa5
   specs:
@@ -337,6 +343,7 @@ DEPENDENCIES
   slim
   statsd-instrument
   stretcher!
+  text!
   therubyracer
   twitter-bootstrap-rails!
   uglifier (>= 1.0.3)
