@@ -187,7 +187,13 @@ authors.each{ |author|
       next
       elsif app_str_match?(app_arr[i]["_id"], app_arr[k]["_id"]) and
               app_titles_match?(app_arr[i]["title"], app_arr[k]["title"])
-        free_paid_dups_id.push([app_arr[i], app_arr[k]])
+        if app_arr[i]["free"]
+          free_paid_dups_id.push([app_arr[i], app_arr[k]])
+          r.hset("free_paid", app_arr[i]["_id"].to_s, app_arr[k].to_json)
+        else
+          free_paid_dups_id.push([app_arr[k], app_arr[i]])
+          r.hset("free_paid", app_arr[k]["_id"].to_s, app_arr[i].to_json)
+        end
         dups[app_arr[i]] += 1
         dups[app_arr[k]] += 1
         del_hash[app_arr[i]] += 1
@@ -208,7 +214,13 @@ authors.each{ |author|
       #is paid
       next
       elsif app_str_match?(app_arr[i]["title"], app_arr[k]["title"])
-        free_paid_dups_title.push([app_arr[i], app_arr[k]])
+        if app_arr[i]["free"]
+          free_paid_dups_id.push([app_arr[i], app_arr[k]])
+          r.hset("free_paid", app_arr[i]["_id"].to_s, app_arr[k].to_json)
+        else
+          free_paid_dups_id.push([app_arr[k], app_arr[i]])
+          r.hset("free_paid", app_arr[k]["_id"].to_s, app_arr[i].to_json)
+        end
         dups[app_arr[i]] += 1
         dups[app_arr[k]] += 1
         del_hash[app_arr[i]] += 1
