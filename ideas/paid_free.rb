@@ -189,10 +189,10 @@ authors.each{ |author|
               app_titles_match?(app_arr[i]["title"], app_arr[k]["title"])
         if app_arr[i]["free"]
           free_paid_dups_id.push([app_arr[i], app_arr[k]])
-          r.hset("free_paid", app_arr[i]["_id"].to_s, app_arr[k].to_json)
+#          r.hset("free_paid", app_arr[i]["_id"].to_s, app_arr[k].to_json)
         else
           free_paid_dups_id.push([app_arr[k], app_arr[i]])
-          r.hset("free_paid", app_arr[k]["_id"].to_s, app_arr[i].to_json)
+#          r.hset("free_paid", app_arr[k]["_id"].to_s, app_arr[i].to_json)
         end
         dups[app_arr[i]] += 1
         dups[app_arr[k]] += 1
@@ -216,10 +216,10 @@ authors.each{ |author|
       elsif app_str_match?(app_arr[i]["title"], app_arr[k]["title"])
         if app_arr[i]["free"]
           free_paid_dups_id.push([app_arr[i], app_arr[k]])
-          r.hset("free_paid", app_arr[i]["_id"].to_s, app_arr[k].to_json)
+#          r.hset("free_paid", app_arr[i]["_id"].to_s, app_arr[k].to_json)
         else
           free_paid_dups_id.push([app_arr[k], app_arr[i]])
-          r.hset("free_paid", app_arr[k]["_id"].to_s, app_arr[i].to_json)
+ #         r.hset("free_paid", app_arr[k]["_id"].to_s, app_arr[i].to_json)
         end
         dups[app_arr[i]] += 1
         dups[app_arr[k]] += 1
@@ -229,11 +229,11 @@ authors.each{ |author|
       end
     end
   end
-"
+
   del_hash.each_key {|key| app_arr.delete(key) }
   del_hash.clear
 
-  app_arr.sort!{|x,y| y[_id] <=> x[_id]}
+  app_arr.sort!{|x,y| y["_id"] <=> x["_id"]}
   for i in 0 .. (app_arr.length-1)
     for k in (i+1) .. (app_arr.length-1)
       if app_arr[k][:free] == app_arr[i][:free]
@@ -241,21 +241,27 @@ authors.each{ |author|
       #is paid
       next
       elsif app_leven_match?(app_arr[i], app_arr[k])
-        free_paid_dups_leven.push([app_arr[i], app_arr[k]])
+        if app_arr[i]["free"]
+          free_paid_dups_leven.push([app_arr[i], app_arr[k]])
+        else
+          free_paid_dups_leven.push([app_arr[k], app_arr[i]])
+        end
         dups[app_arr[i]] += 1
         dups[app_arr[k]] += 1
         break
       end
     end
   end
-"
+
 }
 
 #print_author_app(author_app)
-print_dup_array(free_paid_dups_id)
-print_dup_array(free_paid_dups_title)
+#print_dup_array(free_paid_dups_id)
+#print_dup_array(free_paid_dups_title)
 #print_dup_array(free_paid_dups_leven)
-#save_to_file(free_paid_dups, "free_paid_dups.json")
+save_to_file(free_paid_dups_id, "free_paid_dups_id.json")
+save_to_file(free_paid_dups_title, "free_paid_dups_title.json")
+save_to_file(free_paid_dups_leven, "free_paid_dups_leven.json")
 #save_to_file(author_app, "paid_auth_apps.json")
 
 #puts "total different authors = " + author_app.count.to_s
