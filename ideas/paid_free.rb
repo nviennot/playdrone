@@ -21,11 +21,11 @@ def load_from_file(filename)
 end
 
 def app_leven_match?(app1, app2)
-  id_leven = Text::Levenshtein.distance(app1._id, app2._id)
-  title_leven = Text::Levenshtein.distance(app1.title, app2.title)
+  id_leven = Text::Levenshtein.distance(app1["_id"], app2["_id"])
+  title_leven = Text::Levenshtein.distance(app1["title"], app2["title"])
 
-  id_length = app1._id.length < app2._id.length ? app2._id.length : app1._id.length
-  title_length = app1.title.length < app2.title.length ? app2.title.length : app1.title.length
+  id_length = app1["_id"].length < app2["_id"].length ? app2["_id"].length : app1["_id"].length
+  title_length = app1["title"].length < app2["title"].length ? app2["title"].length : app1["title"].length
 
   if title_leven.fdiv(title_length) < LEVEN_THRESHOLD and id_leven.fdiv(id_length) < LEVEN_THRESHOLD
     return true
@@ -215,10 +215,10 @@ authors.each{ |author|
       next
       elsif app_str_match?(app_arr[i]["title"], app_arr[k]["title"])
         if app_arr[i]["free"]
-          free_paid_dups_id.push([app_arr[i], app_arr[k]])
+          free_paid_dups_title.push([app_arr[i], app_arr[k]])
 #          r.hset("free_paid", app_arr[i]["_id"].to_s, app_arr[k].to_json)
         else
-          free_paid_dups_id.push([app_arr[k], app_arr[i]])
+          free_paid_dups_title.push([app_arr[k], app_arr[i]])
  #         r.hset("free_paid", app_arr[k]["_id"].to_s, app_arr[i].to_json)
         end
         dups[app_arr[i]] += 1
@@ -236,7 +236,7 @@ authors.each{ |author|
   app_arr.sort!{|x,y| y["_id"] <=> x["_id"]}
   for i in 0 .. (app_arr.length-1)
     for k in (i+1) .. (app_arr.length-1)
-      if app_arr[k][:free] == app_arr[i][:free]
+      if app_arr[k]["free"] == app_arr[i]["free"]
       #we are only interested in matches where one app is free and the other
       #is paid
       next
