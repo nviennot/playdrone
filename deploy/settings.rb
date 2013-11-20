@@ -25,18 +25,20 @@ if ENV['VAGRANT']
   role :metrics, '10.1.1.12'
   role :master,  '10.1.1.11'
 else
-  role :unicorn, 'node01.googleplaywith.me', 'node02.googleplaywith.me',
-                 'node03.googleplaywith.me', 'node04.googleplaywith.me',
-                 'node05.googleplaywith.me', 'node06.googleplaywith.me',
-                 'node07.googleplaywith.me', 'node08.googleplaywith.me',
-                 'node09.googleplaywith.me', 'node10.googleplaywith.me'
+  role :unicorn, 'node01.playdrone.io', 'node02.playdrone.io',
+                 'node03.playdrone.io', 'node04.playdrone.io',
+                 'node05.playdrone.io', 'node06.playdrone.io',
+                 'node07.playdrone.io', 'node08.playdrone.io',
+                 'node09.playdrone.io', 'node10.playdrone.io',
+                 'node11.playdrone.io', 'node12.playdrone.io'
 
-  role :sidekiq, 'node01.googleplaywith.me', 'node02.googleplaywith.me',
-                 'node03.googleplaywith.me', 'node04.googleplaywith.me',
-                 'node05.googleplaywith.me', 'node06.googleplaywith.me',
-                 'node07.googleplaywith.me', 'node08.googleplaywith.me',
-                 'node09.googleplaywith.me', 'node10.googleplaywith.me'
+  role :sidekiq, 'node01.playdrone.io', 'node02.playdrone.io',
+                 'node03.playdrone.io', 'node04.playdrone.io',
+                 'node05.playdrone.io', 'node06.playdrone.io',
+                 'node07.playdrone.io', 'node08.playdrone.io',
+                 'node09.playdrone.io', 'node10.playdrone.io',
+                 'node11.playdrone.io', 'node12.playdrone.io'
 
-  role :metrics, 'node01.googleplaywith.me'
-  role :master,  'node01.googleplaywith.me'
+  role :metrics, 'node01.playdrone.io'
+  role :master,  'node01.playdrone.io'
 end

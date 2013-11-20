@@ -8,9 +8,10 @@ namespace :deploy do
   end
 
   task :restart_bg, :roles => :sidekiq do
-    4.times do |i|
-      run "service sidekiq-bg#{i+1} restart"
-    end
+    run "service sidekiq-bg restart"
+    # 4.times do |i|
+      # run "service sidekiq-bg#{i+1} restart"
+    # end
   end
 
   task :restart_metrics, :roles => :metrics do
@@ -37,9 +38,10 @@ namespace :deploy do
   end
 
   task :stop_bg, :roles => :sidekiq do
-    4.times do |i|
-      run "service sidekiq-bg#{i+1} stop || true"
-    end
+    run "service sidekiq-bg stop || true"
+    # 4.times do |i|
+      # run "service sidekiq-bg#{i+1} stop || true"
+    # end
   end
 
   task :stop_metrics, :roles => :metrics do
