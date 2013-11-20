@@ -16,6 +16,7 @@ class Account < Hashie::Dash
 
   def self.create(fields={})
     new(fields).tap do |account|
+      auth_token
       Redis.instance.multi do
         Redis.instance.sadd('accounts', account.email)
         Redis.instance.set(account.key(:password),   account.password)
