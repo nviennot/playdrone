@@ -30,14 +30,18 @@ else
                  'node05.playdrone.io', 'node06.playdrone.io',
                  'node07.playdrone.io', 'node08.playdrone.io',
                  'node09.playdrone.io', 'node10.playdrone.io',
-                 'node11.playdrone.io', 'node12.playdrone.io'
+                 'node11.playdrone.io', 'node12.playdrone.io',
+                 'node13.playdrone.io', 'node14.playdrone.io',
+                 'node15.playdrone.io', 'node16.playdrone.io'
 
   role :sidekiq, 'node01.playdrone.io', 'node02.playdrone.io',
                  'node03.playdrone.io', 'node04.playdrone.io',
                  'node05.playdrone.io', 'node06.playdrone.io',
                  'node07.playdrone.io', 'node08.playdrone.io',
                  'node09.playdrone.io', 'node10.playdrone.io',
-                 'node11.playdrone.io', 'node12.playdrone.io'
+                 'node11.playdrone.io', 'node12.playdrone.io',
+                 'node13.playdrone.io', 'node14.playdrone.io',
+                 'node15.playdrone.io', 'node16.playdrone.io'
 
   role :metrics, 'node01.playdrone.io'
   role :master,  'node01.playdrone.io'
