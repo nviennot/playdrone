@@ -84,7 +84,7 @@ class AppsController < ApplicationController
     end
 
     @app = App.find(:latest, @app_id)
-    @repo_path = "git://#{node}.googleplaywith.me/#{@app_id.gsub(/\./, '/')}.git"
+    @repo_path = "git://#{node}.playdrone.io/#{@app_id.gsub(/\./, '/')}.git"
 
     # Some apps don't have any permissions
     @app.permission ||= []
@@ -110,7 +110,7 @@ class AppsController < ApplicationController
 
   def fetch_from_node(node, app_id)
     r = Faraday.new(:url => "http://#{node}/") do |faraday|
-      faraday.request :basic_auth, "bien", "jacobien" # really not nice, deal with it.
+      faraday.request :basic_auth, "playdrone", "itsshowtime" # really not nice, deal with it.
       faraday.adapter  Faraday.default_adapter
     end.get "/apps/#{app_id}", params.reject { |k,v| k.to_sym.in? request.path_parameters.keys }
 
