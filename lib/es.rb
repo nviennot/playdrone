@@ -29,7 +29,7 @@ module ES
     start_date ||= Date.today
     end_date   ||= Date.today + 1.day
     (start_date..end_date).each { |day| create_index(day.to_s) }
-    create_index(:live, :number_of_shards => 100, :number_of_replicas => 1)
+    create_index(:live, :number_of_shards => 16*5, :number_of_replicas => 0)
     update_all_mappings
     server.aliases(:actions => [:add => {:index => end_date.to_s, :alias => :latest}])
   end
