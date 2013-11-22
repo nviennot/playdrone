@@ -20,11 +20,17 @@ class Stack::DownloadApk < Stack::BaseGit
 
     StatsD.measure 'market.download' do
       begin
-        download_info = Market.purchase(app.id, app.version_code)
+        begin
+          download_info = Market.purchase(app.id, app.version_code)
+        rescue Market::BadRequest => e
+          # Trigger a Market::NotFound if the app is gone from the market
+          Market.details(app.id) if e.message =~ /DF-DFERH-01/
+          raise
+        end
       rescue Market::NotFound => e
         env[:app_not_found] = true
         git.commit do |index|
-          index.add_file("not_found", e.to_s)
+          index.add_file("not_found", e.message)
         end
         return
       end
