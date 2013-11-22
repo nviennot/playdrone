@@ -40,8 +40,9 @@ class Stack::FetchMarketDetails < Stack::BaseGit
       instantiate_app(env, nil)
     else
       instantiate_app(env, MultiJson.load(git.read_file('metadata.json'), :symbolize_keys => true))
-      @stack.call(env)
     end
+
+    @stack.call(env) if env[:app]
   end
 
   private
@@ -71,7 +72,11 @@ class Stack::FetchMarketDetails < Stack::BaseGit
 
     if raw_app
       env[:app] = App.from_market(raw_app)
-    else
+      # Apps with no version codes are gone
+      env[:app] = nil unless env[:app].version_code
+    end
+
+    unless env[:app]
       if env[:previous_app]
         env[:app] = env[:previous_app].dup
       else
