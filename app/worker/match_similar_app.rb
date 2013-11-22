@@ -1,6 +1,6 @@
 class MatchSimilarApp
   include Sidekiq::Worker
-  sidekiq_options :queue => name.underscore, :backtrace => true, :timeout => 1.minute
+  sidekiq_options :queue => name.underscore, :backtrace => true
 
   def perform(app_id, options={})
     options.symbolize_keys!

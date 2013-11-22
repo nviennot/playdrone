@@ -39,6 +39,12 @@ module NodeWorker
       end
     end
 
+    def sidekiq_retry_in(&block)
+      self.node_classes.values.each do |node_class|
+        node_class.sidekiq_retry_in(&block)
+      end
+    end
+
     def perform_async(*args)
       raise "Nop, use perform_async_on_node"
     end

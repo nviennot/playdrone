@@ -1,6 +1,7 @@
 class ReprocessApp
   include NodeWorker
-  sidekiq_options :timeout => 5.minutes
+  sidekiq_options :retry => 5
+  sidekiq_retry_in { |count| 3600 * 2 }
 
   def node_perform(app_id)
     Stack.reprocess_app(:app_id => app_id)

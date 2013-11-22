@@ -1,6 +1,7 @@
 class ProcessApp
   include NodeWorker
-  sidekiq_options :timeout => 5.minutes
+  sidekiq_options :retry => 5
+  sidekiq_retry_in { |count| 3600 * 2 }
 
   def node_perform(app_id, crawled_at, options={})
     options.symbolize_keys!

@@ -1,6 +1,5 @@
 class GcApp
   include NodeWorker
-  sidekiq_options :timeout => 1.minute
 
   def node_perform(app_id)
     repo = Repository.new(app_id)

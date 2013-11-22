@@ -1,6 +1,5 @@
 class PurgeBranch
   include NodeWorker
-  sidekiq_options :timeout => 1.minute
 
   def node_perform(app_id, branch)
     Stack.purge_branch(:app_id => app_id, :purge_branch => branch)
