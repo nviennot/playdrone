@@ -23,7 +23,7 @@ class Stack::FetchMarketDetails < Stack::BaseGit
 
       git.set_head unless env[:app].free
 
-      @stack.call(env)
+      @stack.call(env) unless env[:app_not_found]
 
     rescue Market::NotFound => e
       instantiate_app(env, nil)
@@ -42,7 +42,7 @@ class Stack::FetchMarketDetails < Stack::BaseGit
       instantiate_app(env, MultiJson.load(git.read_file('metadata.json'), :symbolize_keys => true))
     end
 
-    @stack.call(env) if env[:app]
+    @stack.call(env) unless env[:app_not_found]
   end
 
   private
