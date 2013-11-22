@@ -17,13 +17,15 @@ class Stack::FetchMarketDetails < Stack::BaseGit
 
       instantiate_app(env, app_details.raw_app)
 
+      raise "No version code" unless env[:app].version_code
+
       git.commit do |index|
         index.add_file('metadata.json', MultiJson.dump(app_details.raw_app, :pretty => true))
       end
 
       git.set_head unless env[:app].free
 
-      @stack.call(env) unless env[:app_not_found]
+      @stack.call(env)
 
     rescue Market::NotFound => e
       instantiate_app(env, nil)
@@ -40,9 +42,8 @@ class Stack::FetchMarketDetails < Stack::BaseGit
       instantiate_app(env, nil)
     else
       instantiate_app(env, MultiJson.load(git.read_file('metadata.json'), :symbolize_keys => true))
+      @stack.call(env)
     end
-
-    @stack.call(env) unless env[:app_not_found]
   end
 
   private
@@ -72,11 +73,7 @@ class Stack::FetchMarketDetails < Stack::BaseGit
 
     if raw_app
       env[:app] = App.from_market(raw_app)
-      # Apps with no version codes are gone
-      env[:app] = nil unless env[:app].version_code
-    end
-
-    unless env[:app]
+    else
       if env[:previous_app]
         env[:app] = env[:previous_app].dup
       else

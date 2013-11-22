@@ -10,8 +10,6 @@ class Stack::DownloadApk < Stack::BaseGit
     app = env[:app]
     return unless app.free
 
-    raise "No version code" unless app.version_code
-
     if env[:crawled_at] < Date.today - 7.day
       # not happening
       return
@@ -23,7 +21,7 @@ class Stack::DownloadApk < Stack::BaseGit
     StatsD.measure 'market.download' do
       begin
         download_info = Market.purchase(app.id, app.version_code)
-      rescue Market::NotFound, Market::BadRequest => e
+      rescue Market::NotFound => e
         env[:app_not_found] = true
         git.commit do |index|
           index.add_file("not_found", e.to_s)
