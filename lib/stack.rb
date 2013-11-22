@@ -37,8 +37,9 @@ module Stack
 
     @create_app_stack ||= ::Middleware::Builder.new do
       use LockApp
-        use PrepareFS
-          use Stack.common_stack
+        use DeleteMissingApp
+          use PrepareFS
+            use Stack.common_stack
     end
     @create_app_stack.call(options.dup)
   end

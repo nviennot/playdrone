@@ -10,13 +10,13 @@ class Stack::PrepareFS < Stack::Base
     Dir.mktmpdir "#{env[:app_id]}", Rails.root.join('scratch') do |dir|
       env[:scratch] = Pathname.new(dir)
       @stack.call(env)
+    end
 
-      if env[:need_git_gc]
-        # It would be much more efficient to write a pack directly (clone then push)
-        # Expect horrible performance when saving sources.
-        output = exec_and_capture("git gc --prune=now -q", :chdir => env[:repo].path)
-        Rails.logger.info "Cannot garbage collect the repository: #{output}" unless $?.success?
-      end
+    if env[:need_git_gc]
+      # It would be much more efficient to write a pack directly (clone then push)
+      # Expect horrible performance when saving sources.
+      output = exec_and_capture("git gc --prune=now -q", :chdir => env[:repo].path)
+      Rails.logger.info "Cannot garbage collect the repository: #{output}" unless $?.success?
     end
   end
 end

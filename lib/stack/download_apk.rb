@@ -10,6 +10,8 @@ class Stack::DownloadApk < Stack::BaseGit
     app = env[:app]
     return unless app.free
 
+    raise "No version code" unless app.version_code
+
     if env[:crawled_at] < Date.today - 7.day
       # not happening
       return
