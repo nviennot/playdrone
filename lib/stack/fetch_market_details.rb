@@ -21,6 +21,8 @@ class Stack::FetchMarketDetails < Stack::BaseGit
         index.add_file('metadata.json', MultiJson.dump(app_details.raw_app, :pretty => true))
       end
 
+      git.set_head unless env[:app].free
+
       @stack.call(env)
 
     rescue Market::NotFound => e
