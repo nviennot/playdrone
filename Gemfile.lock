@@ -9,12 +9,6 @@ GIT
       net-http-persistent (~> 2.8)
 
 GIT
-  remote: git://github.com/nviennot/hiredis-rb.git
-  revision: 92ab2914e1134f7eace18453ff796034d26650c8
-  specs:
-    hiredis (0.4.5)
-
-GIT
   remote: git://github.com/nviennot/protobuf.git
   revision: 06871a5a50b5d49fb4e3f6df3b1ee11aca39b676
   branch: dev
@@ -311,7 +305,6 @@ DEPENDENCIES
   guard-livereload
   haml-rails
   hashie
-  hiredis!
   jquery-rails
   less-rails
   middleware

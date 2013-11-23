@@ -9,7 +9,7 @@ set :use_sudo, false
 ssh_options[:forward_agent] = true
 
 set :application, 'google-play-crawler'
-set :rvm_ruby_string, 'ruby-1.9.3-p327@google-play-crawler'
+set :rvm_ruby_string, 'ruby-2.0@google-play-crawler'
 set :deploy_to, "/srv/#{application}"
 set :keep_releases, 3
 set :normalize_asset_timestamps, false

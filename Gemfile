@@ -2,7 +2,7 @@ source 'https://rubygems.org/'
 
 gem 'rails'
 gem 'redis'
-gem 'hiredis', :git => 'git://github.com/nviennot/hiredis-rb.git'
+# gem 'hiredis', :git => 'git://github.com/nviennot/hiredis-rb.git'
 gem 'sidekiq'
 gem 'faraday'
 gem 'faraday_middleware'
