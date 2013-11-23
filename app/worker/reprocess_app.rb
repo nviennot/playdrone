@@ -4,7 +4,9 @@ class ReprocessApp
   # sidekiq_retry_in { |count| 3600 * 2 }
 
   def node_perform(app_id)
-    Stack.reprocess_app(:app_id => app_id)
+    Timeout.timeout(2.minutes) do
+      Stack.reprocess_app(:app_id => app_id)
+    end
   end
 
   def self.reprocess_all(options={})

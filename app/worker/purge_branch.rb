@@ -2,7 +2,9 @@ class PurgeBranch
   include NodeWorker
 
   def node_perform(app_id, branch)
-    Stack.purge_branch(:app_id => app_id, :purge_branch => branch)
+    Timeout.timeout(1.minute) do
+      Stack.purge_branch(:app_id => app_id, :purge_branch => branch)
+    end
   end
 
   def self.purge_all(branch)
