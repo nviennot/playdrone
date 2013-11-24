@@ -233,6 +233,7 @@ GEM
       redis (~> 3.0.4)
     ref (1.0.4)
     ruby-progressbar (1.0.2)
+    rubyzip (1.1.0)
     rvm-capistrano (1.3.0)
       capistrano (>= 2.0.0)
     sass (3.2.7)
@@ -317,6 +318,7 @@ DEPENDENCIES
   rails
   redis
   ruby-progressbar
+  rubyzip
   rugged!
   rvm-capistrano
   sass-rails (~> 3.2.3)

@@ -19,6 +19,7 @@ gem 'whenever', :require => false
 gem 'nokogiri', :require => false
 gem "ruby-progressbar", :require => false
 gem 'text', git: 'git://github.com/threedaymonk/text.git'
+gem 'rubyzip', :require => false
 
 # Front end only
 gem 'unicorn', :require => false

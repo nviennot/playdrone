@@ -208,4 +208,7 @@ class App < ES::Model
 
   # FindLibraries
   property :library, :type => :string, :index => :not_analyzed
+
+  # FetchDevSignature
+  property :dev_signature, :type => :string, :index => :not_analyzed
 end

@@ -12,6 +12,7 @@ module Stack
             use FindTokens
             use LookForNativeLibraries
             use LookForObfuscatedCode
+            use FetchDevSignature
             use FindLibraries
             # use Signature
     end
