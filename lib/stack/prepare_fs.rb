@@ -12,7 +12,7 @@ class Stack::PrepareFS < Stack::Base
       @stack.call(env)
     end
 
-    if env[:need_git_gc]
+    if env[:need_git_gc] || env[:force_gc]
       # It would be much more efficient to write a pack directly (clone then push)
       # Expect horrible performance when saving sources.
       output = exec_and_capture("git gc --prune=now -q", :chdir => env[:repo].path)

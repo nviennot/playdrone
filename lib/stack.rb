@@ -8,7 +8,7 @@ module Stack
           use CacheApkResults
             use DownloadApk
             use DecompileApk
-            # use IndexSources # can be enabled if needed
+            use IndexSources
             use FindTokens
             use LookForNativeLibraries
             use LookForObfuscatedCode

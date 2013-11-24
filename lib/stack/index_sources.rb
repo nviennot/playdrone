@@ -1,9 +1,6 @@
 class Stack::IndexSources < Stack::Base
   def call(env)
-    should_index_sources = !!env[:src_dir]
-    #should_index_sources = true
-
-    if should_index_sources
+    if env[:src_dir] || env[:force_index_sources]
       # We'll only index the sources in the canonical java package.
       # XXX Obfuscated sources are not going to be indexed.
       app_id_slashes = env[:app_id].gsub(/\./, '/')
