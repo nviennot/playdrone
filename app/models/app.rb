@@ -138,6 +138,7 @@ class App < ES::Model
 
   # LookForNativeLibraries attributes
   property :has_native_libs, :type => :boolean
+  property :native_libs,     :type => :string, :index => :not_analyzed
 
   # Signature attributes
   # property :sig_resources_100,      :type => :string, :index => :not_analyzed
