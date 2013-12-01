@@ -111,6 +111,12 @@ Cumulative downloads paid apps (min-max)   & #{dl(data[:old][:paid][:min_dl])}-#
 Total cumulative downloads (min-max)       & #{dl(data[:old][:total][:min_dl])}-#{dl(data[:old][:total][:max_dl])} &
                                              #{dl(data[:new][:total][:min_dl])}-#{dl(data[:new][:total][:max_dl])} \\hfill (+#{p(data[:old][:total][:min_dl], data[:new][:total][:min_dl])}\\%) \\\\ \\hline
 
+Google revenues (min-max)                  & #{dl(data[:old][:paid][:min_money]*0.3)}-#{dl(data[:old][:paid][:max_money]*0.3)} &
+                                             #{dl(data[:new][:paid][:min_money]*0.3)}-#{dl(data[:new][:paid][:max_money]*0.3)} \\hfill (+#{p(data[:old][:paid][:min_money], data[:new][:paid][:min_money])}\\%) \\\\ \\hline
+
+Developer revenues (min-max)               & #{dl(data[:old][:paid][:min_money]*0.7)}-#{dl(data[:old][:paid][:max_money]*0.7)} &
+                                             #{dl(data[:new][:paid][:min_money]*0.7)}-#{dl(data[:new][:paid][:max_money]*0.7)} \\hfill (+#{p(data[:old][:paid][:min_money], data[:new][:paid][:min_money])}\\%) \\\\ \\hline
+
 Paid apps total revenue (min-max)          & #{dl(data[:old][:paid][:min_money])}-#{dl(data[:old][:paid][:max_money])} &
                                              #{dl(data[:new][:paid][:min_money])}-#{dl(data[:new][:paid][:max_money])} \\hfill (+#{p(data[:old][:paid][:min_money], data[:new][:paid][:min_money])}\\%) \\\\ \\hline
 
