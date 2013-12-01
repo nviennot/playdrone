@@ -1,5 +1,30 @@
 #!../script/rails runner
 
+def money_stats(es_connection, index)
+  Thread.current[:es_connection] = nil
+  ENV['ELASTICSEARCH_URL'] = es_connection
+
+  result = App.index(:latest).search({
+    :size => 0,
+    :query => {:term => { :free => false }},
+    :facets => {
+      :min_money => {
+        :statistical => {
+          :script => "doc['price'].value + doc['downloads'].value"
+        }
+      },
+      :max_money => {
+        :statistical => {
+          :script => "doc['price'].value + doc['downloads_max'].value"
+        }
+      }
+    }
+  })
+
+  { :min_money => result[:facets][:min_money][:total],
+    :max_money => result[:facets][:max_money][:total] }
+end
+
 def __lookup_app_stats(es_connection, index, query)
   Thread.current[:es_connection] = nil
   ENV['ELASTICSEARCH_URL'] = es_connection
@@ -27,9 +52,11 @@ def _lookup_app_stats(es_connection, index)
     :free => __lookup_app_stats(es_connection, index, {:term => { :free => true }}),
     :paid => __lookup_app_stats(es_connection, index, {:term => { :free => false }})
   }
-  r.merge({
+  r.merge!({
     :total => Hash[r[:free].keys.zip(r[:free].values.zip(r[:paid].values).map(&:sum))]
   })
+  r[:paid].merge!(money_stats(es_connection, index))
+  r
 end
 
 def lookup_app_stats
@@ -83,6 +110,9 @@ Cumulative downloads paid apps (min-max)   & #{dl(data[:old][:paid][:min_dl])}-#
 
 Total cumulative downloads (min-max)       & #{dl(data[:old][:total][:min_dl])}-#{dl(data[:old][:total][:max_dl])} &
                                              #{dl(data[:new][:total][:min_dl])}-#{dl(data[:new][:total][:max_dl])} \\hfill (+#{p(data[:old][:total][:min_dl], data[:new][:total][:min_dl])}\\%) \\\\ \\hline
+
+Paid apps total revenue (min-max)          & #{dl(data[:old][:paid][:min_money])}-#{dl(data[:old][:paid][:max_money])} &
+                                             #{dl(data[:new][:paid][:min_money])}-#{dl(data[:new][:paid][:max_money])} \\hfill (+#{p(data[:old][:paid][:min_money], data[:new][:paid][:min_money])}\\%) \\\\ \\hline
 
 \\end{tabular}
 \\caption{Evolution of the market from June 22nd 2013 to Nov 30th 2013}
