@@ -1,6 +1,6 @@
 #!../script/rails runner
 
-result = App.index(Date.today - 1).search(
+result = App.index(:latest).search(
   :size => 0,
   :query => { :term => { :decompiled => true } },
   :facets => {

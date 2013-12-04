@@ -32,18 +32,12 @@ buckets = [
   { :range => { :downloads => { :from => 50000000 } } }
 ]
 
-buckets.each do |bucket|
-  dl = (bucket[:term] || {})[:downloads] ||
-       bucket[:range][:downloads][:from] ||
-       bucket[:range][:downloads][:to]
-
-  query[:facets][dl.to_s] = {
+buckets.each_with_index do |bucket, i|
+  query[:facets][i] = {
     :statistical => {
       :field => "star_rating"
     },
-    :facet_filter => {
-      :term => { :downloads => dl }
-    }
+    :facet_filter => bucket
   }
 end
 
@@ -67,7 +61,10 @@ end
 histogram = result[:aggregate].values
 
 get_download_str = lambda do |i|
-  dl = result[:aggregate].keys[i].to_i
+  dl = buckets[i][:term][:downloads] rescue nil
+  dl ||= buckets[i][:range][:downloads][:to] rescue nil
+  dl ||= buckets[i][:range][:downloads][:from] rescue nil
+
   return "#{dl}" if dl < 1_000
   dl /= 1000
   return "#{dl}k" if dl < 1_000

@@ -43,6 +43,7 @@ result.facets.in['entries'].size.times.each do |i|
   elsif Time.at(day).to_date == Date.parse("2013-06-03")
   elsif Time.at(day).to_date == Date.parse("2013-06-04")
   elsif Time.at(day).to_date == Date.parse("2013-06-05")
+  elsif Time.at(day).to_date == Date.parse("2013-11-24")
     # no good data
     nil
   else

@@ -1,13 +1,14 @@
-set terminal pdf dashed size 12,3
+set terminal pdf dashed size 5,2
 set output "paid_ratings.pdf"
 
-set title "Free/Paid Rating (free apps)"
-set key invert reverse Left outside
+# set title "Free/Paid Rating (free apps)"
+set key invert reverse Left horizontal
 
-set ylabel "Average Ratings with StdDev" offset +2, 0
+set ylabel "avg/min/max rating" offset +2, 0
 set xlabel "Number of Downloads" offset 0,+0.2
+set xtics rotate by -20 offset -1.1,0
 set grid y
- set yrange [0:5.5]
+ set yrange [0.8:5.8]
 
 set ytics 0.5
 
