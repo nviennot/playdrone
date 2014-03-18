@@ -57,6 +57,21 @@ module Stack
     @clean_branch_stack.call(options.dup)
   end
 
+  def self.download_and_decompile(options={})
+    raise "missing app_id"       unless options[:app_id]
+    raise "missing version_code" unless options[:version_code]
+    ::Middleware::Builder.new do
+      use LockApp
+      use PrepareFS
+      use DownloadApk
+      use DecompileApk
+    end.call(options.merge(:crawled_at => Date.today,
+                           :app => App.new(:free => true,
+                                           :_id => options[:app_id],
+                                           :crawled_at => Date.today,
+                                           :version_code => options[:version_code])))
+  end
+
   class << self
     extend StatsD::Instrument
     statsd_count   :reprocess_app,    'stack.reprocess_app'
