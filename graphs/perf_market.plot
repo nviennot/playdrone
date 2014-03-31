@@ -32,9 +32,9 @@ set ylabel "Throughput (req/s)" offset +1, 0
 set yrange [0:300]
 
 
-plot 'perf_market.dat' using 1:($2) t 'Search'    lt 1 lc 1 with lines, \
-                    '' using 1:($3) t 'Details'   lt 1 lc 3 with lines, \
-                    '' using 1:($4) t 'Purchase'  lt 1 lc 2 with lines
+plot 'perf_market.dat' using 1:($3) t 'Details'  lt 1 lw 4 lc 7 with lines, \
+                    '' using 1:($2) t 'Search'   lt 1 lw 4 lc rgb "#ff2222" with lines, \
+                    '' using 1:($4) t 'Purchase' lt 1 lw 4 lc rgb "#66ff66" with lines
 
 set nokey
 set xtics 7200
@@ -43,6 +43,6 @@ set ylabel "Latency (s)" offset 0, 0
 
 set xlabel "Time" offset 0,+0.2
 
-plot 'perf_market.dat' using 1:($5) t 'Search'   lt 1 lc 1 with lines, \
-                    '' using 1:($6) t 'Details'  lt 1 lc 3 with lines, \
-                    '' using 1:($7) t 'Purchase' lt 1 lc 2 with lines
+plot 'perf_market.dat' using 1:($6) t 'Details'  lt 1 lw 4 lc 7 with lines, \
+                    '' using 1:($5) t 'Search'   lt 1 lw 4 lc rgb "#ff2222"with lines, \
+                    '' using 1:($7) t 'Purchase' lt 1 lw 4 lc rgb "#66ff66" with lines
