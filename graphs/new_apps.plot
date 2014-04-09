@@ -4,7 +4,7 @@ set output "new_apps.pdf"
 #set title "Apps Released and Removed on the Market"
 set key left
 
-set ylabel "Number of Apps" offset +1, 0
+set ylabel "Number of applications" offset +1, 0
 set xlabel "Day" offset 0,+0.8
 set grid y
 set xtics rotate by -30 offset -0.5,0
@@ -48,4 +48,4 @@ set arrow from 59,-2000 to 63,-6000 nohead ls 5 lc 0 lw 3
 plot 'new_apps.dat' using 1:($3)                 lt 1 lc 2 with boxes fs solid 0.6 t "Added", \
                  '' using 1:(-$4)                lt 1 lc 1 with boxes fs solid 0.6 t "Removed", \
                  '' using 1:($5)                 lt 1 lc 13 lw 5 with lines t "Updated", \
-                 '' using 1:($3-$4):xticlabel(2) lt 1 lc 3 lw 5 with lines t "Net Added"
+                 '' using 1:($3-$4):xticlabel(2) lt 1 lc 3 lw 5 with lines t "Net added"

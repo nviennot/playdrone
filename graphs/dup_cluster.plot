@@ -4,8 +4,8 @@ set output "dup_cluster.pdf"
 #set title "Cluster Size repartition, Different Blacklist Cutoffs\n(min_count = 3, threshold = 0.8)"
 set key invert
 
-set ylabel "Number of Clusters" offset +1, 0
-set xlabel "Cluster Size (excluding victim application)" offset 0,+0.2
+set ylabel "Number of clusters" offset +1, 0
+set xlabel "Cluster size (excluding victim application)" offset 0,+0.2
 set grid y
 
 set logscale xy

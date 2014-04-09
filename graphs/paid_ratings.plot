@@ -4,13 +4,14 @@ set output "paid_ratings.pdf"
 # set title "Free/Paid Rating (free apps)"
 set key invert reverse Left horizontal
 
-set ylabel "avg/min/max rating" offset +2, 0
-set xlabel "Number of Downloads" offset 0,+0.2
+set ylabel "Avg/min/max rating" offset +2, 0
+set xlabel "Number of downloads" offset 0,+0.2
 set xtics rotate by -20 offset -1.1,0
 set grid y
- set yrange [0.8:5.8]
+set yrange [0.8:5.7]
 
 set ytics 0.5
+set ytics (1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5)
 
 set style data histograms
 set style histogram errorbars lw 3 gap 1
