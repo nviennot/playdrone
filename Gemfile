@@ -32,7 +32,6 @@ gem 'less-rails'
 gem 'twitter-bootstrap-rails', git: 'https://github.com/seyhunak/twitter-bootstrap-rails.git'
 gem 'sinatra', :require => false
 gem 'coderay'
-gem 'will_paginate'
 # Front end only
 
 group :development do

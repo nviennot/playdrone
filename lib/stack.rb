@@ -31,8 +31,9 @@ module Stack
   end
 
   def self.process_app(options={})
-    raise "missing app_id"     unless options[:app_id]
-    raise "missing crawled_at" unless options[:crawled_at]
+    raise "missing app_id" unless options[:app_id]
+    options = options.dup
+    options[:crawled_at] ||= Date.today
     # can pass :reprocess => branch to reprocess that branch
     # do not use unless you know what you are doing.
 
@@ -42,7 +43,8 @@ module Stack
           use PrepareFS
             use Stack.common_stack
     end
-    @create_app_stack.call(options.dup)
+    @create_app_stack.call(options)
+    options[:app]
   end
 
   def self.purge_branch(options={})

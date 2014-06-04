@@ -1,6 +1,6 @@
 FIGS = native_libs native_libs_ratings paid_ratings new_apps resource_blacklist \
 			 dup_threshold dup_min_count dup_cluster dev_free_paid app_categories \
-			 obfuscation ads_marketshare perf_market tokens
+			 obfuscation ads_marketshare perf_market tokens size_cdf size_cdf_dl
 
 PDF_FILES = $(FIGS:=.pdf)
 DAT_FILES = $(FIGS:=.dat)
