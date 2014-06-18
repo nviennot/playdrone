@@ -5,6 +5,12 @@ This repository contains the code used in the following paper:
 
 [![A Measurement Study of Google Play](http://i.imgur.com/ZAuWtry.png)](http://viennot.com/playdrone.pdf)
 
+The talk can be watched on Youtube: [http://youtu.be/xS0lyL\_0OAM](http://youtu.be/xS0lyL_0OAM)
+
+The slides are available here: [http://viennot.com/playdrone-slides.pdf](http://viennot.com/playdrone-slides.pdf)
+
+The paper can be downloaded here: [http://viennot.com/playdrone.pdf](http://viennot.com/playdrone.pdf)
+
 ---
 
 The code is research quality code. It's poorly documented, and have no test suite.
