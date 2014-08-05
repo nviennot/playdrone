@@ -4,8 +4,8 @@ FOLDER=`echo $1 | sed -e 's/\.apk$//g'`
 $MPATH/apktool d -f $1                      || exit 1
 mkdir $FOLDER/src                           || exit 1
 mv $FOLDER/smali $FOLDER/.smali             || exit 1
-$MPATH/dex2jar-0.0.9.13/d2j-dex2jar.sh $1   || exit 1
+$MPATH/dex2jar-0.0.9.15/d2j-dex2jar.sh $1   || exit 1
 echo "Converting .class files to java..."   || exit 1
-java -jar -Xms1024m -Xmx2048m $MPATH/jd-cli/jd-core-java-1.0.jar ${FOLDER}-dex2jar.jar $FOLDER/src || exit 1
+java -jar -Xms1024m -Xmx2048m $MPATH/jd-cli/jd-core-java-1.2.jar ${FOLDER}-dex2jar.jar $FOLDER/src || exit 1
 rm -rf ${FOLDER}_dex2jar.jar                || exit 1
 python $MPATH/rreassoc.py ${FOLDER}         || exit 1
