@@ -4,9 +4,9 @@ module Stack
   def self.common_stack
     ::Middleware::Builder.new do
       use IndexAppAfter
-        use FetchMarketDetails
+        use FetchMarketDetailsS3
           use CacheApkResults
-            use DownloadApk
+            use DownloadApkS3
             use DecompileApk
             use IndexSources
             use FindTokens

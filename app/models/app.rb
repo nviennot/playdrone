@@ -38,6 +38,10 @@ class App < ES::Model
     end
   end
 
+  def bucket_hash
+    "#{Digest::SHA1.hexdigest(id)[0...2]}"
+  end
+
   property :_id,                :type => :string,  :index    => :not_analyzed
 
   property :title,              :type => :string,  :analyzer => :simple

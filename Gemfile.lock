@@ -42,6 +42,12 @@ GIT
       execjs
       railties (>= 3.1)
 
+PATH
+  remote: ~/s3
+  specs:
+    s3 (0.3.21)
+      proxies (~> 0.2.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -189,8 +195,9 @@ GEM
       multi_json (~> 1.0)
       multi_xml (~> 0.5)
       rack (~> 1.2)
-    oj (2.0.10)
+    oj (2.10.0)
     polyglot (0.3.3)
+    proxies (0.2.1)
     pry (0.9.12.1)
       coderay (~> 1.0.5)
       method_source (~> 0.8)
@@ -321,6 +328,7 @@ DEPENDENCIES
   rubyzip
   rugged!
   rvm-capistrano
+  s3!
   sass-rails (~> 3.2.3)
   sidekiq
   signet

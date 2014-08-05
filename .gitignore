@@ -9,3 +9,4 @@ graphs/*.pdf
 graphs/*.dat
 graphs/*.cache
 matches/*
+load.archive_org.s3_creds

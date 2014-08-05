@@ -13,11 +13,22 @@ class Stack::Base
   def exec_and_capture(*args)
     options = args.extract_options!
     args = args.map(&:to_s)
-    IO.popen('-') do |io|
+
+    cwd = options.delete(:cwd)
+    stdin = options.delete(:stdin)
+    stdin = StringIO.new(stdin) if stdin.is_a?(String)
+
+    IO.popen('-', stdin ? "r+" : "r") do |io|
       unless io
         trap("SIGINT", "IGNORE")
         trap("SIGTERM", "IGNORE")
         $stderr.reopen($stdout)
+
+        if cwd
+          FileUtils.mkdir_p(cwd)
+          Dir.chdir(cwd)
+        end
+
         begin
           exec(*args, options)
         rescue Exception => e
@@ -26,6 +37,10 @@ class Stack::Base
         exit! 1
       end
 
+      if stdin
+        IO.copy_stream(stdin, io)
+        io.close_write
+      end
       io.read
     end
   end

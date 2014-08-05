@@ -20,6 +20,7 @@ gem 'nokogiri', :require => false
 gem "ruby-progressbar", :require => false
 gem 'text', git: 'git://github.com/threedaymonk/text.git'
 gem 'rubyzip', :require => false
+gem 's3', path: '~/s3', :require => false
 
 # Front end only
 gem 'unicorn', :require => false
