@@ -29,11 +29,12 @@ module Stack
       end
     end
 
-    def upload(item, file, content=nil)
+    def upload(item, bucket_metadata, file, content=nil)
+      metadata = bucket_metadata.map { |k,v| "--metadata=#{k}:#{v}" }.join(" ")
       if content
-        exec(*"upload --quiet --no-derive --retries=10 --remote-name=#{file} #{item} -".split(" "), :stdin => content)
+        exec(*"upload #{metadata} --quiet --no-derive --retries=10 --remote-name=#{file} #{item} -".split(" "), :stdin => content)
       else
-        exec(*"upload --quiet --no-derive -retries=10 #{item} #{file}".split(" "))
+        exec(*"upload #{metadata} --quiet --no-derive -retries=10 #{item} #{file}".split(" "))
       end
     end
 
@@ -70,10 +71,11 @@ end
 
 class Stack::BaseS3 < Stack::Base
   class S3
-    attr_accessor :bucket, :file_name, :lazy_fetch, :content_cache
+    attr_accessor :bucket, :bucket_metadata, :file_name, :lazy_fetch, :content_cache
 
     def initialize(options, env)
       @bucket = options[:bucket_name]
+      @bucket_metadata = options[:bucket_metadata]
       @file_name = options[:file_name]
       @bucket = @bucket.call(env) if @bucket.is_a?(Proc)
       @file_name = @file_name.call(env) if @file_name.is_a?(Proc)
@@ -81,7 +83,7 @@ class Stack::BaseS3 < Stack::Base
     end
 
     def write(content)
-      Stack::IA.upload(bucket, file_name, content)
+      Stack::IA.upload(bucket, bucket_metadata, file_name, content)
     end
 
     def read

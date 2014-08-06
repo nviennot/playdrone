@@ -1,6 +1,7 @@
 class Stack::FetchMarketDetailsS3 < Stack::BaseS3
-  use_s3 :bucket_name => ->(env){ "playdrone-metadata-#{env[:crawled_at]}" },
-         :file_name   => ->(env){ "#{env[:app_id]}.json" }
+  use_s3 :bucket_name     => ->(env){ "playdrone-metadata-#{env[:crawled_at]}-#{App.bucket_hash(env[:app_id])}" },
+         :bucket_metadata => {:mediatype => :software, :collection => :android_apps},
+         :file_name       => ->(env){ "#{env[:app_id]}.json" }
 
   def persist_to_s3(env, s3)
     if env[:crawled_at] < Date.today - 1.day

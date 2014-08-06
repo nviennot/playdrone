@@ -7,6 +7,7 @@ namespace :deploy do
       symlinks["/srv/matches"] = "matches"
       symlinks["#{shared_path}/nodes.yml"] = "config/nodes.yml"
       symlinks["#{shared_path}/p27env"] = "p27env"
+      symlinks["#{shared_path}/s3_creds.rb"] = "config/initializers/00_s3_creds.rb"
 
       cmd = []
       symlinks.each do |src, dst|

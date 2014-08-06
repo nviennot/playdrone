@@ -17,6 +17,10 @@ class App < ES::Model
       # TODO batches
       Redis.instance.sort('apps', :order => 'alpha').each
     end
+
+    def bucket_hash(app_id)
+      "#{Digest::SHA1.hexdigest(app_id)[0...2]}"
+    end
   end
 
   def initialize(attributes={}, &block)
@@ -39,7 +43,7 @@ class App < ES::Model
   end
 
   def bucket_hash
-    "#{Digest::SHA1.hexdigest(id)[0...2]}"
+    self.class.bucket_hash(id)
   end
 
   property :_id,                :type => :string,  :index    => :not_analyzed
@@ -134,7 +138,7 @@ class App < ES::Model
   property :crawled_at,      :type => :date, :store => true
 
   # DownloadApk attributes
-  property :forward_locked,  :type => :boolean
+  # property :forward_locked,  :type => :boolean
   property :downloaded,      :type => :boolean
 
   # DecompileApk attributes
