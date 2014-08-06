@@ -2,4 +2,4 @@ development:
   url: 'http://localhost:9200'
 
 production:
-  url: 'http://node1:9200'
+  url: 'http://localhost:9200'
