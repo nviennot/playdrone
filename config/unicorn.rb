@@ -16,8 +16,8 @@ if ENV["RAILS_ENV"] == 'production'
 
   # Help ensure your application will always spawn in the symlinked
   # "current" directory that Capistrano sets up.
-  app_root = "/srv/google-play-crawler/current"
-  shared_root = "/srv/google-play-crawler/shared"
+  app_root = "/srv/playdrone/current"
+  shared_root = "/srv/playdrone/shared"
   working_directory app_root
 
   # listen on both a Unix domain socket and a TCP port,
