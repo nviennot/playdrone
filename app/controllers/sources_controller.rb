@@ -5,7 +5,7 @@ class SourcesController < ApplicationController
     @app_id = params[:app_id]
     @filename = params[:filename]
 
-    @results = Source.index(:live).search({
+    @results = Source.index(:src).search({
       :size => 1,
 
       :filter => {
@@ -29,7 +29,7 @@ class SourcesController < ApplicationController
     regex      = Regexp.new(params[:filter], Regexp::IGNORECASE) if params[:filter].present?
     return unless user_query.present?
 
-    @results = Source.index(:live).search({
+    @results = Source.index(:src).search({
       :from => from,
       :size => per_page,
 

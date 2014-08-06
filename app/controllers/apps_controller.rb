@@ -98,7 +98,7 @@ class AppsController < ApplicationController
                #{Rails.root.join('script/ansi2html.sh')} --palette=linux` rescue nil
     end
 
-    @results = Source.index(:live).search({
+    @results = Source.index(:src).search({
       :size   => 100000,
       :query  => { :term     => { :app_id => @app_id } },
       :sort   => { :filename => { :order  => :asc } },

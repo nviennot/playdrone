@@ -11,17 +11,16 @@ class Stack::IndexSources < Stack::Base
 
       sources = Dir["#{prefix}**/*.java"].map do |filename|
         { :_type    => 'source',
-          :_parent  => env[:app_id],
           :app_id   => env[:app_id],
           :filename => filename.split(prefix).last,
           :lines    => File.open(filename) { |f| f.readlines.map(&:chomp) } }
       end
 
       if sources.present?
-        Source.index(:live).delete_query(:term => {:app_id => env[:app_id] }) rescue nil
-        # TODO TypedIndex doesn't have a bulk_index, could fix Stretcher.
         StatsD.measure 'stack.index_sources' do
-          ES.index(:live).bulk_index(sources)
+          Source.index(:src).delete_query(:term => {:app_id => env[:app_id] }) rescue nil
+          # TODO TypedIndex doesn't have a bulk_index, could fix Stretcher.
+          ES.index(:src).bulk_index(sources)
         end
       end
     end
