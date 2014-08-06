@@ -1,6 +1,6 @@
 class Stack::FetchMarketDetailsS3 < Stack::BaseS3
-  use_s3 :bucket_name     => ->(env){ "playdrone-metadata-#{env[:crawled_at]}-#{App.bucket_hash(env[:app_id])}" },
-         :bucket_metadata => {:mediatype => :software, :collection => :android_apps},
+  use_fs :bucket_name     => ->(env){ "playdrone-metadata-#{env[:crawled_at]}-#{App.bucket_hash(env[:app_id])}" },
+         :bucket_metadata => {:mediatype => :software, :collection => 'playdrone-metadata'},
          :file_name       => ->(env){ "#{env[:app_id]}.json" }
 
   def persist_to_s3(env, s3)
@@ -48,15 +48,14 @@ class Stack::FetchMarketDetailsS3 < Stack::BaseS3
 
   def populate_previous_app(env)
     ((env[:crawled_at] - 7.days) ... env[:crawled_at]).to_a.reverse.each do |day|
-
       raw_metadata = nil
 
-      begin
-        raw_metadata = Stack::IA.download("playdrone-metadata-#{day}", "#{env[:app_id]}.json",
-                                          :return_content => true)
-      rescue Stack::IA::Error404
-        next
-      end
+      bucket_name =  "playdrone-metadata-#{day}-#{App.bucket_hash(env[:app_id])}"
+      file_name = "#{env[:app_id]}.json"
+
+      fs = FS.new(:bucket_name => bucket_name, :file_name => file_name)
+      next unless fs.object_exists?
+      raw_metadata = fs.read
 
       metadata = MultiJson.load(raw_metadata, :symbolize_keys => true)
       next if metadata[:not_found]

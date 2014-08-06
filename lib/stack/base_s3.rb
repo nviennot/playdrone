@@ -73,13 +73,15 @@ class Stack::BaseS3 < Stack::Base
   class S3
     attr_accessor :bucket, :bucket_metadata, :file_name, :lazy_fetch, :content_cache
 
-    def initialize(options, env)
+    def initialize(options, env=nil)
       @bucket = options[:bucket_name]
       @bucket_metadata = options[:bucket_metadata]
       @file_name = options[:file_name]
       @bucket = @bucket.call(env) if @bucket.is_a?(Proc)
+      @bucket_metadata = @bucket_metadata.call(env) if @bucket_metadata.is_a?(Proc)
       @file_name = @file_name.call(env) if @file_name.is_a?(Proc)
       @lazy_fetch = options[:lazy_fetch]
+      raise if @bucket.nil? || @file_name.nil?
     end
 
     def write(content)
@@ -104,8 +106,36 @@ class Stack::BaseS3 < Stack::Base
     end
   end
 
+  class FS < S3
+    BASE_PATH = "#{Rails.root}/s3"
+
+    def bucket_path
+      "#{BASE_PATH}/#{bucket}"
+    end
+
+    def file_path
+      "#{bucket_path}/#{file_name}"
+    end
+
+    def write(content)
+      FileUtils.mkdir_p(bucket_path)
+      File.write(file_path, content, :mode => 'wb')
+    end
+
+    def read
+      @content_cache ||= File.read(file_path)
+    rescue Errno::ENOENT => e
+      raise Stack::IA::Error404.new(e.message)
+    end
+
+    def object_exists?
+      File.exist?(file_path)
+    end
+  end
+
   def s3_from_env(env)
-    S3.new(self.class.s3_options, env)
+    klass = self.class.through_fs ? FS : S3
+    klass.new(self.class.s3_options, env)
   end
 
   def should_process?(env, s3)
@@ -119,11 +149,16 @@ class Stack::BaseS3 < Stack::Base
   end
 
   class << self
-    attr_accessor :s3_options
+    attr_accessor :s3_options, :through_fs
     def use_s3(options={})
       options[:role]        ||= self.name.split('::').last
       options[:lazy_fetch]  ||= false
       @s3_options = options
+    end
+
+    def use_fs(options={})
+      use_s3(options)
+      @through_fs = true
     end
   end
 end

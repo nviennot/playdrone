@@ -5,6 +5,7 @@ class Stack::DownloadApkS3 < Stack::BaseS3
 
   use_s3 :bucket_name => ->(env){ "playdrone-apk-#{env[:app].bucket_hash}" },
          :file_name   => ->(env){ "#{env[:app].id}-#{env[:app].version_code}.apk" },
+         :bucket_metadata => {:mediatype => :software, :collection => 'playdrone-apks'},
          :lazy_fetch  => true
 
   # ApiV2 does not give us the last-modified header :(
