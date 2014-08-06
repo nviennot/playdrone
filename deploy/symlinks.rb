@@ -6,6 +6,7 @@ namespace :deploy do
       symlinks["/srv/scratch"] = "scratch"
       symlinks["/srv/matches"] = "matches"
       symlinks["#{shared_path}/nodes.yml"] = "config/nodes.yml"
+      symlinks["#{shared_path}/p27env"] = "p27env"
 
       cmd = []
       symlinks.each do |src, dst|
