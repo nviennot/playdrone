@@ -38,19 +38,19 @@ class Stack::BaseGit < Stack::Base
     end
 
     def branch_exist?
-      !!Rugged::Reference.lookup(repo, branch_ref)
+      !!repo.references[branch_ref]
     end
 
     def tag_exist?
-      !!Rugged::Reference.lookup(repo, tag_ref)
+      !!repo.references[tag_ref]
     end
 
     def last_commit_sha
-      Rugged::Reference.lookup(repo, branch_ref).try(:target)
+      repo.references[branch_ref].try(:target_id)
     end
 
     def committed_tree
-      sha = Rugged::Reference.lookup(repo, tag_ref).try(:target)
+      sha = repo.references[tag_ref].try(:target_id)
       @committed_tree ||= repo.lookup(sha).tree if sha
     end
 
@@ -129,10 +129,10 @@ class Stack::BaseGit < Stack::Base
 
       Rugged::Commit.create(repo, commit).tap do |commit_sha|
         begin
-          Rugged::Reference.create(repo, tag_ref, commit_sha)
+          repo.references.create(tag_ref, commit_sha)
         rescue Rugged::ReferenceError => e
           if e.message =~ /already exists/
-            Rugged::Reference.lookup(repo, tag_ref).delete!
+            repo.references.delete(tag_ref)
             retry
           end
         end
@@ -140,7 +140,7 @@ class Stack::BaseGit < Stack::Base
     end
 
     def set_head
-      Rugged::Reference.create(repo, 'HEAD', branch_ref, true)
+      repo.references.create('HEAD', branch_ref, :force => true)
     end
 
     def read_file(file_name)

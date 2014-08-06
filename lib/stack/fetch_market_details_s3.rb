@@ -57,7 +57,7 @@ class Stack::FetchMarketDetailsS3 < Stack::BaseS3
         next
       end
 
-      metadata = MultiJson.load(metadata, :symbolize_keys => true)
+      metadata = MultiJson.load(raw_metadata, :symbolize_keys => true)
       next if metadata[:not_found]
 
       env[:previous_app_raw] = metadata

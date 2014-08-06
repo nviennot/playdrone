@@ -168,6 +168,7 @@ GEM
     multi_json (1.10.1)
     multi_xml (0.5.5)
     multipart-post (1.2.0)
+    net-http-persistent (2.9.4)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-sftp (2.1.2)
@@ -306,6 +307,7 @@ DEPENDENCIES
   less-rails
   middleware
   multi_json
+  net-http-persistent
   nokogiri
   oauth
   oauth2
