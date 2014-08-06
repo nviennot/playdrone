@@ -4,12 +4,12 @@ gem 'rails'
 gem 'redis'
 # gem 'hiredis', :git => 'git://github.com/nviennot/hiredis-rb.git'
 gem 'sidekiq'
-gem 'faraday'
+gem 'faraday', '~> 0.8.7'
 gem 'faraday_middleware'
 gem 'protobuf', git: 'git://github.com/nviennot/protobuf.git', :branch => 'dev'
 gem 'stretcher', git: 'git://github.com/PoseBiz/stretcher.git'
 gem 'hashie'
-gem 'rugged', git: 'git://github.com/nviennot/rugged.git', :branch => :development, :submodules => true
+gem 'rugged'
 gem 'middleware'
 gem 'multi_json'
 gem 'oj'
@@ -20,7 +20,7 @@ gem 'nokogiri', :require => false
 gem "ruby-progressbar", :require => false
 gem 'text', git: 'git://github.com/threedaymonk/text.git'
 gem 'rubyzip', :require => false
-gem 's3', path: '~/s3', :require => false
+gem 's3', :require => false
 
 # Front end only
 gem 'unicorn', :require => false
