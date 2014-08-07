@@ -4,7 +4,7 @@
 
 APK2GOLD=`pwd`/vendor/apk2gold/apk2gold
 ulimit -m $((4096*1024))
-ulimit -t 60
+ulimit -t 300
 cd $1
 $APK2GOLD $2 2>&1 || exit 1
 mv "${2%.*}" src

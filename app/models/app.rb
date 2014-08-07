@@ -21,6 +21,10 @@ class App < ES::Model
     def bucket_hash(app_id)
       "#{Digest::SHA1.hexdigest(app_id)[0...2]}"
     end
+
+    def download_url(app_id, version_code)
+      "http://archive.org/download/playdrone-apk-#{bucket_hash(app_id)}/#{app_id}-#{version_code}.apk"
+    end
   end
 
   def initialize(attributes={}, &block)

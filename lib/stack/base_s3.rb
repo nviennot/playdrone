@@ -25,7 +25,7 @@ module Stack
       args = ["#{Rails.root}/script/ia",*args]
       options[:cwd] = scratch_dir
       Stack::Base.new(nil).exec_and_capture(*args, options).tap do |stdout|
-        raise_error(stdout) unless $?.to_i.zero?
+        raise_error(stdout) unless $?.success?
       end
     end
 
