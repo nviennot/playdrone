@@ -17,9 +17,9 @@ module NodeWorker
           end
 
           def perform(*args)
-            unless Node.current_node == "#{node}"
-              raise "Processing data for #{node}, but I'm #{Node.current_node}"
-            end
+            # unless Node.current_node == "#{node}"
+              # raise "Processing data for #{node}, but I'm #{Node.current_node}"
+            # end
 
             node_perform(*args)
           end
