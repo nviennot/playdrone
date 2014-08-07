@@ -104,11 +104,11 @@ class Stack::BaseTokenFinder < Stack::BaseGit
       app_token_name = "#{token_name}_token"
 
       token_keys.each do |key_name, keys|
-        env[:app]["#{app_token_name}_#{key_name}"] = keys
+        env[:app]["#{app_token_name}_#{key_name}".to_sym] = keys
       end
       count = token_keys.first[1].count
       total_count += count
-      env[:app]["#{app_token_name}_count"] = count
+      env[:app]["#{app_token_name}_count".to_sym] = count
     end
 
     env[:app][:token_count] = total_count
