@@ -47,6 +47,10 @@ module ES
   class Model < Hashie::Dash
     alias_attribute :id, :_id
 
+    def initialize(attributes={}, &block)
+      super(Hash[attributes].symbolize_keys, &block)
+    end
+
     def self.mapping
       @mapping ||= {}
     end

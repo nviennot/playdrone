@@ -48,7 +48,7 @@ class AppsController < ApplicationController
         :has_native_libs => { :terms => { :field => :has_native_libs} },
       },
 
-      :fields => [:app_id, :title, :downloads]
+      :_source => [:app_id, :title, :downloads]
     }
 
     if params[:filter_filters]
@@ -99,10 +99,10 @@ class AppsController < ApplicationController
     end
 
     @results = Source.index(:src).search({
-      :size   => 100000,
-      :query  => { :term     => { :app_id => @app_id } },
-      :sort   => { :filename => { :order  => :asc } },
-      :fields => [:filename]
+      :size    => 100000,
+      :query   => { :term     => { :app_id => @app_id } },
+      :sort    => { :filename => { :order  => :asc } },
+      :_source => [:filename]
     })
   end
 

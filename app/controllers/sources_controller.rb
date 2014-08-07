@@ -17,7 +17,7 @@ class SourcesController < ApplicationController
         }
       },
 
-      :fields => [:lines]
+      :_source => [:lines]
     })
   end
 
@@ -45,7 +45,7 @@ class SourcesController < ApplicationController
         }
       },
 
-      :fields => [:app_id, :filename],
+      :_source => [:app_id, :filename],
 
       :highlight => {
         :pre_tags  => [''],
