@@ -3,7 +3,7 @@ every :day, :at => '1:00am', :roles => [:master] do
 end
 
 every :day, :at => '2:00am', :roles => [:master] do
-  runner "File.open('/root/dic').to_a.shuffle.each { |l| SearchApp.perform_async(l.unpack('C*').pack('U*').chomp) }"
+  runner "File.open('/srv/words/current').to_a.shuffle.each { |l| SearchApp.perform_async(l.unpack('C*').pack('U*').chomp) }"
 end
 
 every :day, :at => '1:00am' do
