@@ -25,6 +25,10 @@ def submit_metrics_once
   Sidekiq::Stats.new.queues.each do |queue_name, size|
     StatsD.gauge("sidekiq.#{queue_name}", size)
   end
+
+  %w(processed failed enqueued retry_size scheduled_size).each do |stat|
+    StatsD.gauge("sidekiq.stats.#{stat}", Sidekiq::Stats.new.__send__(stat))
+  end
 end
 
 namespace :metrics do
