@@ -1,16 +1,9 @@
 class ProcessApp
   include NodeWorker
-
-  class WillDoLater < RuntimeError; end
-
   # sidekiq_options :retry => 5
   # sidekiq_retry_in { |count| 3600 * 2 }
 
   def node_perform(app_id, crawled_at, options={})
-    if App.bucket_hash(app_id) == 'a1'
-      raise WillDoLater
-    end
-
     options.symbolize_keys!
     crawled_at = Date.parse(crawled_at) if crawled_at.is_a? String
     Timeout.timeout(6.minutes) do
