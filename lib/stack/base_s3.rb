@@ -109,6 +109,16 @@ class Stack::BaseS3 < Stack::Base
   class FS < S3
     BASE_PATH = "#{Rails.root}/s3"
 
+    def self.touch(dir_glob, file)
+      Dir["#{Stack::BaseS3::FS::BASE_PATH}/#{dir_glob}"].each do |dir|
+        FileUtils.touch "#{dir}/#{file}"
+      end
+    end
+
+    def self.mark_metadata_ready_for_ingest(date)
+      touch("playdrone-metadata-#{date.to_date}*", ".ingest_ready")
+    end
+
     def bucket_path
       "#{BASE_PATH}/#{bucket}"
     end

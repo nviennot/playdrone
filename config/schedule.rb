@@ -1,5 +1,5 @@
 every :day, :at => '1:00am', :roles => [:master] do
-  runner "ES.create_all_indexes and ProcessApp.process_all(Date.today)"
+  rake "cron:daily"
 end
 
 every :day, :at => '2:00am', :roles => [:master] do
