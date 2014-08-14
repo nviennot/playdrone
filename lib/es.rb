@@ -20,7 +20,7 @@ module ES
     # number_of_replicas doesn't count master
     index(index_name).create(:index => options.reverse_merge(:refresh_interval => 10*1000,
                                                              :number_of_replicas => 0,
-                                                             :number_of_shards => 8))
+                                                             :number_of_shards => 6))
   rescue Stretcher::RequestError => e
     raise e unless e.http_response.body['error'] =~ /IndexAlreadyExistsException/
   end
@@ -29,7 +29,7 @@ module ES
     start_date ||= Date.today
     end_date   ||= Date.today + 1.day
     (start_date..end_date).each { |day| create_index(day.to_s) }
-    create_index(:src, :number_of_shards => 8, :number_of_replicas => 0)
+    create_index(:src, :number_of_shards => 6, :number_of_replicas => 0)
     update_all_mappings
     # TODO Automatic alias for the latest index
     # server.aliases(:actions => [:add => {:index => end_date.to_s, :alias => :latest}])
