@@ -33,6 +33,9 @@
             = @app_eid
             =link_to @app_id, "https://play.google.com/store/apps/details?id=#{@app_id}"
         %tr
+          %td.property APK Link
+          %td.value= @app.downloaded ? link_to("#{@app_id}-#{@app.version_code}.apk", App.download_url(@app_id, @app.version_code)) : '[not downloaded]'
+        %tr
           %td.property Creator
           %td.value= @app.developer_name
         %tr

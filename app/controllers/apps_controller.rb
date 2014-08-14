@@ -84,7 +84,7 @@ class AppsController < ApplicationController
     end
 
     @app = App.find(:latest, @app_id)
-    @repo_path = "git://#{node}.playdrone.io/#{@app_id.gsub(/\./, '/')}.git"
+    @repo_path = "git://#{node}.playdrone.viennot.com/#{@app_id.gsub(/\./, '/')}.git"
 
     # Some apps don't have any permissions
     @app.permission ||= []
