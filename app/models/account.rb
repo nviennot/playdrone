@@ -115,4 +115,24 @@ class Account < Hashie::Dash
       sleep 1
     end
   end
+
+  def self.get_with_affinity(affinity)
+    loop do
+      if @account_cache_refreshed_at.nil? || @account_cache_refreshed_at < 10.minutes.ago
+        accounts = Redis.instance.smembers('accounts')
+        bad_accounts = Redis.instance.keys('accounts:*:disabled').map { |k| k.split(':')[1] }
+        @account_cache = Hash[(accounts - bad_accounts).map { |a| [a.hash, a] }]
+        @account_cache_refreshed_at = Time.now
+      end
+
+      affinity_hash = affinity.hash
+      best_keys = @account_cache.keys.sort_by { |k| (affinity_hash - k).abs }
+      best_keys[0...2].each do |k|
+        account = find(@account_cache[k])
+        return account if account.rate_limit!
+      end
+
+      sleep 1
+    end
+  end
 end

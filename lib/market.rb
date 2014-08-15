@@ -109,6 +109,8 @@ module Market
     result = api.post('purchase', :ot => 1, :doc => app_id, :vc => version_code) do |builder|
       # The API can be a little slow to authorize the purchase
       builder.options[:read_timeout] = 30
+      # Trying to use the same account so we are nicer with Google.
+      builder.options[:account_affinity] = app_id
     end
     PurchaseResult.new result.body
   end

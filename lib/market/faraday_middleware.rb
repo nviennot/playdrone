@@ -5,8 +5,8 @@ module Market
 
   class FaradayMiddleware < Faraday::Response::Middleware
     def call(env)
-      # Note that first_usable does the rate limit accounting
-      account = Account.first_usable
+      affinity = env[:request][:account_affinity]
+      account = affinity ? Account.get_with_affinity(affinity) : Account.first_usable
       env[:account] = account
 
       env[:request_headers].reverse_merge!(
