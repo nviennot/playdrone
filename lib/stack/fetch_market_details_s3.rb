@@ -47,6 +47,7 @@ class Stack::FetchMarketDetailsS3 < Stack::BaseS3
   private
 
   def populate_previous_app(env)
+    env[:number_of_404_days] = 0
     ((env[:crawled_at] - 7.days) ... env[:crawled_at]).to_a.reverse.each do |day|
       raw_metadata = nil
 
@@ -58,7 +59,10 @@ class Stack::FetchMarketDetailsS3 < Stack::BaseS3
       raw_metadata = fs.read
 
       metadata = MultiJson.load(raw_metadata, :symbolize_keys => true)
-      next if metadata[:not_found]
+      if metadata[:not_found]
+        env[:number_of_404_days] += 1
+        next
+      end
 
       env[:previous_app_raw] = metadata
       env[:previous_app] = App.from_market(metadata)

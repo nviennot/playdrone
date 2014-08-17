@@ -15,7 +15,7 @@ class App < ES::Model
 
     def all
       # TODO batches
-      Redis.instance.sort('apps', :order => 'alpha').each
+      Redis.instance.sort('active_apps', :order => 'alpha').each
     end
 
     def bucket_hash(app_id)

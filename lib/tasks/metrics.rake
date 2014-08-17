@@ -21,6 +21,7 @@ def submit_metrics_once
   StatsD.gauge('account.enabled_count', num_enabled_accounts)
 
   StatsD.gauge('apps.count', Redis.instance.scard('apps'))
+  StatsD.gauge('apps.active_count', Redis.instance.scard('active_apps'))
 
   Sidekiq::Stats.new.queues.each do |queue_name, size|
     StatsD.gauge("sidekiq.#{queue_name}", size)

@@ -3,7 +3,9 @@ module Stack
   # and we can retry the whole thing.
   def self.common_stack
     ::Middleware::Builder.new do
+      use CleanupMissingAppsAfter
       use IndexAppAfter
+
         use FetchMarketDetailsS3
           use CacheApkResults
             use DownloadApkS3

@@ -29,6 +29,7 @@ class Node
       end
 
       redis.call('sadd', 'apps', app_id)
+      redis.call('sadd', 'active_apps', app_id)
       redis.call('set', app_id_key, node)
       redis.call('zincrby', 'nodes', 1, node)
       return {node, 1}
