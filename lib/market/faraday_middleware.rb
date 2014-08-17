@@ -46,6 +46,10 @@ module Market
       parsed_body = ::GooglePlay::ResponseWrapper.new.parse_from_string(env[:body]).to_hash rescue nil
       env[:body] = parsed_body if parsed_body
 
+      if env[:status] == 404
+        raise Market::NotFound.new :status => env[:status], :body => env[:body]
+      end
+
       if env[:status] == 500 && env[:body].to_s =~ /(Item not found|could not be found)/
         raise Market::NotFound.new :status => env[:status], :body => env[:body]
       end
