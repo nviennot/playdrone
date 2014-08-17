@@ -30,6 +30,24 @@ def submit_metrics_once
   %w(processed failed enqueued retry_size scheduled_size).each do |stat|
     StatsD.gauge("sidekiq.stats.#{stat}", Sidekiq::Stats.new.__send__(stat))
   end
+
+  results = App.index(Date.today).search(
+    :size => 0,
+    :query => {:match_all => {}},
+    :facets => {
+      :free            => { :terms => { :field => :free }},
+      :downloaded      => { :terms => { :field => :downloaded }},
+      :decompiled      => { :terms => { :field => :decompiled }},
+      :apk_updated     => { :terms => { :field => :apk_updated }},
+      :market_removed  => { :terms => { :field => :market_removed }},
+      :market_released => { :terms => { :field => :market_released }},
+    })
+
+  StatsD.gauge("apps.daily.total", results.total)
+  %w(free downloaded decompiled apk_updated market_removed market_released).each do |facet|
+    value = results.facets[facet]['terms'].select { |t| t['term'] == 'T' }.first['count'] rescue 0
+    StatsD.gauge("apps.daily.#{facet}", value)
+  end
 end
 
 namespace :metrics do
