@@ -7,14 +7,18 @@ class Stack::FetchDevSignature < Stack::BaseGit
 
     signature = nil
 
-    Zip::File.open(env[:apk_path]) do |z|
-      sig_zip_path = z.entries.map(&:name).grep(/^META-INF\/*.+(RSA|DSA)$/).first
-      sig_file = env[:scratch].join('dev_signature')
-      File.open(sig_file, "wb") { |f| f.write z.read(sig_zip_path) }
-      sig = `cat #{sig_file} | keytool -printcert | grep "MD5: "`
-      raise "Bad matching" unless sig.chomp.match(/.*MD5:\s+(.+)$/)
-      signature = $1.gsub(/:/, '')
-      raise "Bad Signature" unless signature.size == 32
+    begin
+      Zip::File.open(env[:apk_path]) do |z|
+        sig_zip_path = z.entries.map(&:name).grep(/^META-INF\/*.+(RSA|DSA)$/).first
+        sig_file = env[:scratch].join('dev_signature')
+        File.open(sig_file, "wb") { |f| f.write z.read(sig_zip_path) }
+        sig = `cat #{sig_file} | keytool -printcert | grep "MD5: "`
+        raise "Bad matching" unless sig.chomp.match(/.*MD5:\s+(.+)$/)
+        signature = $1.gsub(/:/, '')
+        raise "Bad Signature" unless signature.size == 32
+      end
+    rescue
+      signature = 'invalid'
     end
 
     git.commit do |index|
