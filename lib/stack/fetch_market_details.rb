@@ -49,7 +49,7 @@ class Stack::FetchMarketDetails < Stack::BaseGit
   private
 
   def populate_previous_app(env)
-    env[:crawl_dates] ||= env[:repo].tags.select { |t| t =~ /market_metadata-/ }
+    env[:crawl_dates] ||= env[:repo].tags.map(&:name).select { |t| t =~ /market_metadata-/ }
                                          .map { |t| Date.parse(t.gsub(/market_metadata-/, '')) }.sort
     previous_date = env[:crawl_dates].select { |d| d < env[:crawled_at] }.last
     return unless previous_date

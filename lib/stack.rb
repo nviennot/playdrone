@@ -20,6 +20,19 @@ module Stack
     end
   end
 
+  def self.reindex_sources(options={})
+    raise "missing app_id" unless options[:app_id]
+
+    @reindex_sources ||= ::Middleware::Builder.new do
+      use LockApp
+        use PrepareFS
+          use ReindexSourcesShim
+            use DecompileApk
+              use IndexSources
+    end
+    @reindex_sources.call(options.dup)
+  end
+
   def self.reprocess_app(options={})
     raise "missing app_id" unless options[:app_id]
 
