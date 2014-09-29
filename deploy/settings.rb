@@ -19,7 +19,7 @@ set :rvm_type, :system
 set :whenever_roles, [:sidekiq, :master]
 set :whenever_command, 'bundle exec whenever'
 
-role :unicorn, *(1..3).map { |i| "node#{i.to_s.rjust(2,'0')}.playdrone.viennot.com" }
-role :sidekiq, *(1..3).map { |i| "node#{i.to_s.rjust(2,'0')}.playdrone.viennot.com" }
-role :metrics, 'node01.playdrone.viennot.com'
-role :master,  'node01.playdrone.viennot.com'
+role :unicorn, *(1..4).map { |i| "node#{i.to_s.rjust(2,'0')}.playdrone.io" }
+role :sidekiq, *(1..4).map { |i| "node#{i.to_s.rjust(2,'0')}.playdrone.io" }
+role :metrics, 'node01.playdrone.io'
+role :master,  'node01.playdrone.io'
