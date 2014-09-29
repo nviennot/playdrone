@@ -9,6 +9,7 @@ class Stack::IndexSources < Stack::Base
       sources = []
       %w(java xml html js).each do |extention|
         sources += Dir["#{env[:src_dir]}/**/*.#{extention}"].map do |fullpath|
+          next unless File.file?(fullpath)
           path = fullpath.split("#{env[:src_dir]}/").last
           next if path =~ /^original/ # don't want garbage with original (binary) xml files
 
