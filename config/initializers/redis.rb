@@ -5,7 +5,7 @@ def Redis.instance
   return @_redis_instance if @_redis_instance
 
   # redis = Redis.new(:driver => :hiredis)
-  redis = Redis.new
+  redis = Redis.new(:timeout => 10*60)
   version = redis.info['redis_version']
   unless Gem::Version.new(version) >= Gem::Version.new('2.6.0')
     raise "You are using Redis #{version}. Please use Redis 2.6.0 or later."
