@@ -29,8 +29,6 @@ class Stack::DownloadApk < Stack::BaseGit
         return
       end
 
-      app.forward_locked = download_info.forward_locked
-
       response = Faraday.new(:ssl => {:verify => false}) do |f|
         f.response :follow_redirects
         f.adapter  :net_http
@@ -87,7 +85,6 @@ class Stack::DownloadApk < Stack::BaseGit
     fake_payload = {:payload => {:buy_response => { :purchase_status_response => { :app_delivery_data => download_info } } } }
     download_info = Market::PurchaseResult.new(fake_payload)
 
-    app.forward_locked = download_info.forward_locked
     app.downloaded = true
 
     @stack.call(env)

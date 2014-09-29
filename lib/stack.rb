@@ -6,9 +6,9 @@ module Stack
       use CleanupMissingAppsAfter
       use IndexAppAfter
 
-        use FetchMarketDetailsS3
+        use Rails.env.production? ? FetchMarketDetailsS3 : FetchMarketDetails
           use CacheApkResults
-            use DownloadApkS3
+            use Rails.env.production? ? DownloadApkS3 : DownloadApk
             use DecompileApk
             use IndexSources
             use FindTokens
