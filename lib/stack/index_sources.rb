@@ -25,7 +25,7 @@ class Stack::IndexSources < Stack::Base
       end
 
       StatsD.measure 'stack.index_sources' do
-        Source.index(:src).delete_query(:query => {:term => {:app_id => env[:app_id] }}) rescue nil
+        # Source.index(:src).delete_query(:query => {:term => {:app_id => env[:app_id] }}) rescue nil
         ES.index(:src).bulk_index(sources)
       end
     end
