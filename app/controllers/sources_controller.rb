@@ -3,7 +3,7 @@ require 'will_paginate/collection'
 class SourcesController < ApplicationController
   def show
     @app_id = params[:app_id]
-    @filename = params[:filename]
+    @path = params[:filename]
 
     @results = Source.index(:src).search({
       :size => 1,
@@ -11,14 +11,16 @@ class SourcesController < ApplicationController
       :filter => {
         :bool => {
           :must => [
-            { :term => { :app_id   => @app_id } },
-            { :term => { :filename => @filename } }
+            { :term => { :app_id  => @app_id } },
+            { :term => { :path    => @path } }
           ]
         }
       },
 
       :_source => [:lines]
     })
+
+    @extension = extension_for(@path)
   end
 
   def search
@@ -45,7 +47,7 @@ class SourcesController < ApplicationController
         }
       },
 
-      :_source => [:app_id, :filename],
+      :_source => [:app_id, :path],
 
       :highlight => {
         :pre_tags  => [''],
@@ -60,11 +62,24 @@ class SourcesController < ApplicationController
       matched_lines = matched_lines.grep(regex) if regex
       next if matched_lines.empty?
 
-      {:app_id   => source.app_id,
-       :filename => source.filename,
-       :lines    => matched_lines}
+      {:app_id    => source.app_id,
+       :path      => source.path,
+       :extension => extension_for(source.path),
+       :filename  => filename_for(source.path),
+       :lines     => matched_lines}
     end.compact
 
     @pagination = WillPaginate::Collection.new(page, per_page, @results.total)
+  end
+
+  private
+
+  def extension_for(path)
+    ext = path.split('.').last.to_sym
+    ext == :js ? :java_script : ext # for coderay
+  end
+
+  def filename_for(path)
+    path.split('/').last
   end
 end

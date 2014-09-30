@@ -7,7 +7,7 @@ class Stack::IndexSources < Stack::Base
       canonical_path = "src/#{env[:app_id].gsub(/\./, '/')}"
 
       sources = []
-      %w(java xml html js).each do |extention|
+      %w(java xml html js).each do |extension|
         sources += Dir["#{env[:src_dir]}/**/*.#{extention}"].map do |fullpath|
           next unless File.file?(fullpath)
           path = fullpath.split("#{env[:src_dir]}/").last
@@ -18,7 +18,7 @@ class Stack::IndexSources < Stack::Base
             :canonical => !!path[canonical_path],
             :path      => path,
             :filename  => path.split('/').last,
-            :extention => extention,
+            :extention => extension, # TODO fix to extension
             :crawed_at => env[:crawled_at],
             :lines     => File.read(fullpath).lines.map(&:chomp) }
         end.compact

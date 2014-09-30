@@ -3,6 +3,7 @@ class Source < ES::Model
   property :canonical,  :type => :boolean, :store    => true
   property :path,       :type => :string,  :index    => :not_analyzed
   property :filename,   :type => :string,  :index    => :not_analyzed
+  # TODO fix to extension
   property :extention,  :type => :string,  :index    => :not_analyzed
   property :crawled_at, :type => :date,    :store    => true
   property :lines,      :type => :string,  :analyzer => :simple
