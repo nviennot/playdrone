@@ -35,6 +35,7 @@ class SourcesController < ApplicationController
 
     from       = (page-1) * per_page
     regex      = Regexp.new(params[:filter], Regexp::IGNORECASE) if params[:filter].present?
+
     return unless user_query.present?
 
     query = {
@@ -49,16 +50,16 @@ class SourcesController < ApplicationController
               :default_field    => :lines,
               :default_operator => 'AND'
             }
-          }
+          },
+
+          :filter => {
+            :and => [
+              { :term  => { :extention => extension } },
+              { :term  => { :canonical => canonical } },
+            ].select { |h| h.values[0].values[0].present? }.compact,
+          }.select { |_, v| v.present? },
         }
       },
-
-      :filter => {
-        :and => [
-          { :term  => { :extention => extension } },
-          { :term  => { :canonical => canonical } },
-        ].select { |h| h.values[0].values[0].present? }.compact,
-      }.select { |_, v| v.present? },
 
       :_source => [:app_id, :path],
 
@@ -66,6 +67,15 @@ class SourcesController < ApplicationController
         :pre_tags  => [''],
         :post_tags => [''],
         :fields    => { :lines => { :fragment_size => 300, :number_of_fragments => 100000 } }
+      },
+
+      :aggs => {
+        :apps_count => {
+          :cardinality => {
+            :field => :app_id,
+            :precision_threshold => 10000,
+          }
+        }
       }
     }
 

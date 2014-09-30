@@ -3,6 +3,7 @@
     .span6
       %p
         Matched #{@results.total} files
+        among ~#{@results.raw['aggregations']['apps_count']['value']} apps
         (took #{@results.raw['took']/1000.0}s)
 
     .span6.source-paginate
