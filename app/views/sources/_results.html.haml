@@ -22,7 +22,8 @@
           - @files.each do |file|
             - file[:lines].each do |line|
               %tr
-                %td.eid=  link_to file[:app_id],   "/apps/#{file[:app_id]}"
+                -# %td.eid=  link_to file[:app_id],   "/apps/#{file[:app_id]}"
+                %td.eid=  link_to file[:app_id], "https://play.google.com/store/apps/details?id=#{file[:app_id]}"
                 %td.path= link_to file[:filename], "/apps/#{file[:app_id]}/#{file[:path]}"
                 %td.line.CodeRay= raw CodeRay.scan(line, file[:extension]).html
 
