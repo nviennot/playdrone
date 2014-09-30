@@ -24,5 +24,9 @@
       - options = {'All Extensions' => :all, 'Java' => :java, 'XML' => :xml, 'HTML' => :html, 'JavaScript' => :js}
       = select_tag  :extension, options_for_select(options, params[:extension] || :all), :class => 'input-medium'
 
+      %label.checkbox
+        = check_box_tag :canonical_path_only, 'yes', params[:canonical_path_only]
+        In canonical path only
+
 #results
   = render 'results'

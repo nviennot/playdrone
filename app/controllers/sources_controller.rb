@@ -30,6 +30,9 @@ class SourcesController < ApplicationController
     per_page   = (params[:per_page] || 10).to_i
     page       = (params[:page] || 1).to_i
     extension  = (params[:extension] || :all).to_sym
+    extension  = nil if extension == :all
+    canonical  = params[:canonical_path_only] == 'yes'
+
     from       = (page-1) * per_page
     regex      = Regexp.new(params[:filter], Regexp::IGNORECASE) if params[:filter].present?
     return unless user_query.present?
@@ -50,6 +53,13 @@ class SourcesController < ApplicationController
         }
       },
 
+      :filter => {
+        :and => [
+          { :term  => { :extention => extension } },
+          { :term  => { :canonical => canonical } },
+        ].select { |h| h.values[0].values[0].present? }.compact,
+      }.select { |_, v| v.present? },
+
       :_source => [:app_id, :path],
 
       :highlight => {
@@ -58,11 +68,6 @@ class SourcesController < ApplicationController
         :fields    => { :lines => { :fragment_size => 300, :number_of_fragments => 100000 } }
       }
     }
-
-    if extension != :all
-      query[:filter] ||= {}
-      query[:filter][:term] = { :extention => extension }
-    end
 
     @results = Source.index(:src).search(query)
 
