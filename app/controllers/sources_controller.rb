@@ -79,6 +79,8 @@ class SourcesController < ApplicationController
       }
     }
 
+    query[:query][:filtered][:query] = {:match_all => {}} if user_query == '*'
+
     @results = Source.index(:src).search(query)
 
     @files = @results.results.map do |source|
