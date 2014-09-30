@@ -15,7 +15,7 @@ gem 'middleware'
 gem 'multi_json'
 gem 'oj'
 gem 'statsd-instrument'
-gem 'airbrake'
+# gem 'airbrake'
 gem 'whenever', :require => false
 gem 'nokogiri', :require => false
 gem "ruby-progressbar", :require => false
