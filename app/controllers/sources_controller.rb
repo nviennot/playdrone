@@ -24,14 +24,17 @@ class SourcesController < ApplicationController
   end
 
   def search
+    @extensions = %w(java xml html js)
+
     user_query = params[:query]
     per_page   = (params[:per_page] || 10).to_i
     page       = (params[:page] || 1).to_i
+    extension  = (params[:extension] || :all).to_sym
     from       = (page-1) * per_page
     regex      = Regexp.new(params[:filter], Regexp::IGNORECASE) if params[:filter].present?
     return unless user_query.present?
 
-    @results = Source.index(:src).search({
+    query = {
       :from => from,
       :size => per_page,
 
@@ -54,7 +57,14 @@ class SourcesController < ApplicationController
         :post_tags => [''],
         :fields    => { :lines => { :fragment_size => 300, :number_of_fragments => 100000 } }
       }
-    })
+    }
+
+    if extension != :all
+      query[:filter] ||= {}
+      query[:filter][:term] = { :extention => extension }
+    end
+
+    @results = Source.index(:src).search(query)
 
     @files = @results.results.map do |source|
       next unless source._highlight

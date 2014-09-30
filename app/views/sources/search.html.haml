@@ -6,8 +6,8 @@
     %a.logo{:href => '/'} Google Play With Me
 
 .row
-  .span12.offset1
-    = form_tag '/sources', :class => 'form-inline search', :method => :get do
+  = form_tag '/sources', :class => 'form-inline search', :method => :get do
+    .span12.offset1
       = text_field_tag :query,  params[:query],  :autocomplete => :off, :class => 'input-xxlarge',
                        :placeholder => 'Query (Lucene syntax), fields: app_id, filename, lines'
       = text_field_tag :filter, params[:filter], :autocomplete => :off,
@@ -19,6 +19,10 @@
       = button_tag :id => 'search', :class => 'btn btn-primary' do
         %i.icon-search
         %span Search
+
+    .span12.offset1
+      - options = {'All Extensions' => :all, 'Java' => :java, 'XML' => :xml, 'HTML' => :html, 'JavaScript' => :js}
+      = select_tag  :extension, options_for_select(options, params[:extension] || :all), :class => 'input-medium'
 
 #results
   = render 'results'
