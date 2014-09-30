@@ -21,7 +21,7 @@
         %span Search
 
     .span12.offset1
-      - options = {'All Extensions' => :all, 'Java' => :java, 'XML' => :xml, 'HTML' => :html, 'JavaScript' => :js}
+      - options = {'All Extensions' => :all, 'Java' => :java, 'XML' => :xml, 'HTML' => :html, 'JavaScript' => :js, 'Libraries' => :so}
       = select_tag  :extension, options_for_select(options, params[:extension] || :all), :class => 'input-medium'
 
       %label.checkbox
