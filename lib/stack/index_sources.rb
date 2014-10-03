@@ -47,8 +47,13 @@ class Stack::IndexSources < Stack::Base
       end.compact
 
       StatsD.measure 'stack.index_sources' do
-        # Source.index(:src).delete_query(:query => {:term => {:app_id => env[:app_id] }}) rescue nil
-        ES.index(:src).bulk_index(sources)
+        Source.index(:src).delete_query(:query => {:term => {:app_id => env[:app_id] }})
+        begin
+          ES.index(:src).bulk_index(sources)
+        rescue Faraday::Error::ConnectionFailed
+          # Trying smaller amounts
+          sources.each_slice(50) { |s| ES.index(:src).bulk_index(s) }
+        end
       end
     end
 
