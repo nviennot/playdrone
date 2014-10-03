@@ -97,6 +97,19 @@ class SourcesController < ApplicationController
     end.compact
 
     @pagination = WillPaginate::Collection.new(page, per_page, @results.total)
+
+    respond_to do |format|
+      format.html { }
+      format.json do
+        output = {
+          :files_matched => @results.total,
+          :apps_matched => @results.raw['aggregations']['apps_count']['value'],
+          :took => "#{@results.raw['took']/1000.0}s",
+          :matches => @files.map { |f| f.select { |k,v| k.in? [:app_id, :path, :lines] } }
+        }
+        render text: MultiJson.dump(output, :pretty => true)
+      end
+    end
   end
 
   private
