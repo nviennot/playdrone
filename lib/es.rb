@@ -2,7 +2,7 @@
 
 module ES
   def self.server
-    Thread.current[:es_connection] ||= Stretcher::Server.new(ENV['ELASTICSEARCH_URL'])
+    Thread.current[:es_connection] ||= Stretcher::Server.new(ENV['ELASTICSEARCH_URL'], :read_timeout => 120)
   end
 
   def self.index(index_name)
