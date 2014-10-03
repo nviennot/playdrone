@@ -90,10 +90,10 @@ module ES
       result = self.index(index_name).search({:search_type => :scan, :scroll => '5m', :size => 1000}, query)
       return if result.total.zero?
 
-      scroll_id = result[:raw][:_scroll_id]
+      scroll_id = result.raw[:_scroll_id]
       bar = ProgressBar.create(:format => '%t |%b>%i| %c/%C %e', :title => "Scan", :total => result.total)
       loop do
-        result = ES.server.request(:get, '_search/scroll', :scroll => '5m', :scroll_id => scroll_id)
+        result = ES.server.request(:get, ES.server.path_uri('/_search/scroll'), :scroll => '5m', :scroll_id => scroll_id)
         data = result.hits.hits
         break if data.empty?
         scroll_id = result[:_scroll_id]
