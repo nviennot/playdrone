@@ -54,8 +54,10 @@ class Account < Hashie::Dash
 
     # we get SID, LSID, Auth, services, Token.
     # Token contains doritos,hist,mail,googleme,lh2,talk,android,cl. What is doritos?
-    auth_token = Hash[response.body.split("\n").map { |line| line.split('=') }]['Auth']
-    auth_token ? auth_token : raise(AuthFailed)
+
+    parsed = Hash[response.body.split("\n").map { |line| line =~ /^([^=]+)=(.+$)/; [$1, $2] }]
+    raise(AuthFailed) unless parsed['Auth']
+    parsed['Auth']
   end
 
   def auth_token
