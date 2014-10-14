@@ -48,7 +48,7 @@ class Stack::FetchMarketDetailsS3 < Stack::BaseS3
 
   def populate_previous_app(env)
     env[:number_of_404_days] = 0
-    ((env[:crawled_at] - 7.days) ... env[:crawled_at]).to_a.reverse.each do |day|
+    ((env[:crawled_at] - 5.days) ... env[:crawled_at]).to_a.reverse.each do |day|
       raw_metadata = nil
 
       bucket_name =  "playdrone-metadata-#{day}-#{App.bucket_hash(env[:app_id])}"

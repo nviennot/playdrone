@@ -119,6 +119,14 @@ class Stack::BaseS3 < Stack::Base
       touch("playdrone-metadata-#{date.to_date}*", ".ingest_ready")
     end
 
+    def self.cleanup_old_metadata(date)
+      Dir["#{Stack::BaseS3::FS::BASE_PATH}/playdrone-metadata-#{date.to_date}*"].each do |dir|
+        if File.exist?(dir + "/.ingest_complete")
+          FileUtils.rm_rf(dir)
+        end
+      end
+    end
+
     def bucket_path
       "#{BASE_PATH}/#{bucket}"
     end

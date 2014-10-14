@@ -62,6 +62,24 @@ module Stack
     options[:app]
   end
 
+  def self.process_app_only_raw(options={})
+    raise "missing app_id" unless options[:app_id]
+    options = options.dup
+    options[:crawled_at] ||= Date.today
+    # can pass :reprocess => branch to reprocess that branch
+    # do not use unless you know what you are doing.
+
+    @process_app_only_raw ||= ::Middleware::Builder.new do
+      use LockApp
+        use PrepareScratch
+          use CleanupMissingAppsAfter
+            use FetchMarketDetailsS3
+            use DownloadApkS3
+    end
+    @process_app_only_raw.call(options)
+    options[:app]
+  end
+
   def self.purge_branch(options={})
     raise "missing app_id"       unless options[:app_id]
     raise "missing purge_branch" unless options[:purge_branch]
