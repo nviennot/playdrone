@@ -11,7 +11,11 @@ namespace :cron do
     require File.join(Rails.root, "config", "environment")
     # TODO make APK collations
     StackWorker.process_all(:process_app_only_raw)
+
+    File.open('/srv/words/current').to_a
+      .shuffle
+      .map {|w| w.unpack('C*').pack('U*').chomp }
+      .each { |w| SearchApp.perform_async(w) }
     # ES.create_all_indexes
-    # def self.process_app_only_raw(options={})
   end
 end
