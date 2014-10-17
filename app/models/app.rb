@@ -5,7 +5,7 @@ class App < ES::Model
     def discovered_app(app_id)
       node, added = Node.register_app(app_id)
       if added
-        ProcessApp.perform_async_on_node(node, app_id)
+        ProcessApp.perform_async_on_node(node, app_id, Date.today)
       end
     end
 
