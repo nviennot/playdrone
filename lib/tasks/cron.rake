@@ -10,7 +10,7 @@ namespace :cron do
   task :daily_master do |t, args|
     require File.join(Rails.root, "config", "environment")
     # TODO make APK collations
-    ProcessAll.process_all
+    ProcessApp.process_all
 
     File.open('/srv/words/current').to_a
       .shuffle
