@@ -4,6 +4,7 @@ class Account < Hashie::Dash
   # Just in case...
   MAX_QUERIES_PER_MIN = Rails.env.production? ? 1000 : 2**10
   AUTH_TOKEN_EXPIRE = 1.hour
+  DISABLE_EXPIRE = 30.minutes
 
   # Not using redis hashes for the fields, it's easier to deal with expirations
   property :email,      :required => true
@@ -11,6 +12,7 @@ class Account < Hashie::Dash
   property :android_id, :required => true
 
   def key(what)
+    raise "no email?" unless self.email
     ['accounts', self.email, what].compact.join(':')
   end
 
@@ -76,7 +78,10 @@ class Account < Hashie::Dash
   end
 
   def disable!
-    Redis.instance.set(key(:disabled), 1)
+    Redis.instance.multi do
+      Redis.instance.set(key(:disabled), 1)
+      Redis.instance.expire(key(:disabled), DISABLE_EXPIRE)
+    end
   end
 
   def enable!
