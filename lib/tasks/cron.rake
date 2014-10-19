@@ -18,4 +18,10 @@ namespace :cron do
       .each { |w| SearchApp.perform_async(w) }
     # ES.create_all_indexes
   end
+
+  desc "Hourly stuff to do for master"
+  task :hourly_master do |t, args|
+    require File.join(Rails.root, "config", "environment")
+    ScanLeaderboard.perform_async(:browse)
+  end
 end

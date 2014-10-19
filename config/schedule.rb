@@ -2,6 +2,10 @@ every :day, :at => '1:00am', :roles => [:master] do
   rake "cron:daily_master"
 end
 
+every :hour, :roles => [:master] do
+  rake "cron:hourly_master"
+end
+
 # every :day, :at => '2:00am', :roles => [:master] do
   # runner "File.open('/srv/words/current').to_a.shuffle.each { |l| SearchApp.perform_async(l.unpack('C*').pack('U*').chomp) }"
 # end
