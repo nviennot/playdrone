@@ -12,7 +12,7 @@ class Account < Hashie::Dash
   property :android_id, :required => true
 
   def key(what)
-    raise "no email?" unless self.email
+    raise "no email?" unless self.email.present?
     ['accounts', self.email, what].compact.join(':')
   end
 
@@ -124,6 +124,8 @@ class Account < Hashie::Dash
   end
 
   def self.get_with_affinity(affinity)
+    return first_usable # disabling affinity for now...
+
     loop do
       if @account_cache_refreshed_at.nil? || @account_cache_refreshed_at < 10.minutes.ago
         accounts = Redis.instance.smembers('accounts')
