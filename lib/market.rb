@@ -115,6 +115,43 @@ module Market
     PurchaseResult.new result.body
   end
 
+  class BrowseResult < Struct.new(:payload)
+    def list_url
+      payload[:payload][:browse_response][:contents_url]
+    end
+
+    def categories
+      return nil unless payload[:payload][:browse_response][:category]
+      Hash[payload[:payload][:browse_response][:category].map { |k,v| [k[:name],k[:data_url]] }]
+    end
+  end
+
+  def self.browse(options={})
+    if options[:raw_url]
+      BrowseResult.new api.get(options[:raw_url]).body
+    else
+      params = {}
+      params[:c] = 3 # App category
+      BrowseResult.new api.get('browse', params).body
+    end
+  end
+
+  class ListResult < Struct.new(:payload)
+    def docs
+      payload[:payload][:list_response][:doc]
+    end
+  end
+
+  def self.list(options={})
+    if options[:raw_url]
+      ListResult.new api.get(options[:raw_url]).body
+    else
+      params = {}
+      params[:c] = 3 # App category
+      ListResult.new api.get('list', params).body
+    end
+  end
+
   class << self
     extend StatsD::Instrument
     statsd_count   :search, 'market.search'
