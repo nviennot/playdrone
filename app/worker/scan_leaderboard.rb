@@ -5,7 +5,7 @@ class ScanLeaderboard
   def perform_list(raw_url=nil)
     result = Market.list(:raw_url => raw_url)
 
-    result.docs.each do |cat|
+    result.docs.to_a.each do |cat|
       if cat[:container_metadata].present?
         if cat[:container_metadata][:next_page_url]
           self.class.perform_async(:list, cat[:container_metadata][:next_page_url])
