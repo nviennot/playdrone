@@ -11,6 +11,15 @@ The slides are available here: [http://viennot.com/playdrone-slides.pdf](http://
 
 The paper can be downloaded here: [http://viennot.com/playdrone.pdf](http://viennot.com/playdrone.pdf)
 
+
+---
+
+Getting the Data
+----------------
+
+Playdrone is deployed on archive.org, and currently crawling.
+Instructions on how to get the data will be made available during Nov. 2014.
+
 ---
 
 The code is research quality code. It's poorly documented, and have no test suite.
@@ -19,7 +28,8 @@ Most of the code lies in
 [lib/](https://github.com/nviennot/playdrone/tree/master/lib) and
 [app/models/](https://github.com/nviennot/playdrone/tree/master/app/models).
 
-Here are the basic steps to process an app in dev mode:
+I strongly discourage you to run the code and encourage you to use it only as a
+reference, but if you must, here are the basic steps to process an app in dev mode:
 
 1. Make sure you have Ruby and Java installed
 
