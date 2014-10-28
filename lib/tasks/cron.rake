@@ -22,8 +22,8 @@ namespace :cron do
   desc "Hourly stuff to do for everyone"
   task :hourly do |t, args|
     require File.join(Rails.root, "config", "environment")
-    StatsD.gauge("ingest.#{$current_node}.ready", Dir['/srv/s3/*/.ingest_ready'].count)
-    StatsD.gauge("ingest.#{$current_node}.complete", Dir['/srv/s3/*/.ingest_complete'].count)
+    StatsD.gauge("#{$current_node.split('.').first}.ingest.ready", Dir['/srv/s3/*/.ingest_ready'].count)
+    StatsD.gauge("#{$current_node.split('.').first}.ingest.complete", Dir['/srv/s3/*/.ingest_complete'].count)
   end
 
   desc "Hourly stuff to do for master"
