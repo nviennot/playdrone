@@ -4,7 +4,7 @@ class Stack::FetchMarketDetailsS3 < Stack::BaseS3
          :file_name       => ->(env){ "#{env[:app_id]}.json" }
 
   def persist_to_s3(env, s3)
-    if env[:crawled_at] < Date.today - 1.day
+    if env[:crawled_at] != Date.today
       instantiate_app(env, :use_previous_data)
       @stack.call(env)
       return
