@@ -8,6 +8,7 @@ module Market
                   :ssl => {:verify => false, :version => 'TLSv1'}) do |builder|
         builder.use     Market::FaradayMiddleware
         builder.request :url_encoded
+        builder.response :follow_redirects
 
         builder.options[:open_timeout] = 10
         builder.options[:read_timeout] = 10
