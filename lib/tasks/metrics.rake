@@ -8,7 +8,7 @@ def submit_metrics_once
       local disabled = redis.call('get', prefix .. ':disabled')
       local rate = tonumber(redis.call('get', prefix .. ':rate_limit_minutes')) or 0
 
-      if rate <= #{Account::MAX_QUERIES_PER_MIN} and not disabled then
+      if rate <= #{Account::MAX_QUERIES_PER_ACCOUNT_PER_MIN} and not disabled then
         enabled_accounts = enabled_accounts + 1
       end
     end

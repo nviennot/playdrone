@@ -55,7 +55,7 @@ module Market
       end
 
       unless env[:status] == 200
-        raise Market::BadRequest.new :status => env[:status], :body => env[:body]
+        raise Market::BadRequest.new :status => env[:status], :account => env[:account].email, :body => env[:body]
       end
     end
   end
