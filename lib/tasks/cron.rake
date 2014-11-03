@@ -12,10 +12,10 @@ namespace :cron do
     # TODO make APK collations
     ProcessApp.process_all
 
-    File.open('/srv/words/current').to_a
-      .shuffle
-      .map {|w| w.unpack('C*').pack('U*').chomp }
-      .each { |w| SearchApp.perform_async(w) }
+    # File.open('/srv/words/current').to_a
+      # .shuffle
+      # .map {|w| w.unpack('C*').pack('U*').chomp }
+      # .each { |w| SearchApp.perform_async(w) }
     # ES.create_all_indexes
   end
 
