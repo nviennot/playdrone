@@ -7,7 +7,7 @@ class ProcessApp
     crawled_at = Date.parse(crawled_at) if crawled_at.is_a? String
     crawled_at ||= Date.today
     Timeout.timeout(6.minutes) do
-      Stack.process_app_only_raw(options.merge(:app_id => app_id, :crawled_at => crawled_at))
+      Stack.process_app(options.merge(:app_id => app_id, :crawled_at => crawled_at))
     end
   end
 
