@@ -55,7 +55,7 @@ class Stack::FetchMarketDetails < Stack::BaseGit
     return unless previous_date
 
     previous_tag_ref = "refs/tags/market_metadata-#{previous_date}"
-    previous_commit_sha = Rugged::Reference.lookup(env[:repo], previous_tag_ref).try(:target)
+    previous_commit_sha = env[:repo].references[previous_tag_ref].try(:target)
 
     return unless previous_commit_sha
     previous_metadata = env[:repo].lookup(previous_commit_sha).tree['metadata.json']
