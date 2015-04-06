@@ -14,13 +14,15 @@ The paper can be downloaded here: [http://viennot.com/playdrone.pdf](http://vien
 
 ---
 
-Getting the Data
-----------------
+November 2014 Market Snapshot
+------------------------------
 
-Playdrone is deployed on archive.org, and currently crawling.
-Instructions on how to get the data will be made available during Nov. 2014.
+archive.org has deployed PlayDrone to capture a few days worth of data.
 
----
+Instructions on how to get this dataset can be found on [https://archive.org/details/android_apps](https://archive.org/details/android_apps&tab=about).
+
+PlayDrone Code
+--------------
 
 The code is research quality code. It's poorly documented, and have no test suite.
 
